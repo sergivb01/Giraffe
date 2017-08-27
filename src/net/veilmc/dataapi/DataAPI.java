@@ -17,23 +17,27 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.Messenger;
+import org.bukkit.scheduler.BukkitScheduler;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
+import static org.bukkit.Bukkit.getConsoleSender;
+import static org.bukkit.Bukkit.getScheduler;
 
 public class DataAPI extends JavaPlugin{
+    public static boolean debug = true;
     private DataPublisher publisher;
     private DataSubscriber subscriber;
     private JedisPool pool;
     private String serverType;
     private String jedisPrefix;
     private DataAPI instance;
+    private List<Player> playerToSave = new ArrayList<>();
 
     public DataAPI() {
         this.pool = null;
@@ -64,8 +68,22 @@ public class DataAPI extends JavaPlugin{
         jedisPrefix = "data:gamemodes:" + serverType;
 
 
-        savePlayerGlobalData();
+        BukkitScheduler bukkitScheduler = getScheduler();
+
         saveServerData();
+        bukkitScheduler.scheduleSyncRepeatingTask(this, () -> {
+            saveServerData();
+            if(debug)
+                getConsoleSender().sendMessage(ChatColor.RED + "Saved server data");
+            if (!playerToSave.isEmpty()) {
+                Player next = playerToSave.get(0);
+                saveSinglePlayerData(next);
+                if(debug)
+                    getConsoleSender().sendMessage(ChatColor.RED + "Saved data of " + ChatColor.GRAY + next.getDisplayName());
+                Collections.rotate(playerToSave, -1);
+            }
+        }, 5 * 20L, 5 * 20L);
+
     }
 
     public void saveSinglePlayerData(Player player){
@@ -193,4 +211,6 @@ public class DataAPI extends JavaPlugin{
     }
 
     private Messenger getMessenger() { return Bukkit.getMessenger(); }
+
+    public List<Player> getPlayerToSave(){ return playerToSave; }
 }

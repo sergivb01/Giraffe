@@ -39,6 +39,8 @@ public class PlayerListener implements Listener{
             plugin.getPublisher().write("staffswitch;" + player.getName() + ";" + Bukkit.getServerName() + ";" + " joined the server.");
         }
 
+        if(!plugin.getPlayerToSave().contains(player)) plugin.getPlayerToSave().add(player);
+
     }
 
     @EventHandler
@@ -54,6 +56,9 @@ public class PlayerListener implements Listener{
         if(player.hasPermission("rank.staff")){
             plugin.getPublisher().write("staffswitch;" + player.getName() + ";" + Bukkit.getServerName() + ";" + " left the server.");
         }
+
+        if(plugin.getPlayerToSave().contains(player)) plugin.getPlayerToSave().remove(player);
+
     }
 
 
