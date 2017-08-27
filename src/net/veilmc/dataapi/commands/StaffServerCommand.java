@@ -3,6 +3,7 @@ package net.veilmc.dataapi.commands;
 import net.minecraft.util.com.google.common.io.ByteArrayDataOutput;
 import net.minecraft.util.com.google.common.io.ByteStreams;
 import net.veilmc.dataapi.DataAPI;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -25,8 +26,9 @@ public class StaffServerCommand implements CommandExecutor{
 
         Player player = (Player) sender;
 
-        if (args.length == 0) {
-            player.sendMessage(ChatColor.RED + "Usage: /staffserver <server>");
+        if (args.length <= 1) {
+            player.sendMessage(ChatColor.RED + "Usage: /staffserver <server> <player_to_teleport>");
+            player.sendMessage(ChatColor.RED + "Example: " + ChatColor.GRAY + "/staffserver kits Hacker_ProGamer25");
             return false;
         }
 
@@ -35,6 +37,8 @@ public class StaffServerCommand implements CommandExecutor{
         jedis.expire("data:global:" + player.getUniqueId().toString(), 30);
         plugin.getJedisPool().returnResource(jedis);
         jedis.close();
+
+        Bukkit.dispatchCommand(player, "tp " + args[1]);
 
         final ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
         dataOutput.writeUTF("Connect");

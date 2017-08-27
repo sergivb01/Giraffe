@@ -17,7 +17,6 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.Messenger;
-import org.bukkit.scheduler.BukkitScheduler;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.exceptions.JedisConnectionException;
@@ -25,7 +24,6 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
 import java.io.File;
 import java.util.*;
 
-import static org.bukkit.Bukkit.getConsoleSender;
 import static org.bukkit.Bukkit.getScheduler;
 
 public class DataAPI extends JavaPlugin{
@@ -43,19 +41,22 @@ public class DataAPI extends JavaPlugin{
     }
 
     public void onDisable() {
-        this.subscriber.getJedisPubSub().unsubscribe();
+        this.subscriber.getJedisPubSub().unsubscribe(); //cya redis :d
         this.pool.destroy();
         instance = null;
     }
 
     public void onEnable() {
         instance = this;
+
+        //Configuration stuff
         final File configFile = new File(this.getDataFolder() + "/config.yml");
         if (!configFile.exists()) {
             this.saveDefaultConfig();
         }
         this.getConfig().options().copyDefaults(true);
 
+        //For staffserver cmd
         getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
         setupJedis();
@@ -66,22 +67,15 @@ public class DataAPI extends JavaPlugin{
         serverType = this.getConfig().getString("serverType", "hcf");
         jedisPrefix = "data:gamemodes:" + serverType;
 
-
-        BukkitScheduler bukkitScheduler = getScheduler();
-
-        saveServerData();
-        bukkitScheduler.scheduleSyncRepeatingTask(this, () -> {
-            saveServerData();
-            if(debug)
-                getConsoleSender().sendMessage(ChatColor.RED + "Saved server data");
+        getScheduler().scheduleSyncRepeatingTask(this, this::saveServerData, 5 * 20L, 5 * 20L);
+        getScheduler().scheduleSyncRepeatingTask(this, () -> { //Save data of single player every 15 seconds.
             if (!playerToSave.isEmpty()) {
                 Player next = playerToSave.get(0);
                 saveSinglePlayerData(next);
-                if(debug)
-                    getConsoleSender().sendMessage(ChatColor.RED + "Saved data of " + ChatColor.GRAY + next.getDisplayName());
                 Collections.rotate(playerToSave, -1);
             }
-        }, 5 * 20L, 5 * 20L);
+        }, 10 * 20L, 10 * 20L);
+
 
     }
 
@@ -212,4 +206,6 @@ public class DataAPI extends JavaPlugin{
     private Messenger getMessenger() { return Bukkit.getMessenger(); }
 
     public List<Player> getPlayerToSave(){ return playerToSave; }
+
+    public String getJedisPrefix(){ return jedisPrefix; }
 }
