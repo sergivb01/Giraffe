@@ -31,6 +31,7 @@ public class PlayerListener implements Listener{
         Jedis jedis = plugin.getJedisPool().getResource();
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            jedis.hset(plugin.getJedisPrefix() + ":playerdata:" + player.getUniqueId().toString(), "online", "true"); //Set it ONLINE NIGGERS!
             BaseUser baseUser = BasePlugin.getPlugin().getUserManager().getUser(player.getUniqueId()); //Player data fromm base
             Map<String, String> playerData = new HashedMap<>(); //Let's save all the player data from db
                                                                 //to a Map<String, String>
@@ -49,7 +50,7 @@ public class PlayerListener implements Listener{
             //Notification message.
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aYour options has been &eloaded &afrom the database."));
 
-            plugin.saveSinglePlayerData(player); //Now save the data on database
+            plugin.saveSinglePlayerData(player, true); //Now save the data on database
             plugin.getLogger().info("Saved " + player.getName() + " data as he joined the game.");
         }, 3 * 20L);
 
@@ -73,7 +74,7 @@ public class PlayerListener implements Listener{
         final Player player = event.getPlayer();
         new BukkitRunnable() {
             public void run() {
-                plugin.saveSinglePlayerData(player);
+                plugin.saveSinglePlayerData(player, false);
                 plugin.getLogger().info("Saved " + player.getName() + " data as he quit the game.");
             }
         }.runTaskAsynchronously(this.plugin);
@@ -83,7 +84,8 @@ public class PlayerListener implements Listener{
         }
 
         if(plugin.getPlayerToSave().contains(player)) plugin.getPlayerToSave().remove(player); //We don't need to keep player in
-                                                                                                //arraylist of players-to-save (scheduler)
+
+                                                                                                        //arraylist of players-to-save (scheduler)
 
     }
 
