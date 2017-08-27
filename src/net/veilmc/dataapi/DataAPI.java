@@ -20,7 +20,6 @@ import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.scheduler.BukkitScheduler;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import java.io.File;
@@ -91,12 +90,12 @@ public class DataAPI extends JavaPlugin{
         final Deathban deathban = HCF.getInstance().getUserManager().getUser(player.getUniqueId()).getDeathban();
         final FactionUser factionUser = HCF.getInstance().getUserManager().getUser(player.getUniqueId());
         final PlayerFaction playerFaction = HCF.getInstance().getFactionManager().getPlayerFaction(player.getUniqueId());
-        final BaseUser baseUser = BasePlugin.getInstance().getUserManager().getUser(player.getUniqueId());
+        final BaseUser baseUser = BasePlugin.getPlugin().getUserManager().getUser(player.getUniqueId());
 
         Map<String, String> playerInfo = new HashedMap<>();
         playerInfo.put("nickname", player.getName());
         playerInfo.put("lastIP", player.getAddress().getHostName());
-        playerInfo.put("playtime", String.valueOf(BasePlugin.getInstance().getPlayTimeManager().getTotalPlayTime(player.getUniqueId())));
+        playerInfo.put("playtime", String.valueOf(BasePlugin.getPlugin().getPlayTimeManager().getTotalPlayTime(player.getUniqueId())));
         playerInfo.put("kills", String.valueOf(factionUser.getKills()));
         playerInfo.put("deaths", String.valueOf(factionUser.getDeaths()));
         playerInfo.put("diamonds", String.valueOf(factionUser.getDiamondsMined()));
@@ -184,7 +183,7 @@ public class DataAPI extends JavaPlugin{
     private void setupJedis(){
         try {
 
-            this.pool = new JedisPool(new JedisPoolConfig(), this.getConfig().getString("redis-server"), this.getConfig().getInt("redis-port"));
+            this.pool = new JedisPool(this.getConfig().getString("redis-server"));
             this.publisher = new DataPublisher(this);
             this.subscriber = new DataSubscriber(this);
 
