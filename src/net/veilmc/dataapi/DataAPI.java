@@ -183,17 +183,9 @@ public class DataAPI extends JavaPlugin{
 
     private void setupJedis(){
         try {
-
             this.pool = new JedisPool(this.getConfig().getString("redis-server"));
             this.publisher = new DataPublisher(this);
             this.subscriber = new DataSubscriber(this);
-
-            /*this.pool = new JedisPool(new JedisPoolConfig(), this.getConfig().getString("redis-server"), this.getConfig().getInt("redis-port"));
-            final Jedis jedis = this.getJedisPool().getResource();
-            jedis.ping();
-            this.getJedisPool().returnResource(jedis);
-            this.publisher = new DataPublisher(this);
-            this.subscriber = new DataSubscriber(this);*/
         }catch (JedisConnectionException e) {
             e.printStackTrace();
             this.getServer().getPluginManager().disablePlugin(this);
@@ -213,8 +205,6 @@ public class DataAPI extends JavaPlugin{
     private Messenger getMessenger() { return Bukkit.getMessenger(); }
 
     public List<Player> getPlayerToSave(){ return playerToSave; }
-
-    public String getJedisPrefix(){ return jedisPrefix; }
 
     public String getServerType(){ return serverType; }
 
