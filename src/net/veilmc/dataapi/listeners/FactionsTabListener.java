@@ -12,6 +12,7 @@ import me.joeleoli.construct.ConstructLibrary;
 import me.joeleoli.construct.api.ConstructVersion;
 import me.joeleoli.construct.api.IConstruct;
 import me.joeleoli.construct.util.TaskUtil;
+import net.veilmc.dataapi.DataAPI;
 import net.veilmc.dataapi.utils.TabUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -20,16 +21,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.Plugin;
 
 public class FactionsTabListener implements Listener {
 
     private IConstruct construct;
 
-    public FactionsTabListener(Plugin plugin) {
+    public FactionsTabListener(DataAPI plugin) {
         // Define construct before registering event listeners
         this.construct = ConstructLibrary.getApi();
-
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
@@ -59,9 +58,8 @@ public class FactionsTabListener implements Listener {
             return;
         }
 
-        this.construct.setPosition(player, 2, player.getLocation().getX() + ", " + player.getLocation().getZ());
+        this.construct.setPosition(player, 2, (int) player.getLocation().getX() + ", " + (int) player.getLocation().getZ());
     }*/
-
 
     private void initialUpdate(Player player) {
         if (!this.construct.hasTabList(player)) {
