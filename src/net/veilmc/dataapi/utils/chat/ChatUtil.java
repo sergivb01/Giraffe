@@ -1,4 +1,4 @@
-package net.veilmc.dataapi.util.chat;
+package net.veilmc.dataapi.utils.chat;
 
 import net.minecraft.server.v1_7_R4.*;
 import org.bukkit.command.CommandSender;

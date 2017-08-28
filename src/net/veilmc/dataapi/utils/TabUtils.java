@@ -52,86 +52,88 @@ public class TabUtils {
 
     public static String translate(final Player player, String path) {
         FactionManager factionManager = HCF.getPlugin().getFactionManager();
+        PlayerFaction playerFaction = factionManager.getPlayerFaction(player.getUniqueId());
+        
         if (path.contains("%player_kills%")) {
-            return path.replace("%player_kills%", String.valueOf(player.getStatistic(Statistic.PLAYER_KILLS)));
+            path = path.replace("%player_kills%", String.valueOf(player.getStatistic(Statistic.PLAYER_KILLS)));
         }
         if (path.contains("%player_deaths%")) {
-            return path.replace("%player_deaths%", String.valueOf(player.getStatistic(Statistic.DEATHS)));
+            path = path.replace("%player_deaths%", String.valueOf(player.getStatistic(Statistic.DEATHS)));
         }
         if (path.contains("%faction_location%")) {
             final Location location = player.getLocation();
             final Faction factionAt = factionManager.getFactionAt(location);
-            return path.replace("%faction_location%", String.valueOf(factionAt.getDisplayName(player)));
+            path = path.replace("%faction_location%", String.valueOf(factionAt.getDisplayName(player)));
         }
         if (path.contains("%player_location%")) {
-            return path.replace("%player_location%", String.valueOf(getCardinalDirection(player)) + " (" + player.getLocation().getBlockX() + ", " + player.getLocation().getBlockZ() + ")");
+            path = path.replace("%player_location%", "(" + player.getLocation().getBlockX() + ", " + player.getLocation().getBlockZ() + ") " + getCardinalDirection(player));
         }
         if (path.contains("%online_players%")) {
-            return path.replace("%online_players%", String.valueOf(Bukkit.getServer().getOnlinePlayers().size()));
+            path = path.replace("%online_players%", String.valueOf(Bukkit.getServer().getOnlinePlayers().size() + "/" + Bukkit.getServer().getMaxPlayers()));
         }
         if (path.contains("%player_ping%")) {
-            return path.replace("%player_ping%", String.valueOf(((CraftPlayer)player).getHandle().ping));
+            path = path.replace("%player_ping%", String.valueOf(((CraftPlayer)player).getHandle().ping));
         }
         final Map<PlayerFaction, Integer> factionOnlineMap = new HashMap<>();
         //Player[] onlinePlayers;
         for (Player target : Bukkit.getOnlinePlayers()) {
             if (player == null || player.canSee(target)) {
-                PlayerFaction playerFaction = factionManager.getPlayerFaction(target.getUniqueId());
-                if (playerFaction != null) {
-                    factionOnlineMap.put(playerFaction, factionOnlineMap.getOrDefault(playerFaction, 0) + 1);
+                PlayerFaction pFac = factionManager.getPlayerFaction(target.getUniqueId());
+                if (pFac != null) {
+                    factionOnlineMap.put(pFac, factionOnlineMap.getOrDefault(pFac, 0) + 1);
                 }
             }
         }
         final List<Map.Entry<PlayerFaction, Integer>> sortedMap = (List<Map.Entry<PlayerFaction, Integer>>) MapSorting.sortedValues(factionOnlineMap, (Comparator)Comparator.reverseOrder());
         for (int i = 0; i < 20; ++i) {
             if (i >= sortedMap.size()) {
-                return path.replace("%f_list_" + (i + 1) + "%", "");
+                path = path.replace("%f_list_" + (i + 1) + "%", "");
             }
             else {
                 String name = ChatColor.RED + sortedMap.get(i).getKey().getName();
-                if (factionManager.getPlayerFaction(player.getUniqueId()) != null) {
-                    name = sortedMap.get(i).getKey().getDisplayName(factionManager.getPlayerFaction(player.getUniqueId()));
+                if (playerFaction != null) {
+                    name = sortedMap.get(i).getKey().getDisplayName(playerFaction);
                 }
-                return path.replace("%f_list_" + (i + 1) + "%", String.valueOf(name) + ChatColor.GRAY + " (" + sortedMap.get(i).getValue() + ")");
+                path = path.replace("%f_list_" + (i + 1) + "%", String.valueOf(name) + ChatColor.GRAY + " (" + sortedMap.get(i).getValue() + ")");
             }
         }
-        if (factionManager.getPlayerFaction(player.getUniqueId()) != null) {
+        if (playerFaction != null) {
             if (path.contains("%f_title%")) {
-                return path.replace("%f_title%", "Faction Info");
+                path = path.replace("%f_title%", "Faction Info");
             }
             if (path.contains("%ftag%")) {
-                return path.replace("%ftag%", factionManager.getPlayerFaction(player.getUniqueId()).getName());
+                path = path.replace("%ftag%", playerFaction.getName());
             }
             if (path.contains("%fdtr%")) {
-                return path.replace("%fdtr%", String.format("%.2f", factionManager.getPlayerFaction(player.getUniqueId()).getDeathsUntilRaidable()));
+                path = path.replace("%fdtr%", "&7DTR: &a" + String.format("%.2f", playerFaction.getDeathsUntilRaidable()));
             }
             if (path.contains("%fhome%")) {
-                if (factionManager.getPlayerFaction(player.getUniqueId()).getHome() != null) {
-                    return path.replace("%fhome%", String.valueOf(ChatColor.WHITE.toString()) + factionManager.getPlayerFaction(player.getUniqueId()).getHome().getBlockX() + ", " + HCF.getInstance().getFactionManager().getPlayerFaction(player.getUniqueId()).getHome().getBlockY() + ", " + HCF.getInstance().getFactionManager().getPlayerFaction(player.getUniqueId()).getHome().getBlockZ());
+                if (playerFaction.getHome() != null) {
+                    path = path.replace("%fhome%", "&7Home: &a" + playerFaction.getHome().getBlockX() + ", " + HCF.getInstance().getFactionManager().getPlayerFaction(player.getUniqueId()).getHome().getBlockY() + ", " + HCF.getInstance().getFactionManager().getPlayerFaction(player.getUniqueId()).getHome().getBlockZ());
                 }
                 else {
-                    return path.replace("%fhome%", ChatColor.WHITE + "None");
+                    path = path.replace("%fhome%", ChatColor.WHITE + "None");
                 }
             }
             if (path.contains("%fleader%")) {
-                return path.replace("%fleader%", factionManager.getPlayerFaction(player.getUniqueId()).getLeader().getName());
+                path = path.replace("%fleader%", playerFaction.getLeader().getName());
             }
             if (path.contains("%fbal%")) {
-                return path.replace("%fbal%", "$" + factionManager.getPlayerFaction(player.getUniqueId()).getBalance());
+                path = path.replace("%fbal%", "$" + playerFaction.getBalance());
             }
-            final PlayerFaction playerFaction3 = factionManager.getPlayerFaction(player.getUniqueId());
+            final PlayerFaction playerFaction3 = playerFaction;
             if (path.contains("%fonline%")) {
-                return path.replace("%fonline%", String.valueOf(playerFaction3.getMembers().size()) + "/" + playerFaction3.getOnlinePlayers().size());
+                path = path.replace("%fonline%", "&7Online: &a" + String.valueOf(playerFaction3.getMembers().size()) + "/" + playerFaction3.getOnlinePlayers().size());
             }
             final List<Player> online = Lists.newArrayList(playerFaction3.getOnlinePlayers());
             online.sort(Comparator.comparing(HumanEntity::getName));
             online.sort(Comparator.comparingInt(o -> playerFaction3.getMember(o).getRole().ordinal()));
             for (int j = 0; j < 16; ++j) {
                 if (j >= online.size()) {
-                    return path.replace("%f_member_" + j + "%", "");
+                    path = path.replace("%f_member_" + j + "%", "");
                 }
                 else {
-                    return path.replace("%f_member_" + (j + 1) + "%", String.valueOf(playerFaction3.getMember(online.get(j)).getRole().getAstrix()) + online.get(j).getName());
+                    path = path.replace("%f_member_" + (j + 1) + "%", String.valueOf(playerFaction3.getMember(online.get(j)).getRole().getAstrix()) + online.get(j).getName());
                 }
             }
         }
@@ -158,34 +160,34 @@ public class TabUtils {
                 return "";
             }
             for (int i = 1; i < 31; ++i) {
-                return path.replace("%f_member_" + i + "%", "");
+                path = path.replace("%f_member_" + i + "%", "");
             }
             for (int i = 1; i < 31; ++i) {
-                return path.replace("%f_list_" + i + "%", "");
+                path = path.replace("%f_list_" + i + "%", "");
             }
         }
         if (path.contains("%diamond%")) {
-            return path.replace("%diamond%", String.valueOf(player.getStatistic(Statistic.MINE_BLOCK, Material.DIAMOND_ORE)));
+            path = path.replace("%diamond%", String.valueOf(player.getStatistic(Statistic.MINE_BLOCK, Material.DIAMOND_ORE)));
         }
         if (path.contains("%lapis%")) {
-            return path.replace("%lapis%", String.valueOf(player.getStatistic(Statistic.MINE_BLOCK, Material.LAPIS_ORE)));
+            path = path.replace("%lapis%", String.valueOf(player.getStatistic(Statistic.MINE_BLOCK, Material.LAPIS_ORE)));
         }
         if (path.contains("%iron%")) {
-            return path.replace("%iron%", String.valueOf(player.getStatistic(Statistic.MINE_BLOCK, Material.IRON_ORE)));
+            path = path.replace("%iron%", String.valueOf(player.getStatistic(Statistic.MINE_BLOCK, Material.IRON_ORE)));
         }
         if (path.contains("%gold%")) {
-            return path.replace("%gold%", String.valueOf(player.getStatistic(Statistic.MINE_BLOCK, Material.GOLD_ORE)));
+            path = path.replace("%gold%", String.valueOf(player.getStatistic(Statistic.MINE_BLOCK, Material.GOLD_ORE)));
         }
         if (path.contains("%coal%")) {
-            return path.replace("%coal%", String.valueOf(player.getStatistic(Statistic.MINE_BLOCK, Material.COAL_ORE)));
+            path = path.replace("%coal%", String.valueOf(player.getStatistic(Statistic.MINE_BLOCK, Material.COAL_ORE)));
         }
         if (path.contains("%redstone%")) {
-            return path.replace("%redstone%", String.valueOf(player.getStatistic(Statistic.MINE_BLOCK, Material.REDSTONE_ORE)));
+            path = path.replace("%redstone%", String.valueOf(player.getStatistic(Statistic.MINE_BLOCK, Material.REDSTONE_ORE)));
         }
         if (path.contains("%emerald%")) {
-            return path.replace("%emerald%", String.valueOf(player.getStatistic(Statistic.MINE_BLOCK, Material.EMERALD_ORE)));
+            path = path.replace("%emerald%", String.valueOf(player.getStatistic(Statistic.MINE_BLOCK, Material.EMERALD_ORE)));
         }
-        return path;
+        return ChatColor.translateAlternateColorCodes('&', path);
     }
 
 }
