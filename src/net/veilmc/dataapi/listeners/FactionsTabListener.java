@@ -1,5 +1,6 @@
 package net.veilmc.dataapi.listeners;
 
+
 import com.customhcf.hcf.HCF;
 import com.customhcf.hcf.Utils.DurationFormatter;
 import com.customhcf.hcf.kothgame.CaptureZone;
@@ -18,10 +19,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
-
 
 public class FactionsTabListener implements Listener {
 
@@ -49,10 +48,10 @@ public class FactionsTabListener implements Listener {
 
     @EventHandler
     public void onKick(PlayerKickEvent event) {
-        this.construct.removeTabList(event.getPlayer());
+        ConstructLibrary.getApi().removeTabList(event.getPlayer());
     }
 
-    @EventHandler
+    /*@EventHandler
     public void onMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
 
@@ -61,7 +60,7 @@ public class FactionsTabListener implements Listener {
         }
 
         this.construct.setPosition(player, 2, player.getLocation().getX() + ", " + player.getLocation().getZ());
-    }
+    }*/
 
 
     private void initialUpdate(Player player) {
