@@ -3,8 +3,7 @@ main: net.veilmc.dataapi.DataAPI
 version: 0.1
 author: sergivb01
 description: DataAPI plugin
-depend: [Construct
-]
+depend: [Construct]
 commands:
   syncdata:
   sc:
