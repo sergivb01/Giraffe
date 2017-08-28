@@ -7,6 +7,7 @@ import com.customhcf.hcf.deathban.Deathban;
 import com.customhcf.hcf.faction.type.PlayerFaction;
 import com.customhcf.hcf.user.FactionUser;
 import net.veilmc.dataapi.commands.*;
+import net.veilmc.dataapi.listeners.FactionsTabListener;
 import net.veilmc.dataapi.listeners.PlayerListener;
 import net.veilmc.dataapi.redis.DataPublisher;
 import net.veilmc.dataapi.redis.DataSubscriber;
@@ -62,6 +63,7 @@ public class DataAPI extends JavaPlugin{
         registerCommands();
 
         this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+        this.getServer().getPluginManager().registerEvents(new FactionsTabListener(this), this);
 
         serverType = this.getConfig().getString("serverType", "hcf");
         jedisPrefix = "data:gamemodes:" + serverType;
