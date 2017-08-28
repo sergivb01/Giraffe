@@ -8,7 +8,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -62,7 +61,6 @@ public class PlayerListener implements Listener{
         }
 
 
-
         if(player.hasPermission("rank.staff")){ //staff notification about server switched
             plugin.getPublisher().write("staffswitch;" + player.getName() + ";" + Bukkit.getServerName() + ";" + "joined the server.");
         }
@@ -91,7 +89,7 @@ public class PlayerListener implements Listener{
 
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler
     public void onStaffChatChat(AsyncPlayerChatEvent event){
         Player player = event.getPlayer();
         if(BasePlugin.getPlugin().getUserManager().getUser(player.getUniqueId()).isInStaffChat()){//Staffchat
