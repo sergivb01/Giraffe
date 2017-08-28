@@ -14,7 +14,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.github.paperspigot.event.server.ServerShutdownEvent;
 import redis.clients.jedis.Jedis;
 
 import java.util.Map;
@@ -31,35 +30,36 @@ public class PlayerListener implements Listener{
         final Player player = event.getPlayer();
         Jedis jedis = plugin.getJedisPool().getResource();
 
-        if(jedis.contains)
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-            BaseUser baseUser = BasePlugin.getPlugin().getUserManager().getUser(player.getUniqueId()); //Player data fromm base
-            Map<String, String> playerData = new HashedMap<>();
-            playerData.putAll(jedis.hgetAll("data:players:" + player.getUniqueId().toString()));
-            //Staff things
-            if(playerData.get("staff_modmode").equals("true") && !baseUser.isStaffUtil())
-                Bukkit.dispatchCommand(player, "h");
+        if(jedis.exists("data:players:" + player.getUniqueId().toString())) {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                BaseUser baseUser = BasePlugin.getPlugin().getUserManager().getUser(player.getUniqueId()); //Player data fromm base
+                Map<String, String> playerData = new HashedMap<>();
+                playerData.putAll(jedis.hgetAll("data:players:" + player.getUniqueId().toString()));
+                //Staff things
+                if (playerData.get("staff_modmode").equals("true") && !baseUser.isStaffUtil())
+                    Bukkit.dispatchCommand(player, "h");
 
-            if(playerData.get("staff_sc").equals("true") && !baseUser.isInStaffChat())
-                Bukkit.dispatchCommand(player, "sc");
+                if (playerData.get("staff_sc").equals("true") && !baseUser.isInStaffChat())
+                    Bukkit.dispatchCommand(player, "sc");
 
-            if(playerData.get("staff_vanish").equals("true") && !baseUser.isVanished())
-                Bukkit.dispatchCommand(player, "v");
+                if (playerData.get("staff_vanish").equals("true") && !baseUser.isVanished())
+                    Bukkit.dispatchCommand(player, "v");
 
-            //Options things
-            baseUser.setGlobalChatVisible(playerData.get("options_gc").equals("true"));
-            baseUser.setGlobalChatVisible(playerData.get("options_pm").equals("true"));
-            baseUser.setGlobalChatVisible(playerData.get("options_sc").equals("true"));
+                //Options things
+                baseUser.setGlobalChatVisible(playerData.get("options_gc").equals("true"));
+                baseUser.setGlobalChatVisible(playerData.get("options_pm").equals("true"));
+                baseUser.setGlobalChatVisible(playerData.get("options_sc").equals("true"));
 
-            //Notification message.
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aYour options has been &eloaded &afrom the database."));
+                //Notification message.
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aYour options has been &eloaded &afrom the database."));
 
-            plugin.saveSinglePlayerData(player, true); //Now save the data on database
-            plugin.getLogger().info("Saved " + player.getName() + " data as he joined the game.");
+                plugin.saveSinglePlayerData(player, true); //Now save the data on database
+                plugin.getLogger().info("Saved " + player.getName() + " data as he joined the game.");
 
-            plugin.getJedisPool().returnResource(jedis);
-            jedis.close();
-        }, 3 * 20L);
+                plugin.getJedisPool().returnResource(jedis);
+                jedis.close();
+            }, 3 * 20L);
+        }
 
 
 
