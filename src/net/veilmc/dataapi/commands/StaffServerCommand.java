@@ -9,7 +9,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import redis.clients.jedis.Jedis;
 
 public class StaffServerCommand implements CommandExecutor{
     private DataAPI plugin;
@@ -31,12 +30,6 @@ public class StaffServerCommand implements CommandExecutor{
             player.sendMessage(ChatColor.RED + "Example: " + ChatColor.GRAY + "/staffserver kits Hacker_ProGamer25");
             return false;
         }
-
-        Jedis jedis = plugin.getJedisPool().getResource();
-        jedis.set("data:global:" + player.getUniqueId().toString(), "tp " + args[1]);
-        jedis.expire("data:global:" + player.getUniqueId().toString(), 30);
-        plugin.getJedisPool().returnResource(jedis);
-        jedis.close();
 
         Bukkit.dispatchCommand(player, "tp " + args[1]);
 

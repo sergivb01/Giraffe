@@ -14,6 +14,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.github.paperspigot.event.server.ServerShutdownEvent;
 import redis.clients.jedis.Jedis;
 
 import java.util.Map;
@@ -30,17 +31,20 @@ public class PlayerListener implements Listener{
         final Player player = event.getPlayer();
         Jedis jedis = plugin.getJedisPool().getResource();
 
+        if(jedis.contains)
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-            jedis.hset(plugin.getJedisPrefix() + ":playerdata:" + player.getUniqueId().toString(), "online", "true"); //Set it ONLINE NIGGERS!
             BaseUser baseUser = BasePlugin.getPlugin().getUserManager().getUser(player.getUniqueId()); //Player data fromm base
-            Map<String, String> playerData = new HashedMap<>(); //Let's save all the player data from db
-                                                                //to a Map<String, String>
-            playerData.putAll(jedis.hgetAll(plugin.getJedisPrefix() + ":playerdata:" + player.getUniqueId().toString()));
-
+            Map<String, String> playerData = new HashedMap<>();
+            playerData.putAll(jedis.hgetAll("data:players:" + player.getUniqueId().toString()));
             //Staff things
-            baseUser.setStaffUtil(playerData.get("staff_modmode").equals("true"));
-            baseUser.setInStaffChat(playerData.get("staff_sc").equals("true"));
-            baseUser.setVanished(player, playerData.get("staff_vanish").equals("true"), true);
+            if(playerData.get("staff_modmode").equals("true") && !baseUser.isStaffUtil())
+                Bukkit.dispatchCommand(player, "h");
+
+            if(playerData.get("staff_sc").equals("true") && !baseUser.isInStaffChat())
+                Bukkit.dispatchCommand(player, "sc");
+
+            if(playerData.get("staff_vanish").equals("true") && !baseUser.isVanished())
+                Bukkit.dispatchCommand(player, "v");
 
             //Options things
             baseUser.setGlobalChatVisible(playerData.get("options_gc").equals("true"));
@@ -52,17 +56,15 @@ public class PlayerListener implements Listener{
 
             plugin.saveSinglePlayerData(player, true); //Now save the data on database
             plugin.getLogger().info("Saved " + player.getName() + " data as he joined the game.");
+
+            plugin.getJedisPool().returnResource(jedis);
+            jedis.close();
         }, 3 * 20L);
 
-        if(jedis.exists("data:global:" + player.getUniqueId().toString())){ //used for server-side request/report tp command
-            Bukkit.dispatchCommand(player, jedis.get("data:global:" + player.getUniqueId()));
-            jedis.del("data:global:" + player.getUniqueId());
-        }
-        plugin.getJedisPool().returnResource(jedis);
-        jedis.close();
+
 
         if(player.hasPermission("rank.staff")){ //staff notification about server switched
-            plugin.getPublisher().write("staffswitch;" + player.getName() + ";" + Bukkit.getServerName() + ";" + " joined the server.");
+            plugin.getPublisher().write("staffswitch;" + player.getName() + ";" + Bukkit.getServerName() + ";" + "joined the server.");
         }
 
         if(!plugin.getPlayerToSave().contains(player)) plugin.getPlayerToSave().add(player); //Player needs to be added to save-data list :p
@@ -80,7 +82,7 @@ public class PlayerListener implements Listener{
         }.runTaskAsynchronously(this.plugin);
 
         if(player.hasPermission("rank.staff")){ //staff notification about server switched
-            plugin.getPublisher().write("staffswitch;" + player.getName() + ";" + Bukkit.getServerName() + ";" + " left the server.");
+            plugin.getPublisher().write("staffswitch;" + player.getName() + ";" + Bukkit.getServerName() + ";" + "left the server.");
         }
 
         if(plugin.getPlayerToSave().contains(player)) plugin.getPlayerToSave().remove(player); //We don't need to keep player in

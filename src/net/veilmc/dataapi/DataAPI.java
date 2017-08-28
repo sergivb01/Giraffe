@@ -56,7 +56,6 @@ public class DataAPI extends JavaPlugin{
         }
         this.getConfig().options().copyDefaults(true);
 
-        //For staffserver cmd
         getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
         setupJedis();
@@ -67,6 +66,7 @@ public class DataAPI extends JavaPlugin{
         serverType = this.getConfig().getString("serverType", "hcf");
         jedisPrefix = "data:gamemodes:" + serverType;
 
+
         getScheduler().scheduleSyncRepeatingTask(this, this::saveServerData, 5 * 20L, 5 * 20L);
         getScheduler().scheduleSyncRepeatingTask(this, () -> { //Save data of single player every 15 seconds.
             if (!playerToSave.isEmpty()) {
@@ -76,59 +76,60 @@ public class DataAPI extends JavaPlugin{
             }
         }, 10 * 20L, 10 * 20L);
 
+        /*Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
+            getPublisher().write("staffchat;" + sender.getName() + ";" + Bukkit.getServerName() + ";" + StringUtils.join(args, " ").replace(";", ":"));
+        }, 3 * 20L);*/
+
 
     }
 
     public void saveSinglePlayerData(Player player, boolean online){
         final Jedis jedis = getJedisPool().getResource();
+        final String cleanServer = serverType.trim().toLowerCase() + "_";
         Map<String, String> globalInfo = new HashedMap<>();
 
-        globalInfo.put("nickname", player.getName());
-        globalInfo.put("lastIP", player.getAddress().getHostName());
-        globalInfo.put("lastServer", serverType);
+        globalInfo.put("nickname", player.getDisplayName());
+        globalInfo.put("address", player.getAddress().getHostName());
         globalInfo.put("online", (online ? "true" : "false"));
-        jedis.hmset("data:global:playerdata:" + player.getUniqueId().toString(), globalInfo);
-
-        Map<String, String> playerInfo = new HashedMap<>();
+        globalInfo.put("lastServer", serverType);
+        globalInfo.put("nickname", player.getDisplayName());
         if(!serverType.equalsIgnoreCase("lobby")) {
-            final Deathban deathban = HCF.getInstance().getUserManager().getUser(player.getUniqueId()).getDeathban();
             final FactionUser factionUser = HCF.getInstance().getUserManager().getUser(player.getUniqueId());
+            globalInfo.put(cleanServer + "playtime", String.valueOf(BasePlugin.getPlugin().getPlayTimeManager().getTotalPlayTime(player.getUniqueId())));
+            globalInfo.put(cleanServer + "kills", String.valueOf(factionUser.getKills()));
+            globalInfo.put(cleanServer + "deaths", String.valueOf(factionUser.getDeaths()));
+            globalInfo.put(cleanServer + "diamonds", String.valueOf(factionUser.getDiamondsMined()));
+            globalInfo.put(cleanServer + "lives", String.valueOf(HCF.getInstance().getDeathbanManager().getLives(player.getUniqueId())));
+            globalInfo.put(cleanServer + "balance", String.valueOf(HCF.getInstance().getEconomyManager().getBalance(player.getUniqueId())));
+
+            final Deathban deathban = HCF.getInstance().getUserManager().getUser(player.getUniqueId()).getDeathban();
+            globalInfo.put(cleanServer + "deathban_remaining", (deathban == null ? "Not deathbanned" : String.valueOf(deathban.getRemaining())));
+            globalInfo.put(cleanServer + "deathban_reason", (deathban == null ? "Not deathbanned" : deathban.getReason()));
+
             final PlayerFaction playerFaction = HCF.getInstance().getFactionManager().getPlayerFaction(player.getUniqueId());
+            globalInfo.put(cleanServer + "faction_name", (playerFaction == null ? "No Faction" : playerFaction.getName()));
+            globalInfo.put(cleanServer + "faction_role", (playerFaction == null ? "No Faction" : playerFaction.getMember(player.getUniqueId()).getRole().getName()));
+            globalInfo.put(cleanServer + "faction_online", (playerFaction == null ? "No Faction" : playerFaction.getOnlineMembers().size() + "/" + playerFaction.getMembers().size()));
+            globalInfo.put(cleanServer + "faction_dtr", (playerFaction == null ? "No Faction" : String.valueOf(playerFaction.getDeathsUntilRaidable())));
+            globalInfo.put(cleanServer + "faction_dtrregen", (playerFaction == null ? "No Faction" : String.valueOf(playerFaction.getRemainingRegenerationTime())));
+
             final BaseUser baseUser = BasePlugin.getPlugin().getUserManager().getUser(player.getUniqueId());
-            playerInfo.put("playtime", String.valueOf(BasePlugin.getPlugin().getPlayTimeManager().getTotalPlayTime(player.getUniqueId())));
-            playerInfo.put("kills", String.valueOf(factionUser.getKills()));
-            playerInfo.put("deaths", String.valueOf(factionUser.getDeaths()));
-            playerInfo.put("diamonds", String.valueOf(factionUser.getDiamondsMined()));
-            playerInfo.put("lives", String.valueOf(HCF.getInstance().getDeathbanManager().getLives(player.getUniqueId())));
-            playerInfo.put("balance", String.valueOf(HCF.getInstance().getEconomyManager().getBalance(player.getUniqueId())));
-
-            playerInfo.put("deathban_remaining", (deathban == null ? "Not deathbanned" : String.valueOf(deathban.getRemaining())));
-            playerInfo.put("deathban_reason", (deathban == null ? "Not deathbanned" : deathban.getReason()));
-
-            playerInfo.put("faction_name", (playerFaction == null ? "No Faction" : playerFaction.getName()));
-            playerInfo.put("faction_role", (playerFaction == null ? "No Faction" : playerFaction.getMember(player.getUniqueId()).getRole().getName()));
-            playerInfo.put("faction_online", (playerFaction == null ? "No Faction" : playerFaction.getOnlineMembers().size() + "/" + playerFaction.getMembers().size()));
-            playerInfo.put("faction_dtr", (playerFaction == null ? "No Faction" : String.valueOf(playerFaction.getDeathsUntilRaidable())));
-            playerInfo.put("faction_dtrregen", (playerFaction == null ? "No Faction" : String.valueOf(playerFaction.getRemainingRegenerationTime())));
-
-            playerInfo.put("staff_modmode", String.valueOf(baseUser.isStaffUtil()));
-            playerInfo.put("staff_vanish", String.valueOf(baseUser.isVanished()));
-            playerInfo.put("staff_sc", String.valueOf(baseUser.isInStaffChat()));
-
-            playerInfo.put("options_sounds", String.valueOf(baseUser.isMessagingSounds()));
-            playerInfo.put("options_pm", String.valueOf(baseUser.isMessagesVisible()));
-            playerInfo.put("options_sc", String.valueOf(baseUser.isStaffChatVisible()));
-            playerInfo.put("options_gc", String.valueOf(baseUser.isGlobalChatVisible()));
+            globalInfo.put("staff_modmode", String.valueOf(baseUser.isStaffUtil()));
+            globalInfo.put("staff_vanish", String.valueOf(baseUser.isVanished()));
+            globalInfo.put("staff_sc", String.valueOf(baseUser.isInStaffChat()));
+            globalInfo.put("options_sounds", String.valueOf(baseUser.isMessagingSounds()));
+            globalInfo.put("options_pm", String.valueOf(baseUser.isMessagesVisible()));
+            globalInfo.put("options_sc", String.valueOf(baseUser.isStaffChatVisible()));
+            globalInfo.put("options_gc", String.valueOf(baseUser.isGlobalChatVisible()));
         }
-        jedis.hmset(jedisPrefix + ":playerdata:" + player.getUniqueId().toString(), playerInfo);
 
+        jedis.hmset("data:players:" + player.getUniqueId().toString(), globalInfo);
         getJedisPool().returnResource(jedis);
         jedis.close();
 
     }
 
     public void saveServerData(){
-
         final Jedis jedis = getJedisPool().getResource();
         Map<String, String> serverStatus = new HashMap<>();
         serverStatus.put("online", String.valueOf(Bukkit.getOnlinePlayers().size()));
@@ -138,7 +139,7 @@ public class DataAPI extends JavaPlugin{
         serverStatus.put("tps1", String.valueOf(Bukkit.spigot().getTPS()[1]));
         serverStatus.put("tps2", String.valueOf(Bukkit.spigot().getTPS()[2]));
 
-        jedis.hmset(jedisPrefix + ":serverstatus", serverStatus);
+        jedis.hmset("data:servers:status:" + serverType, serverStatus);
 
         getJedisPool().returnResource(jedis);
         jedis.close();
@@ -214,4 +215,7 @@ public class DataAPI extends JavaPlugin{
     public List<Player> getPlayerToSave(){ return playerToSave; }
 
     public String getJedisPrefix(){ return jedisPrefix; }
+
+    public String getServerType(){ return serverType; }
+
 }
