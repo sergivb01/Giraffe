@@ -227,7 +227,7 @@ public class FactionsTabListener implements Listener {
         //End first row
 
         //Start second row
-        this.construct.setPosition(player, 21, TabUtils.translate(player, ChatColor.RED + "" + ChatColor.BOLD + "veilmc.net"));
+        this.construct.setPosition(player, 21, TabUtils.translate(player, ChatColor.GOLD + "" + ChatColor.BOLD + "VeilMC.net"));
         this.construct.setPosition(player, 22, TabUtils.translate(player, "&ePlayers Online"));
         this.construct.setPosition(player, 23, TabUtils.translate(player, "&7" + "%online_players%"));
         this.construct.setPosition(player, 24, TabUtils.translate(player, " "));
@@ -288,9 +288,9 @@ public class FactionsTabListener implements Listener {
         this.construct.setPosition(player, 67, " ");
         this.construct.setPosition(player, 68, " ");
         this.construct.setPosition(player, 69, " ");
-        //this.construct.setPosition(player, 70, ChatColor.RED + "For a better experience");
-        //this.construct.setPosition(player, 71, ChatColor.RED + "We recommend playing in 1.7");
-        this.construct.setPosition(player, 72, " ");
+        this.construct.setPosition(player, 70, ChatColor.RED + "For optimal");
+        this.construct.setPosition(player, 71, ChatColor.RED + "performance");
+        this.construct.setPosition(player, 72, ChatColor.RED + "please use 1.7");
         this.construct.setPosition(player, 73, " ");
         this.construct.setPosition(player, 74, " ");
         this.construct.setPosition(player, 75, " ");

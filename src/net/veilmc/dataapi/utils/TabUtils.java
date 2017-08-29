@@ -111,7 +111,7 @@ public class TabUtils {
                 path = path.replace("%f_title%", "Faction Info");
             }
             if (path.contains("%ftag%")) {
-                path = path.replace("%ftag%", playerFaction.getName());
+                path = path.replace("%ftag%", playerFaction.getDisplayName(player));
             }
             if (path.contains("%fdtr%")) {
                 path = path.replace("%fdtr%", "&7DTR: &a" + String.format("%.2f", playerFaction.getDeathsUntilRaidable()));
@@ -142,7 +142,7 @@ public class TabUtils {
                     path = path.replace("%f_member_" + j + "%", "");
                 }
                 else {
-                    path = path.replace("%f_member_" + (j + 1) + "%", "&a" + String.valueOf(playerFaction3.getMember(online.get(j)).getRole().getAstrix()) + online.get(j).getName());
+                    path = path.replace("%f_member_" + (j + 1) + "%", "&7" + String.valueOf(playerFaction3.getMember(online.get(j)).getRole().getAstrix()) + online.get(j).getName());
                 }
             }
         }
