@@ -33,25 +33,27 @@ import java.util.*;
 import static org.bukkit.Bukkit.getScheduler;
 
 public class DataAPI extends JavaPlugin implements PluginMessageListener {
-    private boolean useTab = true;
+    private Jedis jedis = null;
+    private boolean useTab;
     private DataPublisher publisher;
     private DataSubscriber subscriber;
     private JedisPool pool;
     private String serverType;
     private DataAPI instance;
-    private List<Player> playerToSave = new ArrayList<>();
-    private int playerss = 0;
-    private Jedis jedis = null;
+    private List<Player> playerToSave;
+    private int playerss;
 
     public DataAPI() {
+        this.useTab = true;
+        this.playerToSave = new ArrayList<>();
+        this.playerss = 0;
         this.pool = null;
     }
 
     public void onDisable() {
-        jedis.close();
-        this.subscriber.getJedisPubSub().unsubscribe(); //cya redis :d
+        this.subscriber.getJedisPubSub().unsubscribe();
         this.pool.destroy();
-        instance = null;
+        this.instance = null;
     }
 
     public void onEnable() {
@@ -91,9 +93,6 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
             }
         }, 10 * 20L, 10 * 20L);
 
-        /*Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
-            getPublisher().write("staffchat;" + sender.getName() + ";" + Bukkit.getServerName() + ";" + StringUtils.join(args, " ").replace(";", ":"));
-        }, 3 * 20L);*/
 
     }
 
@@ -137,7 +136,11 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
             globalInfo.put("options_gc", String.valueOf(baseUser.isGlobalChatVisible()));
         }
 
-        jedis.hmset("data:players:" + player.getUniqueId().toString(), globalInfo);
+        try {
+            jedis.hmset("data:players:" + player.getUniqueId().toString(), globalInfo);
+        }catch(Exception ex){
+            getLogger().warning("Error while trying to save " + player.getName() + " data.");
+        }
         //getJedisPool().returnResource(jedis);
         //jedis.close();
 
@@ -153,8 +156,11 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
         serverStatus.put("tps1", String.valueOf(Bukkit.spigot().getTPS()[1]));
         serverStatus.put("tps2", String.valueOf(Bukkit.spigot().getTPS()[2]));
 
-        jedis.hmset("data:servers:status:" + serverType, serverStatus);
-
+        try {
+            jedis.hmset("data:servers:status:" + serverType, serverStatus);
+        }catch(Exception ex){
+            getLogger().warning("ERROR WHILE TRYING TO UPDATE SERVER STATUS!");
+        }
         //getJedisPool().returnResource(jedis);
         //jedis.close();
 
@@ -202,6 +208,7 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
             this.publisher = new DataPublisher(this);
             this.subscriber = new DataSubscriber(this);
             this.jedis = this.getJedisPool().getResource();
+            //this.jedis.select(2);
         }catch (JedisConnectionException e) {
             e.printStackTrace();
             this.getServer().getPluginManager().disablePlugin(this);

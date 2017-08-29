@@ -54,8 +54,11 @@ public class PlayerListener implements Listener{
                 plugin.getLogger().info("Saved " + player.getName() + " data as he joined the game.");
 
                 //plugin.getJedisPool().returnResource(this.plugin.getJedis());
-                //jedis.close();
+                //plugin.getJedis().close();
             }, 3 * 20L);
+        }else{
+            plugin.saveSinglePlayerData(player, true);
+            plugin.getLogger().info("Saved " + player.getName() + " data as he joined the game.");
         }
 
 
@@ -70,12 +73,21 @@ public class PlayerListener implements Listener{
     @EventHandler
     public void onQuit(PlayerQuitEvent event){
         final Player player = event.getPlayer();
-        new BukkitRunnable() {
-            public void run() {
-                plugin.saveSinglePlayerData(player, false);
-                plugin.getLogger().info("Saved " + player.getName() + " data as he quit the game.");
-            }
-        }.runTaskAsynchronously(this.plugin);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            new BukkitRunnable() {
+                public void run(){
+                    try {
+                        plugin.saveSinglePlayerData(player, false);
+                    }catch(IndexOutOfBoundsException | NullPointerException ex){
+                        Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Error while trying to save " + ChatColor.GRAY + player.getName() + ChatColor.RED + " data! (NullPointerException or IndexOutOfBoundsException)");
+                    }
+                    plugin.getLogger().info("Saved " + player.getName() + " data as he quit the game.");
+                }
+            }.runTaskAsynchronously(this.plugin);
+        }, 3 * 20L);
+
+
+
 
         if(player.hasPermission("rank.staff")){ //staff notification about server switched
             plugin.getPublisher().write("staffswitch;" + player.getName() + ";" + Bukkit.getServerName() + ";" + "left the server.");

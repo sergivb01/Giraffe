@@ -90,8 +90,8 @@ public class LobbyTabListener implements Listener {
         hcf.putAll(this.plugin.getJedis().hgetAll("data:servers:status:hcf"));
         lite.putAll(this.plugin.getJedis().hgetAll("data:servers:status:lite"));
         profile.putAll(this.plugin.getJedis().hgetAll("data:players:" + player.getUniqueId().toString()));
-        //this.plugin.getJedisPool().returnResource(jedis);
-        //jedis.close();
+        this.plugin.getJedisPool().returnResource(this.plugin.getJedis());
+        //this.plugin.getJedis().close();
 
         //Start first row
         //tabPlayer.setPosition(1, c(""));

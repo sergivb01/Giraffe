@@ -6,11 +6,13 @@ import com.customhcf.util.chat.Text;
 import net.veilmc.dataapi.DataAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 
-public class DataSubscriber{
+public class DataSubscriber
+{
     private JedisPubSub jedisPubSub;
     private Jedis jedis;
     private DataAPI main;
@@ -23,12 +25,7 @@ public class DataSubscriber{
 
     public void subscribe() {
         this.jedisPubSub = this.get();
-        new Thread() {
-            @Override
-            public void run() {
-                DataSubscriber.this.jedis.subscribe(DataSubscriber.this.jedisPubSub, "ares");
-            }
-        }.start();
+        new Thread(() -> DataSubscriber.this.jedis.subscribe(DataSubscriber.this.jedisPubSub, "ares")).start();
     }
 
     private JedisPubSub get() {
@@ -42,69 +39,66 @@ public class DataSubscriber{
                         final String sender = args[1];
                         final String server = args[2];
                         final String msg = args[3];
-                        switch(command){
-                            case "staffchat":
-                                for(Player staff : Bukkit.getOnlinePlayers()){
-                                    if(staff.hasPermission("rank.staff") && BasePlugin.getPlugin().getUserManager().getUser(staff.getUniqueId()).isStaffChatVisible()) {
+                        final String s = command;
+                        switch (s) {
+                            case "staffchat": {
+                                for (final Player staff : Bukkit.getOnlinePlayers()) {
+                                    if (staff.hasPermission("rank.staff") && BasePlugin.getPlugin().getUserManager().getUser(staff.getUniqueId()).isStaffChatVisible()) {
                                         staff.sendMessage(ChatColor.DARK_AQUA + "[" + server + "] " + ChatColor.AQUA + sender + ": " + msg);
                                     }
                                 }
                                 break;
-                            case "request":
-                                for(Player staff : Bukkit.getOnlinePlayers()){
-                                    if(staff.hasPermission("rank.staff") && BasePlugin.getPlugin().getUserManager().getUser(staff.getUniqueId()).isStaffChatVisible()) {
-                                        //staff.sendMessage(ChatColor.BLUE + "[Request] " + ChatColor.GRAY + "[" + server + "] " + ChatColor.RESET + sender + ChatColor.GRAY + " requested assistance.");
-                                        new Text(ChatColor.BLUE + "[Request] " + ChatColor.GRAY + "[" + server + "] " + ChatColor.RESET + sender + ChatColor.GRAY + " requested assistance.").setHoverText(ChatColor.BLUE + "Click here to teleport to " + ChatColor.GRAY + sender).setClick(ClickAction.RUN_COMMAND, "/staffserver " + server + " " + sender).send(staff);
+                            }
+                            case "request": {
+                                for (final Player staff : Bukkit.getOnlinePlayers()) {
+                                    if (staff.hasPermission("rank.staff") && BasePlugin.getPlugin().getUserManager().getUser(staff.getUniqueId()).isStaffChatVisible()) {
+                                        new Text(ChatColor.BLUE + "[Request] " + ChatColor.GRAY + "[" + server + "] " + ChatColor.RESET + sender + ChatColor.GRAY + " requested assistance.").setHoverText(ChatColor.BLUE + "Click here to teleport to " + ChatColor.GRAY + sender).setClick(ClickAction.RUN_COMMAND, "/staffserver " + server + " " + sender).send((CommandSender)staff);
                                         staff.sendMessage(ChatColor.BLUE + "    Reason: " + ChatColor.GRAY + msg);
                                     }
                                 }
                                 break;
-                            case "report":
+                            }
+                            case "report": {
                                 final String target = args[4];
-                                for(Player staff : Bukkit.getOnlinePlayers()){
-                                    if(staff.hasPermission("rank.staff") && BasePlugin.getPlugin().getUserManager().getUser(staff.getUniqueId()).isStaffChatVisible()) {
-                                        //staff.sendMessage(ChatColor.RED + "[Report] " + ChatColor.GRAY + "[" + server + "] " + ChatColor.RESET + sender + ChatColor.GRAY + " has reported " + ChatColor.RESET + target + ChatColor.GRAY + ".");
-                                        new Text(ChatColor.RED + "[Report] " + ChatColor.GRAY + "[" + server + "] " + ChatColor.RESET + sender + ChatColor.GRAY + " has reported " + ChatColor.RESET + target + ChatColor.GRAY + ".").setHoverText(ChatColor.RED + "Click here to teleport to " + ChatColor.GRAY + target).setClick(ClickAction.RUN_COMMAND, "/staffserver " + server + " " + target).send(staff);
-                                        staff.sendMessage(ChatColor.RED + "    Reason:" + ChatColor.GRAY + msg.replace(target, ""));
+                                for (final Player staff2 : Bukkit.getOnlinePlayers()) {
+                                    if (staff2.hasPermission("rank.staff") && BasePlugin.getPlugin().getUserManager().getUser(staff2.getUniqueId()).isStaffChatVisible()) {
+                                        new Text(ChatColor.RED + "[Report] " + ChatColor.GRAY + "[" + server + "] " + ChatColor.RESET + sender + ChatColor.GRAY + " has reported " + ChatColor.RESET + target + ChatColor.GRAY + ".").setHoverText(ChatColor.RED + "Click here to teleport to " + ChatColor.GRAY + target).setClick(ClickAction.RUN_COMMAND, "/staffserver " + server + " " + target).send((CommandSender)staff2);
+                                        staff2.sendMessage(ChatColor.RED + "    Reason:" + ChatColor.GRAY + msg.replace(target, ""));
                                     }
                                 }
                                 break;
-                            case "staffswitch":
-                                for(Player staff : Bukkit.getOnlinePlayers()){
-                                    if(staff.hasPermission("rank.staff") && BasePlugin.getPlugin().getUserManager().getUser(staff.getUniqueId()).isStaffChatVisible()) {
-                                        staff.sendMessage(ChatColor.DARK_AQUA + "[" + server + "] " + ChatColor.AQUA + sender + " " + msg);
+                            }
+                            case "staffswitch": {
+                                for (final Player staff2 : Bukkit.getOnlinePlayers()) {
+                                    if (staff2.hasPermission("rank.staff") && BasePlugin.getPlugin().getUserManager().getUser(staff2.getUniqueId()).isStaffChatVisible()) {
+                                        staff2.sendMessage(ChatColor.DARK_AQUA + "[" + server + "] " + ChatColor.AQUA + sender + " " + msg);
                                     }
                                 }
                                 break;
+                            }
                         }
-
                     }
                 }
             }
 
             @Override
-            public void onPMessage(String s, String s1, String s2) {
-
+            public void onPMessage(final String s, final String s1, final String s2) {
             }
 
             @Override
-            public void onSubscribe(String s, int i) {
-
+            public void onSubscribe(final String s, final int i) {
             }
 
             @Override
-            public void onUnsubscribe(String s, int i) {
-
+            public void onUnsubscribe(final String s, final int i) {
             }
 
             @Override
-            public void onPUnsubscribe(String s, int i) {
-
+            public void onPUnsubscribe(final String s, final int i) {
             }
 
             @Override
-            public void onPSubscribe(String s, int i) {
-
+            public void onPSubscribe(final String s, final int i) {
             }
         };
     }

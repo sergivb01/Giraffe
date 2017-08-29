@@ -32,13 +32,13 @@ public class RequestCommand implements CommandExecutor{
             player.sendMessage(ChatColor.RED + "Usage: /request <reason...>");
             return false;
         }
-        /*if (RequestCommand.COOLDOWNS.containsKey(player.getUniqueId())) {
+        if (RequestCommand.COOLDOWNS.containsKey(player.getUniqueId())) {
             if (System.currentTimeMillis() - RequestCommand.COOLDOWNS.get(player.getUniqueId()) < 100000L) {
                 player.sendMessage(ChatColor.RED + "You must wait before attempting to request staff assistance again.");
                 return false;
             }
             RequestCommand.COOLDOWNS.remove(player.getUniqueId());
-        }*/
+        }
         this.plugin.getPublisher().write("request;" + player.getDisplayName() + ";" + Bukkit.getServerName() + ";" + StringUtils.join(args, " ").replace(";", ":"));
         player.sendMessage(ChatColor.GREEN + "Staff have been notified of your request.");
         RequestCommand.COOLDOWNS.put(player.getUniqueId(), System.currentTimeMillis());

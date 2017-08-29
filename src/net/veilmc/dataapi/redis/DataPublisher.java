@@ -1,7 +1,7 @@
 package net.veilmc.dataapi.redis;
 
-import net.veilmc.dataapi.DataAPI;
-import redis.clients.jedis.Jedis;
+import net.veilmc.dataapi.*;
+import redis.clients.jedis.*;
 
 public class DataPublisher
 {
@@ -12,13 +12,13 @@ public class DataPublisher
     }
 
     public void write(final String message) {
-        Jedis jedis = main.getJedisPool().getResource();
+        final Jedis jedis = this.main.getJedisPool().getResource();
         try {
-            //jedis = main.getJedisPool().getResource();
             jedis.publish("ares", message);
-        }finally {
-            if (jedis != null){
-                main.getJedisPool().returnResource(jedis);
+        }
+        finally {
+            if (jedis != null) {
+                this.main.getJedisPool().returnResource(jedis);
                 jedis.close();
             }
         }

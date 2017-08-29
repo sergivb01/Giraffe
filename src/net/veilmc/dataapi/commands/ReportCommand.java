@@ -37,7 +37,7 @@ public class ReportCommand implements CommandExecutor{
             player.sendMessage(ChatColor.RED + "No player named '" + args[0] + "' found online.");
             return false;
         }
-        /*if (reported.equals(player)) {
+        if (reported.equals(player)) {
             player.sendMessage(ChatColor.RED + "You can't report yourself!");
             return false;
         }
@@ -47,7 +47,7 @@ public class ReportCommand implements CommandExecutor{
                 return false;
             }
             ReportCommand.COOLDOWNS.remove(player.getUniqueId());
-        }*/
+        }
         this.plugin.getPublisher().write("report;" + player.getDisplayName() + ";" + Bukkit.getServerName() + ";" + StringUtils.join(args, " ").replace(";", ":") + ";" + reported.getDisplayName());
         player.sendMessage(ChatColor.GREEN + "Staff have been notified of your player report.");
         ReportCommand.COOLDOWNS.put(player.getUniqueId(), System.currentTimeMillis());
