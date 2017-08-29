@@ -275,24 +275,17 @@ public class FactionsTabListener implements Listener {
         //Start first row
         tabPlayer.setPosition(1, TabUtils.translate(player, "&ePlayer Info"));
         updatePlayerKills(player);
-        tabPlayer.setPosition(4, TabUtils.translate(player, " "));
         tabPlayer.setPosition(5, TabUtils.translate(player, "&eYour location"));
         updatePlayerLocation(player);
-        tabPlayer.setPosition(8, TabUtils.translate(player, " "));
         updateFactionsDetails(player);
-        tabPlayer.setPosition(14, TabUtils.translate(player, ""));
         tabPlayer.setPosition(15, TabUtils.translate(player, "&ePlayer Vault"));
         updatePlayerVault(player);
-        tabPlayer.setPosition(18, TabUtils.translate(player, " "));
-        tabPlayer.setPosition(19, TabUtils.translate(player, " "));
-        tabPlayer.setPosition(20, TabUtils.translate(player, " "));
         //End first row
 
         //Start second row
-        tabPlayer.setPosition(21, TabUtils.translate(player, ChatColor.GOLD + "" + ChatColor.BOLD + "VeilMC.net"));
+        tabPlayer.setPosition(21, TabUtils.translate(player, "&6&lVeilMC.net"));
         tabPlayer.setPosition(22, TabUtils.translate(player, "&ePlayers Online"));
         updateOnlinePlayers(player);
-        tabPlayer.setPosition(24, TabUtils.translate(player, " "));
         updateFactions(player);
         updateFactionList(player);
         tabPlayer.setPosition(41, TabUtils.translate(player, "&eFaction List"));
@@ -305,26 +298,9 @@ public class FactionsTabListener implements Listener {
         if(!tabPlayer.getVersion().equals(ConstructVersion.V1_8)) return;
 
 
-        tabPlayer.setPosition(61, " ");
-        tabPlayer.setPosition(62, " ");
-        tabPlayer.setPosition(63, " ");
-        tabPlayer.setPosition(64, " ");
-        tabPlayer.setPosition(65, " ");
-        tabPlayer.setPosition(66, " ");
-        tabPlayer.setPosition(67, " ");
-        tabPlayer.setPosition(68, " ");
-        tabPlayer.setPosition(69, " ");
-        tabPlayer.setPosition(70, ChatColor.RED + "For optimal");
-        tabPlayer.setPosition(71, ChatColor.RED + "performance");
-        tabPlayer.setPosition(72, ChatColor.RED + "please use 1.7");
-        tabPlayer.setPosition(73, " ");
-        tabPlayer.setPosition(74, " ");
-        tabPlayer.setPosition(75, " ");
-        tabPlayer.setPosition(76, " ");
-        tabPlayer.setPosition(77, " ");
-        tabPlayer.setPosition(78, " ");
-        tabPlayer.setPosition(79, " ");
-        tabPlayer.setPosition(80, " ");
+        tabPlayer.setPosition(70, "&cFor optimal");
+        tabPlayer.setPosition(71, "&cperformance");
+        tabPlayer.setPosition(72, "&cplease use 1.7");
 
     }
     public void updatePlayerKills(Player player){
