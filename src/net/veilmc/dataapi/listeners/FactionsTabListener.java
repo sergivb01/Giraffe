@@ -1,20 +1,11 @@
 package net.veilmc.dataapi.listeners;
 
 
-import com.customhcf.hcf.HCF;
-import com.customhcf.hcf.Utils.DurationFormatter;
-import com.customhcf.hcf.kothgame.CaptureZone;
-import com.customhcf.hcf.kothgame.EventTimer;
-import com.customhcf.hcf.kothgame.faction.ConquestFaction;
-import com.customhcf.hcf.kothgame.faction.EventFaction;
-import com.customhcf.hcf.kothgame.faction.KothFaction;
 import me.joeleoli.construct.ConstructLibrary;
-import me.joeleoli.construct.api.ConstructVersion;
 import me.joeleoli.construct.api.IConstruct;
 import me.joeleoli.construct.util.TaskUtil;
 import net.veilmc.dataapi.DataAPI;
 import net.veilmc.dataapi.utils.TabUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -35,8 +26,14 @@ public class FactionsTabListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         TaskUtil.runTaskNextTick(() -> {
-            this.construct.createTabList(event.getPlayer());
-            this.initialUpdate(event.getPlayer());
+            if(this.construct.hasTabList(event.getPlayer())){
+                this.construct.removeTabList(event.getPlayer());
+            }
+
+            TaskUtil.runTaskNextTick(()-> {
+                this.construct.createTabList(event.getPlayer());
+                this.initialUpdate(event.getPlayer());
+            });
         });
     }
 
@@ -82,7 +79,7 @@ public class FactionsTabListener implements Listener {
         this.construct.setPosition(player, 13, TabUtils.translate(player, "%fregen%"));
         this.construct.setPosition(player, 14, TabUtils.translate(player, " "));
         this.construct.setPosition(player, 15, TabUtils.translate(player, "&eEvent"));
-        EventTimer eventTimer = HCF.getPlugin().getTimerManager().eventTimer;
+        /*EventTimer eventTimer = HCF.getPlugin().getTimerManager().eventTimer;
         EventFaction eventFaction = eventTimer.getEventFaction();
         if (eventFaction instanceof KothFaction) {
             this.construct.setPosition(player, 16, TabUtils.translate(player, eventTimer.getScoreboardPrefix() + "" + eventFaction.getName() + ChatColor.GRAY + ": " + ChatColor.GOLD + DurationFormatter.getRemaining(eventTimer.getRemaining(), true)));
@@ -179,7 +176,7 @@ public class FactionsTabListener implements Listener {
         this.construct.setPosition(player, 77, " ");
         this.construct.setPosition(player, 78, " ");
         this.construct.setPosition(player, 79, " ");
-        this.construct.setPosition(player, 80, " ");
+        this.construct.setPosition(player, 80, " ");*/
 
     }
 
