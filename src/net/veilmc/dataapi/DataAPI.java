@@ -6,8 +6,12 @@ import com.customhcf.hcf.HCF;
 import com.customhcf.hcf.deathban.Deathban;
 import com.customhcf.hcf.faction.type.PlayerFaction;
 import com.customhcf.hcf.user.FactionUser;
+import net.minecraft.util.com.google.common.io.ByteArrayDataInput;
+import net.minecraft.util.com.google.common.io.ByteArrayDataOutput;
+import net.minecraft.util.com.google.common.io.ByteStreams;
 import net.veilmc.dataapi.commands.*;
 import net.veilmc.dataapi.listeners.FactionsTabListener;
+import net.veilmc.dataapi.listeners.LobbyTabListener;
 import net.veilmc.dataapi.listeners.PlayerListener;
 import net.veilmc.dataapi.redis.DataPublisher;
 import net.veilmc.dataapi.redis.DataSubscriber;
@@ -18,9 +22,9 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.Messenger;
+import org.bukkit.plugin.messaging.PluginMessageListener;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import java.io.File;
@@ -28,15 +32,15 @@ import java.util.*;
 
 import static org.bukkit.Bukkit.getScheduler;
 
-public class DataAPI extends JavaPlugin{
+public class DataAPI extends JavaPlugin implements PluginMessageListener {
     private boolean useTab = true;
     private DataPublisher publisher;
     private DataSubscriber subscriber;
     private JedisPool pool;
     private String serverType;
-    private String jedisPrefix;
     private DataAPI instance;
     private List<Player> playerToSave = new ArrayList<>();
+    private int playerss = 0;
 
     public DataAPI() {
         this.pool = null;
@@ -59,16 +63,22 @@ public class DataAPI extends JavaPlugin{
         this.getConfig().options().copyDefaults(true);
 
         getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+        getMessenger().registerIncomingPluginChannel(this, "BungeeCord", this);
+
+        getMessenger().registerOutgoingPluginChannel(this, "RedisBungee");
+        getMessenger().registerIncomingPluginChannel(this, "RedisBungee", this);
 
         setupJedis();
         registerCommands();
 
-        this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
-        this.getServer().getPluginManager().registerEvents(new FactionsTabListener(this), this);
-
         serverType = this.getConfig().getString("serverType", "hcf");
-        jedisPrefix = "data:gamemodes:" + serverType;
 
+        this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+        if(serverType.equals("lobby")) {
+            this.getServer().getPluginManager().registerEvents(new LobbyTabListener(this), this);
+        }else{
+            this.getServer().getPluginManager().registerEvents(new FactionsTabListener(this), this);
+        }
 
         getScheduler().scheduleSyncRepeatingTask(this, this::saveServerData, 5 * 20L, 5 * 20L);
         getScheduler().scheduleSyncRepeatingTask(this, () -> { //Save data of single player every 15 seconds.
@@ -82,7 +92,6 @@ public class DataAPI extends JavaPlugin{
         /*Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
             getPublisher().write("staffchat;" + sender.getName() + ";" + Bukkit.getServerName() + ";" + StringUtils.join(args, " ").replace(";", ":"));
         }, 3 * 20L);*/
-
 
     }
 
@@ -115,6 +124,7 @@ public class DataAPI extends JavaPlugin{
             globalInfo.put(cleanServer + "faction_online", (playerFaction == null ? "No Faction" : playerFaction.getOnlineMembers().size() + "/" + playerFaction.getMembers().size()));
             globalInfo.put(cleanServer + "faction_dtr", (playerFaction == null ? "No Faction" : String.valueOf(playerFaction.getDeathsUntilRaidable())));
             globalInfo.put(cleanServer + "faction_dtrregen", (playerFaction == null ? "No Faction" : String.valueOf(playerFaction.getRemainingRegenerationTime())));
+            globalInfo.put(cleanServer + "faction_balance", (playerFaction == null ? "No Faction" : String.valueOf(playerFaction.getBalance())));
 
             final BaseUser baseUser = BasePlugin.getPlugin().getUserManager().getUser(player.getUniqueId());
             globalInfo.put("staff_modmode", String.valueOf(baseUser.isStaffUtil()));
@@ -216,5 +226,41 @@ public class DataAPI extends JavaPlugin{
     public void toggleTab(){ useTab = !useTab;}
 
     public boolean getToggleTab(){ return useTab;}
+
+    @Override
+    public void onPluginMessageReceived(String channel, Player player, byte[] message) {
+        if (!channel.equals("RedisBungee")) {
+            return;
+        }
+
+        ByteArrayDataInput in = ByteStreams.newDataInput(message);
+        String subchannel = in.readUTF();
+
+        if (subchannel.equals("PlayerCount")) {
+            String server = in.readUTF();
+            int playerCount = in.readInt();
+
+            playerss = playerCount;
+            //player.sendMessage("Player count on server " + server + " is equal to " + playerCount);
+
+        }
+
+    }
+
+    public void getCount(Player player, String server) {
+
+        if (server == null) {
+            server = "ALL";
+        }
+
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("PlayerCount");
+        out.writeUTF(server);
+
+        player.sendPluginMessage(this, "RedisBungee", out.toByteArray());
+
+    }
+
+    public int getPlayerss(){ return playerss; }
 
 }

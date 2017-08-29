@@ -1,6 +1,5 @@
 package net.veilmc.dataapi.listeners;
 
-
 import com.customhcf.hcf.HCF;
 import com.customhcf.hcf.faction.event.FactionDtrChangeEvent;
 import com.customhcf.hcf.faction.event.FactionRenameEvent;
@@ -35,7 +34,6 @@ public class FactionsTabListener implements Listener {
         // Define construct before registering event listeners
         this.plugin = plugin;
         this.construct = Construct.getLibrary();
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     @EventHandler
@@ -47,12 +45,13 @@ public class FactionsTabListener implements Listener {
         }
 
         TaskUtil.runTaskNextTick(() -> {
-            if(this.construct.hasTabList(player)){
-                if(!this.construct.hasTabList(player)) this.construct.createTabList(event.getPlayer());
-                this.initialUpdate(event.getPlayer());
-                for(Player p : Bukkit.getOnlinePlayers()){
-                    updateOnlinePlayers(p);
-                }
+            if(!this.construct.hasTabList(player)) {
+                this.construct.createTabList(player);
+            }
+            this.initialUpdate(player);
+
+            for(Player p : Bukkit.getOnlinePlayers()){
+                updateOnlinePlayers(p);
             }
         });
 
@@ -251,7 +250,6 @@ public class FactionsTabListener implements Listener {
             TaskUtil.runTaskNextTick(() -> {
                 for(Player on : Bukkit.getOnlinePlayers()){
                     if(this.construct.hasTabList(on)){
-                        updateFactionList(on);
                         updateFactionList(on);
                     }
                 }
