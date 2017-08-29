@@ -18,37 +18,37 @@ import java.util.Map;
 
 public class TabUtils {
 
-    public static String getCardinalDirection(final Player player) {
+    private static String getCardinalDirection(final Player player) {
         double rotation = (player.getLocation().getYaw() - 90.0f) % 360.0f;
         if (rotation < 0.0) {
             rotation += 360.0;
         }
         if (0.0 <= rotation && rotation < 22.5) {
-            return "N";
-        }
-        if (22.5 <= rotation && rotation < 67.5) {
-            return "NE";
-        }
-        if (67.5 <= rotation && rotation < 112.5) {
-            return "E";
-        }
-        if (112.5 <= rotation && rotation < 157.5) {
-            return "SE";
-        }
-        if (157.5 <= rotation && rotation < 202.5) {
-            return "S";
-        }
-        if (202.5 <= rotation && rotation < 247.5) {
-            return "SW";
-        }
-        if (247.5 <= rotation && rotation < 292.5) {
             return "W";
         }
-        if (292.5 <= rotation && rotation < 337.5) {
+        if (22.5 <= rotation && rotation < 67.5) {
             return "NW";
         }
-        if (337.5 <= rotation && rotation < 360.0) {
+        if (67.5 <= rotation && rotation < 112.5) {
             return "N";
+        }
+        if (112.5 <= rotation && rotation < 157.5) {
+            return "NE";
+        }
+        if (157.5 <= rotation && rotation < 202.5) {
+            return "E";
+        }
+        if (202.5 <= rotation && rotation < 247.5) {
+            return "SE";
+        }
+        if (247.5 <= rotation && rotation < 292.5) {
+            return "S";
+        }
+        if (292.5 <= rotation && rotation < 337.5) {
+            return "SW";
+        }
+        if (337.5 <= rotation && rotation < 360.0) {
+            return "W";
         }
         return null;
     }
@@ -118,10 +118,10 @@ public class TabUtils {
             }
             if (path.contains("%fhome%")) {
                 if (playerFaction.getHome() != null) {
-                    path = path.replace("%fhome%", "&7Home: &a" + playerFaction.getHome().getBlockX() + ", " + HCF.getInstance().getFactionManager().getPlayerFaction(player.getUniqueId()).getHome().getBlockY() + ", " + HCF.getInstance().getFactionManager().getPlayerFaction(player.getUniqueId()).getHome().getBlockZ());
+                    path = path.replace("%fhome%", "&7HQ: &a" + playerFaction.getHome().getBlockX() + ", " + HCF.getInstance().getFactionManager().getPlayerFaction(player.getUniqueId()).getHome().getBlockY() + ", " + HCF.getInstance().getFactionManager().getPlayerFaction(player.getUniqueId()).getHome().getBlockZ());
                 }
                 else {
-                    path = path.replace("%fhome%", "&7Home: &a" + "None");
+                    path = path.replace("%fhome%", "&7HQ: &a" + "None");
                 }
             }
             if (path.contains("%fleader%")) {
@@ -132,7 +132,7 @@ public class TabUtils {
             }
             final PlayerFaction playerFaction3 = playerFaction;
             if (path.contains("%fonline%")) {
-                path = path.replace("%fonline%", "&7Online: &a" + String.valueOf(playerFaction3.getMembers().size()) + "/" + playerFaction3.getOnlinePlayers().size());
+                path = path.replace("%fonline%", "&7Online: &a" + String.valueOf(playerFaction3.getOnlinePlayers().size()) + "/" + playerFaction3.getMembers().size());
             }
             final List<Player> online = Lists.newArrayList(playerFaction3.getOnlinePlayers());
             online.sort(Comparator.comparing(HumanEntity::getName));
@@ -142,7 +142,7 @@ public class TabUtils {
                     path = path.replace("%f_member_" + j + "%", "");
                 }
                 else {
-                    path = path.replace("%f_member_" + (j + 1) + "%", "&7" + String.valueOf(playerFaction3.getMember(online.get(j)).getRole().getAstrix()) + online.get(j).getName());
+                    path = path.replace("%f_member_" + (j + 1) + "%", "&a" + String.valueOf(playerFaction3.getMember(online.get(j)).getRole().getAstrix()) + online.get(j).getName());
                 }
             }
         }

@@ -2,8 +2,11 @@ package net.veilmc.dataapi.listeners;
 
 
 import com.customhcf.hcf.HCF;
+import com.customhcf.hcf.faction.event.FactionDtrChangeEvent;
+import com.customhcf.hcf.faction.event.FactionRenameEvent;
 import com.customhcf.hcf.faction.event.PlayerJoinedFactionEvent;
 import com.customhcf.hcf.faction.event.PlayerLeftFactionEvent;
+import com.customhcf.hcf.faction.type.PlayerFaction;
 import com.google.common.base.Optional;
 import me.joeleoli.construct.Construct;
 import me.joeleoli.construct.api.ConstructVersion;
@@ -36,17 +39,41 @@ public class FactionsTabListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
         if(!this.plugin.getToggleTab()){
             event.getPlayer().sendMessage(ChatColor.RED + "Your tab is currently disabled.");
             return;
         }
+
         TaskUtil.runTaskNextTick(() -> {
-           this.construct.createTabList(event.getPlayer());
-           this.initialUpdate(event.getPlayer());
-            for(Player p : Bukkit.getOnlinePlayers()){
-                updateOnlinePlayers(p);
+            if(this.construct.hasTabList(player)){
+                if(!this.construct.hasTabList(player)) this.construct.createTabList(event.getPlayer());
+                this.initialUpdate(event.getPlayer());
+                for(Player p : Bukkit.getOnlinePlayers()){
+                    updateOnlinePlayers(p);
+                }
             }
         });
+
+
+        TaskUtil.runTaskNextTick(() -> {
+            for(Player member : HCF.getPlugin().getFactionManager().getPlayerFaction(player.getUniqueId()).getOnlinePlayers()){
+                if(this.construct.hasTabList(member)){
+                    updateFactions(member);
+                    updateFactionsDetails(member);
+                }
+            }
+        });
+
+        TaskUtil.runTaskNextTick(() -> {
+            for(Player on : Bukkit.getOnlinePlayers()){
+                if(this.construct.hasTabList(on)){
+                    updateFactionList(on);
+                }
+            }
+        });
+
+
 
     }
 
@@ -59,6 +86,23 @@ public class FactionsTabListener implements Listener {
         TaskUtil.runTaskNextTick(() -> {
             for(Player p : Bukkit.getOnlinePlayers()){
                 updateOnlinePlayers(p);
+            }
+        });
+
+        TaskUtil.runTaskNextTick(() -> {
+            for(Player member : HCF.getPlugin().getFactionManager().getPlayerFaction(event.getPlayer().getUniqueId()).getOnlinePlayers()){
+                if(this.construct.hasTabList(member)){
+                    updateFactions(member);
+                    updateFactionsDetails(member);
+                }
+            }
+        });
+
+        TaskUtil.runTaskNextTick(() -> {
+            for(Player on : Bukkit.getOnlinePlayers()){
+                if(this.construct.hasTabList(on)){
+                    updateFactionList(on);
+                }
             }
         });
 
@@ -75,13 +119,45 @@ public class FactionsTabListener implements Listener {
         if(!this.plugin.getToggleTab()) return;
         if(event.getEntity().getKiller() != null){
             Player player = event.getEntity().getKiller();
+            Player death = event.getEntity();
             if(!this.construct.hasTabList(player)) return;
 
             TaskUtil.runTaskNextTick(() -> {
                 updatePlayerKills(player);
                 updatePlayerVault(player);
+                updatePlayerKills(death);
+                updatePlayerVault(death);
             });
 
+            TaskUtil.runTaskNextTick(() -> {
+                for(Player member : HCF.getPlugin().getFactionManager().getPlayerFaction(death.getUniqueId()).getOnlinePlayers()){
+                    if(this.construct.hasTabList(member)){
+                        updateFactions(member);
+                        updateFactionsDetails(member);
+                    }
+                }
+            });
+
+            TaskUtil.runTaskNextTick(() -> {
+                for(Player on : Bukkit.getOnlinePlayers()){
+                    if(this.construct.hasTabList(on)){
+                        updateFactionList(on);
+                    }
+                }
+            });
+
+        }
+    }
+
+    @EventHandler
+    public void onDtrChange(FactionDtrChangeEvent event){
+        if(!this.plugin.getToggleTab()) return;
+
+        if(event.getRaidable() instanceof PlayerFaction){
+            PlayerFaction playerFaction = (PlayerFaction) event.getRaidable();
+            for(Player player : playerFaction.getOnlinePlayers()){
+                if(this.construct.hasTabList(player)) updateFactionsDetails(player);
+            }
         }
     }
 
@@ -101,10 +177,12 @@ public class FactionsTabListener implements Listener {
                 for(Player member : event.getFaction().getOnlinePlayers()){
                     if(this.construct.hasTabList(member)){
                         updateFactions(member);
+                        updateFactionsDetails(member);
                     }
                 }
                 if(this.construct.hasTabList(player)){
                     updateFactions(player);
+                    updateFactionsDetails(player);
                 }
             });
 
@@ -128,13 +206,14 @@ public class FactionsTabListener implements Listener {
         if (optional.isPresent()) {
             player = optional.get();
 
-        if (!this.construct.hasTabList(player)) return;
+            if (!this.construct.hasTabList(player)) return;
 
 
             TaskUtil.runTaskNextTick(() -> {
                 for(Player member : HCF.getPlugin().getFactionManager().getPlayerFaction(player.getUniqueId()).getOnlinePlayers()){
                     if(this.construct.hasTabList(member)){
                         updateFactions(member);
+                        updateFactionsDetails(member);
                     }
                 }
             });
@@ -150,6 +229,33 @@ public class FactionsTabListener implements Listener {
     }
 
     @EventHandler
+    public void factionRename(FactionRenameEvent event){
+            if(!(event.getFaction() instanceof PlayerFaction)) return;
+            if(!this.plugin.getToggleTab()) return;
+
+            PlayerFaction playerFaction = (PlayerFaction) event.getFaction();
+
+            TaskUtil.runTaskNextTick(() -> {
+
+                for(Player member : playerFaction.getOnlinePlayers()){
+                    if(this.construct.hasTabList(member)){
+                        updateFactions(member);
+                        updateFactionList(member);
+                    }
+                }
+            });
+
+            TaskUtil.runTaskNextTick(() -> {
+                for(Player on : Bukkit.getOnlinePlayers()){
+                    if(this.construct.hasTabList(on)){
+                        updateFactionList(on);
+                        updateFactionList(on);
+                    }
+                }
+            });
+    }
+
+    @EventHandler
     public void onMove(PlayerMoveEvent event) {
         if(!this.plugin.getToggleTab()) return;
         Player player = event.getPlayer();
@@ -160,7 +266,6 @@ public class FactionsTabListener implements Listener {
     }
 
     public void initialUpdate(Player player) {
-        if(!this.plugin.getToggleTab()) return;
         if (!this.construct.hasTabList(player)) {
             return;
         }

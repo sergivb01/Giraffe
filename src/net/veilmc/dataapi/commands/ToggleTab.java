@@ -1,6 +1,6 @@
 package net.veilmc.dataapi.commands;
 
-import me.joeleoli.construct.ConstructLibrary;
+import me.joeleoli.construct.Construct;
 import net.veilmc.dataapi.DataAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -23,12 +23,12 @@ public class ToggleTab implements CommandExecutor{
 
         for(Player player : Bukkit.getOnlinePlayers()){
             if(this.plugin.getToggleTab()){
-                if(!ConstructLibrary.getApi().hasTabList(player)){
+                if(!Construct.getLibrary().hasTabList(player)){
                     Bukkit.getPluginManager().callEvent(new PlayerJoinEvent(player, "hello"));
                     player.sendMessage(ChatColor.GREEN + "You tab has been enabled.");
                 }
             }else{
-                ConstructLibrary.getApi().removeTabList(player);
+                Construct.getLibrary().removeTabList(player);
                 player.sendMessage(ChatColor.RED + "Your tab has been disabled! (Will not update)");
             }
         }
