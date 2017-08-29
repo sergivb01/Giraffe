@@ -1,4 +1,4 @@
-name: DataAPI
+name: Foundation
 main: net.veilmc.dataapi.DataAPI
 version: 0.1
 author: sergivb01
