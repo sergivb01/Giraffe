@@ -135,9 +135,9 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
             globalInfo.put("options_sc", String.valueOf(baseUser.isStaffChatVisible()));
             globalInfo.put("options_gc", String.valueOf(baseUser.isGlobalChatVisible()));
         }
-
+       // getJedisPool().returnResource(jedis);
         jedis.hmset("data:players:" + player.getUniqueId().toString(), globalInfo);
-        getJedisPool().returnResource(jedis);
+
         jedis.close();
 
     }

@@ -7,7 +7,9 @@ depend: [Construct]
 commands:
   syncdata:
   sc:
+    aliases: [staffchat]
   report:
   request:
+    aliases: [helpop]
   staffserver:
   toggletab:
