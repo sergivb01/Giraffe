@@ -298,9 +298,9 @@ public class FactionsTabListener implements Listener {
         if(!tabPlayer.getVersion().equals(ConstructVersion.V1_8)) return;
 
 
-        tabPlayer.setPosition(70, "&cFor optimal");
-        tabPlayer.setPosition(71, "&cperformance");
-        tabPlayer.setPosition(72, "&cplease use 1.7");
+        tabPlayer.setPosition(70, ChatColor.RED + "For optimal");
+        tabPlayer.setPosition(71, ChatColor.RED + "performance");
+        tabPlayer.setPosition(72, ChatColor.RED + "please use 1.7");
 
     }
     public void updatePlayerKills(Player player){

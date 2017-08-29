@@ -162,7 +162,7 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
 
     public void savePlayerGlobalData(){
         for(Player p : Bukkit.getOnlinePlayers()) {
-           saveSinglePlayerData(p, true);
+            saveSinglePlayerData(p, true);
         }
     }
 
