@@ -11,7 +11,10 @@ import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TabUtils {
 
@@ -66,13 +69,19 @@ public class TabUtils {
             path = path.replace("%faction_location%", String.valueOf(factionAt.getDisplayName(player)));
         }
         if (path.contains("%player_location%")) {
-            path = path.replace("%player_location%", "(" + player.getLocation().getBlockX() + ", " + player.getLocation().getBlockZ() + ") " + getCardinalDirection(player));
+            path = path.replace("%player_location%", "(" + player.getLocation().getBlockX() + ", " + player.getLocation().getBlockZ() + ") [" + getCardinalDirection(player) + "]");
         }
         if (path.contains("%online_players%")) {
             path = path.replace("%online_players%", String.valueOf(Bukkit.getServer().getOnlinePlayers().size() + "/" + Bukkit.getServer().getMaxPlayers()));
         }
         if (path.contains("%player_ping%")) {
             path = path.replace("%player_ping%", String.valueOf(((CraftPlayer)player).getHandle().ping));
+        }
+        if (path.contains("%player_lives%")) {
+            path = path.replace("%player_lives%", String.valueOf(HCF.getPlugin().getDeathbanManager().getLives(player.getUniqueId())));
+        }
+        if (path.contains("%player_bal%")) {
+            path = path.replace("%player_bal%", "$" + String.valueOf(HCF.getPlugin().getEconomyManager().getBalance(player.getUniqueId())));
         }
         final Map<PlayerFaction, Integer> factionOnlineMap = new HashMap<>();
         //Player[] onlinePlayers;
@@ -112,14 +121,14 @@ public class TabUtils {
                     path = path.replace("%fhome%", "&7Home: &a" + playerFaction.getHome().getBlockX() + ", " + HCF.getInstance().getFactionManager().getPlayerFaction(player.getUniqueId()).getHome().getBlockY() + ", " + HCF.getInstance().getFactionManager().getPlayerFaction(player.getUniqueId()).getHome().getBlockZ());
                 }
                 else {
-                    path = path.replace("%fhome%", ChatColor.WHITE + "None");
+                    path = path.replace("%fhome%", "&7Home: &a" + "None");
                 }
             }
             if (path.contains("%fleader%")) {
                 path = path.replace("%fleader%", playerFaction.getLeader().getName());
             }
             if (path.contains("%fbal%")) {
-                path = path.replace("%fbal%", "$" + playerFaction.getBalance());
+                path = path.replace("%fbal%", "&7Balance: &a" + "$" + playerFaction.getBalance());
             }
             final PlayerFaction playerFaction3 = playerFaction;
             if (path.contains("%fonline%")) {
@@ -133,7 +142,7 @@ public class TabUtils {
                     path = path.replace("%f_member_" + j + "%", "");
                 }
                 else {
-                    path = path.replace("%f_member_" + (j + 1) + "%", String.valueOf(playerFaction3.getMember(online.get(j)).getRole().getAstrix()) + online.get(j).getName());
+                    path = path.replace("%f_member_" + (j + 1) + "%", "&a" + String.valueOf(playerFaction3.getMember(online.get(j)).getRole().getAstrix()) + online.get(j).getName());
                 }
             }
         }

@@ -28,7 +28,7 @@ import java.util.*;
 import static org.bukkit.Bukkit.getScheduler;
 
 public class DataAPI extends JavaPlugin{
-    public static boolean debug = true;
+    private boolean useTab = true;
     private DataPublisher publisher;
     private DataSubscriber subscriber;
     private JedisPool pool;
@@ -173,6 +173,7 @@ public class DataAPI extends JavaPlugin{
         this.getCommand("sc").setExecutor(new StaffChatCommand(this));
         this.getCommand("request").setExecutor(new RequestCommand(this));
         this.getCommand("report").setExecutor(new ReportCommand(this));
+        this.getCommand("toggletab").setExecutor(new ToggleTab(this));
         this.getCommand("staffserver").setExecutor(new StaffServerCommand(this));
 
         Map<String, Map<String, Object>> map = getDescription().getCommands();
@@ -209,5 +210,9 @@ public class DataAPI extends JavaPlugin{
     public List<Player> getPlayerToSave(){ return playerToSave; }
 
     public String getServerType(){ return serverType; }
+
+    public void toggleTab(){ useTab = !useTab;}
+
+    public boolean getToggleTab(){ return useTab;}
 
 }

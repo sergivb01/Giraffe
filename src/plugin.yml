@@ -10,3 +10,4 @@ commands:
   report:
   request:
   staffserver:
+  toggletab:
