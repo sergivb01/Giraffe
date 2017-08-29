@@ -5,9 +5,9 @@ import com.customhcf.hcf.HCF;
 import com.customhcf.hcf.faction.event.PlayerJoinedFactionEvent;
 import com.customhcf.hcf.faction.event.PlayerLeftFactionEvent;
 import com.google.common.base.Optional;
-import me.joeleoli.construct.ConstructLibrary;
+import me.joeleoli.construct.Construct;
 import me.joeleoli.construct.api.ConstructVersion;
-import me.joeleoli.construct.api.IConstruct;
+import me.joeleoli.construct.api.IConstructLibrary;
 import me.joeleoli.construct.util.TaskUtil;
 import net.veilmc.dataapi.DataAPI;
 import net.veilmc.dataapi.utils.TabUtils;
@@ -25,12 +25,12 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class FactionsTabListener implements Listener {
     //TODO: Update stuff
     private DataAPI plugin;
-    private IConstruct construct;
+    private IConstructLibrary construct;
 
     public FactionsTabListener(DataAPI plugin) {
         // Define construct before registering event listeners
         this.plugin = plugin;
-        this.construct = ConstructLibrary.getApi();
+        this.construct = Construct.getLibrary();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
@@ -67,7 +67,7 @@ public class FactionsTabListener implements Listener {
     @EventHandler
     public void onKick(PlayerKickEvent event) {
         if(!this.plugin.getToggleTab()) return;
-        ConstructLibrary.getApi().removeTabList(event.getPlayer());
+        this.construct.removeTabList(event.getPlayer());
     }
 
     @EventHandler
@@ -98,10 +98,13 @@ public class FactionsTabListener implements Listener {
 
 
             TaskUtil.runTaskNextTick(() -> {
-                for(Player member : HCF.getPlugin().getFactionManager().getPlayerFaction(player.getUniqueId()).getOnlinePlayers()){
+                for(Player member : event.getFaction().getOnlinePlayers()){
                     if(this.construct.hasTabList(member)){
                         updateFactions(member);
                     }
+                }
+                if(this.construct.hasTabList(player)){
+                    updateFactions(player);
                 }
             });
 
@@ -163,127 +166,127 @@ public class FactionsTabListener implements Listener {
         }
 
         //Start first row
-        this.construct.setPosition(player, 1, TabUtils.translate(player, "&ePlayer Info"));
+        this.construct.getPlayer(player).setPosition(1, TabUtils.translate(player, "&ePlayer Info"));
         updatePlayerKills(player);
-        this.construct.setPosition(player, 4, TabUtils.translate(player, " "));
-        this.construct.setPosition(player, 5, TabUtils.translate(player, "&eYour location"));
+        this.construct.getPlayer(player).setPosition(4, TabUtils.translate(player, " "));
+        this.construct.getPlayer(player).setPosition(5, TabUtils.translate(player, "&eYour location"));
         updatePlayerLocation(player);
-        this.construct.setPosition(player, 8, TabUtils.translate(player, " "));
+        this.construct.getPlayer(player).setPosition(8, TabUtils.translate(player, " "));
         updateFactionsDetails(player);
-        this.construct.setPosition(player, 14, TabUtils.translate(player, ""));
-        this.construct.setPosition(player, 15, TabUtils.translate(player, "&ePlayer Vault"));
+        this.construct.getPlayer(player).setPosition(14, TabUtils.translate(player, ""));
+        this.construct.getPlayer(player).setPosition(15, TabUtils.translate(player, "&ePlayer Vault"));
         updatePlayerVault(player);
-        this.construct.setPosition(player, 18, TabUtils.translate(player, " "));
-        this.construct.setPosition(player, 19, TabUtils.translate(player, " "));
-        this.construct.setPosition(player, 20, TabUtils.translate(player, " "));
+        this.construct.getPlayer(player).setPosition(18, TabUtils.translate(player, " "));
+        this.construct.getPlayer(player).setPosition(19, TabUtils.translate(player, " "));
+        this.construct.getPlayer(player).setPosition(20, TabUtils.translate(player, " "));
         //End first row
 
         //Start second row
-        this.construct.setPosition(player, 21, TabUtils.translate(player, ChatColor.GOLD + "" + ChatColor.BOLD + "VeilMC.net"));
-        this.construct.setPosition(player, 22, TabUtils.translate(player, "&ePlayers Online"));
+        this.construct.getPlayer(player).setPosition(21, TabUtils.translate(player, ChatColor.GOLD + "" + ChatColor.BOLD + "VeilMC.net"));
+        this.construct.getPlayer(player).setPosition(22, TabUtils.translate(player, "&ePlayers Online"));
         updateOnlinePlayers(player);
-        this.construct.setPosition(player, 24, TabUtils.translate(player, " "));
+        this.construct.getPlayer(player).setPosition(24, TabUtils.translate(player, " "));
         updateFactions(player);
         updateFactionList(player);
-        this.construct.setPosition(player, 41, TabUtils.translate(player, "&eFaction List"));
+        this.construct.getPlayer(player).setPosition(41, TabUtils.translate(player, "&eFaction List"));
         //End third row
 
 
         //^^ 1.7 stuff
         //vv 1.8 stuff
 
-        if(!this.construct.getVersion(player).equals(ConstructVersion.V1_8)) return;
+        if(!this.construct.getPlayer(player).getVersion().equals(ConstructVersion.V1_8)) return;
 
 
-        this.construct.setPosition(player, 61, " ");
-        this.construct.setPosition(player, 62, " ");
-        this.construct.setPosition(player, 63, " ");
-        this.construct.setPosition(player, 64, " ");
-        this.construct.setPosition(player, 65, " ");
-        this.construct.setPosition(player, 66, " ");
-        this.construct.setPosition(player, 67, " ");
-        this.construct.setPosition(player, 68, " ");
-        this.construct.setPosition(player, 69, " ");
-        this.construct.setPosition(player, 70, ChatColor.RED + "For optimal");
-        this.construct.setPosition(player, 71, ChatColor.RED + "performance");
-        this.construct.setPosition(player, 72, ChatColor.RED + "please use 1.7");
-        this.construct.setPosition(player, 73, " ");
-        this.construct.setPosition(player, 74, " ");
-        this.construct.setPosition(player, 75, " ");
-        this.construct.setPosition(player, 76, " ");
-        this.construct.setPosition(player, 77, " ");
-        this.construct.setPosition(player, 78, " ");
-        this.construct.setPosition(player, 79, " ");
-        this.construct.setPosition(player, 80, " ");
+        this.construct.getPlayer(player).setPosition(61, " ");
+        this.construct.getPlayer(player).setPosition(62, " ");
+        this.construct.getPlayer(player).setPosition(63, " ");
+        this.construct.getPlayer(player).setPosition(64, " ");
+        this.construct.getPlayer(player).setPosition(65, " ");
+        this.construct.getPlayer(player).setPosition(66, " ");
+        this.construct.getPlayer(player).setPosition(67, " ");
+        this.construct.getPlayer(player).setPosition(68, " ");
+        this.construct.getPlayer(player).setPosition(69, " ");
+        this.construct.getPlayer(player).setPosition(70, ChatColor.RED + "For optimal");
+        this.construct.getPlayer(player).setPosition(71, ChatColor.RED + "performance");
+        this.construct.getPlayer(player).setPosition(72, ChatColor.RED + "please use 1.7");
+        this.construct.getPlayer(player).setPosition(73, " ");
+        this.construct.getPlayer(player).setPosition(74, " ");
+        this.construct.getPlayer(player).setPosition(75, " ");
+        this.construct.getPlayer(player).setPosition(76, " ");
+        this.construct.getPlayer(player).setPosition(77, " ");
+        this.construct.getPlayer(player).setPosition(78, " ");
+        this.construct.getPlayer(player).setPosition(79, " ");
+        this.construct.getPlayer(player).setPosition(80, " ");
 
     }
     public void updatePlayerKills(Player player){
-        this.construct.setPosition(player, 2, TabUtils.translate(player, "&7Kills:&a %player_kills%"));
+        this.construct.getPlayer(player).setPosition(2, TabUtils.translate(player, "&7Kills:&a %player_kills%"));
     }
 
     public void updatePlayerLocation(Player player){
-        this.construct.setPosition(player, 6, TabUtils.translate(player, "%faction_location%"));
-        this.construct.setPosition(player, 7, TabUtils.translate(player, "&7%player_location%"));
+        this.construct.getPlayer(player).setPosition(6, TabUtils.translate(player, "%faction_location%"));
+        this.construct.getPlayer(player).setPosition(7, TabUtils.translate(player, "&7%player_location%"));
     }
 
     public void updatePlayerVault(Player player){
-        this.construct.setPosition(player, 16, TabUtils.translate(player, "&7Lives:&a %player_lives%"));
-        this.construct.setPosition(player, 17, TabUtils.translate(player, "&7Balance:&a %player_bal%"));
+        this.construct.getPlayer(player).setPosition(16, TabUtils.translate(player, "&7Lives:&a %player_lives%"));
+        this.construct.getPlayer(player).setPosition(17, TabUtils.translate(player, "&7Balance:&a %player_bal%"));
     }
 
     public void updateOnlinePlayers(Player player){
-        this.construct.setPosition(player, 23, TabUtils.translate(player, "&7" + "%online_players%"));
+        this.construct.getPlayer(player).setPosition(23, TabUtils.translate(player, "&7" + "%online_players%"));
     }
 
     public void updateFactionsDetails(Player player){
-        this.construct.setPosition(player, 9, TabUtils.translate(player, "&e%f_title%"));
-        this.construct.setPosition(player, 10, TabUtils.translate(player, "%fhome%"));
-        this.construct.setPosition(player, 11, TabUtils.translate(player, "%fonline%"));
-        this.construct.setPosition(player, 12, TabUtils.translate(player, "%fbal%"));
-        this.construct.setPosition(player, 13, TabUtils.translate(player, "%fdtr%"));
+        this.construct.getPlayer(player).setPosition(9, TabUtils.translate(player, "&e%f_title%"));
+        this.construct.getPlayer(player).setPosition(10, TabUtils.translate(player, "%fhome%"));
+        this.construct.getPlayer(player).setPosition(11, TabUtils.translate(player, "%fonline%"));
+        this.construct.getPlayer(player).setPosition(12, TabUtils.translate(player, "%fbal%"));
+        this.construct.getPlayer(player).setPosition(13, TabUtils.translate(player, "%fdtr%"));
     }
 
     public void updateFactions(Player player){
-        this.construct.setPosition(player, 25, TabUtils.translate(player, "&e" + "%ftag%"));
-        this.construct.setPosition(player, 26, TabUtils.translate(player, "%f_member_1%"));
-        this.construct.setPosition(player, 27, TabUtils.translate(player, "%f_member_2%"));
-        this.construct.setPosition(player, 28, TabUtils.translate(player, "%f_member_3%"));
-        this.construct.setPosition(player, 29, TabUtils.translate(player, "%f_member_4%"));
-        this.construct.setPosition(player, 30, TabUtils.translate(player, "%f_member_5%"));
-        this.construct.setPosition(player, 31, TabUtils.translate(player, "%f_member_6%"));
-        this.construct.setPosition(player, 32, TabUtils.translate(player, "%f_member_7%"));
-        this.construct.setPosition(player, 33, TabUtils.translate(player, "%f_member_8%"));
-        this.construct.setPosition(player, 34, TabUtils.translate(player, "%f_member_9%"));
-        this.construct.setPosition(player, 35, TabUtils.translate(player, "%f_member_10%"));
-        this.construct.setPosition(player, 36, TabUtils.translate(player, "%f_member_11%"));
-        this.construct.setPosition(player, 37, TabUtils.translate(player, "%f_member_12%"));
-        this.construct.setPosition(player, 38, TabUtils.translate(player, "%f_member_13%"));
-        this.construct.setPosition(player, 39, TabUtils.translate(player, "%f_member_14%"));
-        this.construct.setPosition(player, 40, TabUtils.translate(player, "%f_member_15%"));
+        this.construct.getPlayer(player).setPosition(25, TabUtils.translate(player, "&e" + "%ftag%"));
+        this.construct.getPlayer(player).setPosition(26, TabUtils.translate(player, "%f_member_1%"));
+        this.construct.getPlayer(player).setPosition(27, TabUtils.translate(player, "%f_member_2%"));
+        this.construct.getPlayer(player).setPosition(28, TabUtils.translate(player, "%f_member_3%"));
+        this.construct.getPlayer(player).setPosition(29, TabUtils.translate(player, "%f_member_4%"));
+        this.construct.getPlayer(player).setPosition(30, TabUtils.translate(player, "%f_member_5%"));
+        this.construct.getPlayer(player).setPosition(31, TabUtils.translate(player, "%f_member_6%"));
+        this.construct.getPlayer(player).setPosition(32, TabUtils.translate(player, "%f_member_7%"));
+        this.construct.getPlayer(player).setPosition(33, TabUtils.translate(player, "%f_member_8%"));
+        this.construct.getPlayer(player).setPosition(34, TabUtils.translate(player, "%f_member_9%"));
+        this.construct.getPlayer(player).setPosition(35, TabUtils.translate(player, "%f_member_10%"));
+        this.construct.getPlayer(player).setPosition(36, TabUtils.translate(player, "%f_member_11%"));
+        this.construct.getPlayer(player).setPosition(37, TabUtils.translate(player, "%f_member_12%"));
+        this.construct.getPlayer(player).setPosition(38, TabUtils.translate(player, "%f_member_13%"));
+        this.construct.getPlayer(player).setPosition(39, TabUtils.translate(player, "%f_member_14%"));
+        this.construct.getPlayer(player).setPosition(40, TabUtils.translate(player, "%f_member_15%"));
         //End second row
 
     }
 
     public void updateFactionList(Player player){
-        this.construct.setPosition(player, 42, TabUtils.translate(player, "%f_list_1%"));
-        this.construct.setPosition(player, 43, TabUtils.translate(player, "%f_list_2%"));
-        this.construct.setPosition(player, 44, TabUtils.translate(player, "%f_list_3%"));
-        this.construct.setPosition(player, 45, TabUtils.translate(player, "%f_list_4%"));
-        this.construct.setPosition(player, 46, TabUtils.translate(player, "%f_list_5%"));
-        this.construct.setPosition(player, 47, TabUtils.translate(player, "%f_list_6%"));
-        this.construct.setPosition(player, 48, TabUtils.translate(player, "%f_list_7%"));
-        this.construct.setPosition(player, 49, TabUtils.translate(player, "%f_list_8%"));
-        this.construct.setPosition(player, 50, TabUtils.translate(player, "%f_list_9%"));
-        this.construct.setPosition(player, 51, TabUtils.translate(player, "%f_list_10%"));
-        this.construct.setPosition(player, 52, TabUtils.translate(player, "%f_list_11%"));
-        this.construct.setPosition(player, 53, TabUtils.translate(player, "%f_list_12%"));
-        this.construct.setPosition(player, 54, TabUtils.translate(player, "%f_list_13%"));
-        this.construct.setPosition(player, 55, TabUtils.translate(player, "%f_list_14%"));
-        this.construct.setPosition(player, 56, TabUtils.translate(player, "%f_list_15%"));
-        this.construct.setPosition(player, 57, TabUtils.translate(player, "%f_list_16%"));
-        this.construct.setPosition(player, 58, TabUtils.translate(player, "%f_list_17%"));
-        this.construct.setPosition(player, 59, TabUtils.translate(player, "%f_list_18%"));
-        this.construct.setPosition(player, 60, TabUtils.translate(player, "%f_list_19%"));
+        this.construct.getPlayer(player).setPosition(42, TabUtils.translate(player, "%f_list_1%"));
+        this.construct.getPlayer(player).setPosition(43, TabUtils.translate(player, "%f_list_2%"));
+        this.construct.getPlayer(player).setPosition(44, TabUtils.translate(player, "%f_list_3%"));
+        this.construct.getPlayer(player).setPosition(45, TabUtils.translate(player, "%f_list_4%"));
+        this.construct.getPlayer(player).setPosition(46, TabUtils.translate(player, "%f_list_5%"));
+        this.construct.getPlayer(player).setPosition(47, TabUtils.translate(player, "%f_list_6%"));
+        this.construct.getPlayer(player).setPosition(48, TabUtils.translate(player, "%f_list_7%"));
+        this.construct.getPlayer(player).setPosition(49, TabUtils.translate(player, "%f_list_8%"));
+        this.construct.getPlayer(player).setPosition(50, TabUtils.translate(player, "%f_list_9%"));
+        this.construct.getPlayer(player).setPosition(51, TabUtils.translate(player, "%f_list_10%"));
+        this.construct.getPlayer(player).setPosition(52, TabUtils.translate(player, "%f_list_11%"));
+        this.construct.getPlayer(player).setPosition(53, TabUtils.translate(player, "%f_list_12%"));
+        this.construct.getPlayer(player).setPosition(54, TabUtils.translate(player, "%f_list_13%"));
+        this.construct.getPlayer(player).setPosition(55, TabUtils.translate(player, "%f_list_14%"));
+        this.construct.getPlayer(player).setPosition(56, TabUtils.translate(player, "%f_list_15%"));
+        this.construct.getPlayer(player).setPosition(57, TabUtils.translate(player, "%f_list_16%"));
+        this.construct.getPlayer(player).setPosition(58, TabUtils.translate(player, "%f_list_17%"));
+        this.construct.getPlayer(player).setPosition(59, TabUtils.translate(player, "%f_list_18%"));
+        this.construct.getPlayer(player).setPosition(60, TabUtils.translate(player, "%f_list_19%"));
     }
 
 
