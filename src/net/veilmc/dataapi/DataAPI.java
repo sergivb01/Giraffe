@@ -41,12 +41,14 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
     private DataAPI instance;
     private List<Player> playerToSave = new ArrayList<>();
     private int playerss = 0;
+    private Jedis jedis = null;
 
     public DataAPI() {
         this.pool = null;
     }
 
     public void onDisable() {
+        jedis.close();
         this.subscriber.getJedisPubSub().unsubscribe(); //cya redis :d
         this.pool.destroy();
         instance = null;
@@ -96,7 +98,6 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
     }
 
     public void saveSinglePlayerData(Player player, boolean online){
-        final Jedis jedis = getJedisPool().getResource();
         final String cleanServer = serverType.trim().toLowerCase() + "_";
         Map<String, String> globalInfo = new HashedMap<>();
 
@@ -137,13 +138,12 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
         }
 
         jedis.hmset("data:players:" + player.getUniqueId().toString(), globalInfo);
-        getJedisPool().returnResource(jedis);
-        jedis.close();
+        //getJedisPool().returnResource(jedis);
+        //jedis.close();
 
     }
 
     public void saveServerData(){
-        final Jedis jedis = getJedisPool().getResource();
         Map<String, String> serverStatus = new HashMap<>();
         serverStatus.put("online", String.valueOf(Bukkit.getOnlinePlayers().size()));
         serverStatus.put("max", String.valueOf(Bukkit.getMaxPlayers()));
@@ -155,8 +155,8 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
 
         jedis.hmset("data:servers:status:" + serverType, serverStatus);
 
-        getJedisPool().returnResource(jedis);
-        jedis.close();
+        //getJedisPool().returnResource(jedis);
+        //jedis.close();
 
     }
 
@@ -201,6 +201,7 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
             this.pool = new JedisPool(this.getConfig().getString("redis-server"));
             this.publisher = new DataPublisher(this);
             this.subscriber = new DataSubscriber(this);
+            this.jedis = this.getJedisPool().getResource();
         }catch (JedisConnectionException e) {
             e.printStackTrace();
             this.getServer().getPluginManager().disablePlugin(this);
@@ -262,5 +263,7 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
     }
 
     public int getPlayerss(){ return playerss; }
+
+    public Jedis getJedis(){ return this.jedis; }
 
 }

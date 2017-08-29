@@ -13,7 +13,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-import redis.clients.jedis.Jedis;
 
 import java.util.Map;
 
@@ -27,13 +26,12 @@ public class PlayerListener implements Listener{
     @EventHandler
     public void onJoin(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        Jedis jedis = plugin.getJedisPool().getResource();
 
-        if(jedis.exists("data:players:" + player.getUniqueId().toString())) {
+        if(this.plugin.getJedis().exists("data:players:" + player.getUniqueId().toString())) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                 BaseUser baseUser = BasePlugin.getPlugin().getUserManager().getUser(player.getUniqueId()); //Player data fromm base
                 Map<String, String> playerData = new HashedMap<>();
-                playerData.putAll(jedis.hgetAll("data:players:" + player.getUniqueId().toString()));
+                playerData.putAll(this.plugin.getJedis().hgetAll("data:players:" + player.getUniqueId().toString()));
                 //Staff things
                 if (playerData.get("staff_modmode").equals("true") && !baseUser.isStaffUtil())
                     Bukkit.dispatchCommand(player, "h");
@@ -55,8 +53,8 @@ public class PlayerListener implements Listener{
                 plugin.saveSinglePlayerData(player, true); //Now save the data on database
                 plugin.getLogger().info("Saved " + player.getName() + " data as he joined the game.");
 
-                plugin.getJedisPool().returnResource(jedis);
-                jedis.close();
+                //plugin.getJedisPool().returnResource(this.plugin.getJedis());
+                //jedis.close();
             }, 3 * 20L);
         }
 

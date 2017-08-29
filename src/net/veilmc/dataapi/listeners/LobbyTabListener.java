@@ -15,7 +15,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import redis.clients.jedis.Jedis;
 
 import java.util.Map;
 import java.util.Random;
@@ -87,13 +86,12 @@ public class LobbyTabListener implements Listener {
         Map<String, String> hcf = new HashedMap<>();
         Map<String, String> lite = new HashedMap<>();
         Map<String, String> profile = new HashedMap<>();
-        Jedis jedis = plugin.getJedisPool().getResource();
-        kits.putAll(jedis.hgetAll("data:servers:status:kits"));
-        hcf.putAll(jedis.hgetAll("data:servers:status:hcf"));
-        lite.putAll(jedis.hgetAll("data:servers:status:lite"));
-        profile.putAll(jedis.hgetAll("data:players:" + player.getUniqueId().toString()));
-        this.plugin.getJedisPool().returnResource(jedis);
-        jedis.close();
+        kits.putAll(this.plugin.getJedis().hgetAll("data:servers:status:kits"));
+        hcf.putAll(this.plugin.getJedis().hgetAll("data:servers:status:hcf"));
+        lite.putAll(this.plugin.getJedis().hgetAll("data:servers:status:lite"));
+        profile.putAll(this.plugin.getJedis().hgetAll("data:players:" + player.getUniqueId().toString()));
+        //this.plugin.getJedisPool().returnResource(jedis);
+        //jedis.close();
 
         //Start first row
         //tabPlayer.setPosition(1, c(""));
