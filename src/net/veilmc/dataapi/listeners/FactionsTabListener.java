@@ -157,7 +157,9 @@ public class FactionsTabListener implements Listener {
         if(event.getRaidable() instanceof PlayerFaction){
             PlayerFaction playerFaction = (PlayerFaction) event.getRaidable();
             for(Player player : playerFaction.getOnlinePlayers()){
-                if(this.construct.hasTabList(player)) updateFactionsDetails(player);
+                TaskUtil.runTaskNextTick(() -> {
+                    if(this.construct.hasTabList(player)) updateFactionsDetails(player);
+                });
             }
         }
     }
