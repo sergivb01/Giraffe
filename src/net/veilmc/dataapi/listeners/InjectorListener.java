@@ -165,6 +165,8 @@ public class InjectorListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         inject(event.getPlayer());
+        event.getPlayer().setNoDamageTicks(19);
+        event.getPlayer().setMaximumNoDamageTicks(19);
     }
 
 
