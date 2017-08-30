@@ -80,8 +80,18 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
         this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
         if(serverType.equals("lobby")) {
             this.getServer().getPluginManager().registerEvents(new LobbyTabListener(this), this);
+            getLogger().info("LOBBY MODEEEEEEEEEEEEEE");
+            getLogger().info("LOBBY MODEEEEEEEEEEEEEE");
+            getLogger().info("LOBBY MODEEEEEEEEEEEEEE");
+            getLogger().info("LOBBY MODEEEEEEEEEEEEEE");
+            getLogger().info("LOBBY MODEEEEEEEEEEEEEE");
         }else{
             this.getServer().getPluginManager().registerEvents(new FactionsTabListener(this), this);
+            getLogger().info("HCF MODEEEEEEEEEEEEEEEEE (" + serverType + ")");
+            getLogger().info("HCF MODEEEEEEEEEEEEEEEEE (" + serverType + ")");
+            getLogger().info("HCF MODEEEEEEEEEEEEEEEEE (" + serverType + ")");
+            getLogger().info("HCF MODEEEEEEEEEEEEEEEEE (" + serverType + ")");
+            getLogger().info("HCF MODEEEEEEEEEEEEEEEEE (" + serverType + ")");
         }
 
         getScheduler().scheduleSyncRepeatingTask(this, this::saveServerData, 5 * 20L, 5 * 20L);
