@@ -16,10 +16,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Map;
 
-public class PlayerListener implements Listener{
+public class PlayerDataListener implements Listener{
     private DataAPI plugin;
 
-    public PlayerListener(final DataAPI plugin) {
+    public PlayerDataListener(final DataAPI plugin) {
         this.plugin = plugin;
     }
 

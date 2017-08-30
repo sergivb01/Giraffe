@@ -13,6 +13,7 @@ import me.joeleoli.construct.api.IConstructLibrary;
 import me.joeleoli.construct.api.IConstructPlayer;
 import me.joeleoli.construct.util.TaskUtil;
 import net.veilmc.dataapi.DataAPI;
+import net.veilmc.dataapi.events.PlayerMoveFullBlockEvent;
 import net.veilmc.dataapi.utils.TabUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,7 +23,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class FactionsTabListener implements Listener {
@@ -261,7 +261,7 @@ public class FactionsTabListener implements Listener {
     }
 
     @EventHandler
-    public void onMove(PlayerMoveEvent event) {
+    public void onMove(PlayerMoveFullBlockEvent event) {
         if(!this.plugin.getToggleTab()) return;
         Player player = event.getPlayer();
 

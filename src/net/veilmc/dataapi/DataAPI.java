@@ -12,7 +12,8 @@ import net.minecraft.util.com.google.common.io.ByteStreams;
 import net.veilmc.dataapi.commands.*;
 import net.veilmc.dataapi.listeners.FactionsTabListener;
 import net.veilmc.dataapi.listeners.LobbyTabListener;
-import net.veilmc.dataapi.listeners.PlayerListener;
+import net.veilmc.dataapi.listeners.PlayerDataListener;
+import net.veilmc.dataapi.listeners.PlayerMoveListener;
 import net.veilmc.dataapi.redis.DataPublisher;
 import net.veilmc.dataapi.redis.DataSubscriber;
 import org.apache.commons.collections4.map.HashedMap;
@@ -77,7 +78,8 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
 
         serverType = this.getConfig().getString("serverType", "hcf");
 
-        this.getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+        this.getServer().getPluginManager().registerEvents(new PlayerMoveListener(), this);
+        this.getServer().getPluginManager().registerEvents(new PlayerDataListener(this), this);
         if(serverType.equals("lobby")) {
             this.getServer().getPluginManager().registerEvents(new LobbyTabListener(this), this);
             getLogger().info("LOBBY MODEEEEEEEEEEEEEE");
