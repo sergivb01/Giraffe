@@ -102,6 +102,8 @@ public class TabUtils {
                 String name = ChatColor.RED + sortedMap.get(i).getKey().getName();
                 if (playerFaction != null) {
                     name = sortedMap.get(i).getKey().getDisplayName(playerFaction);
+                    int max = (name.length() < 12) ? name.length() : 12;
+                    name = name.substring(0, max);
                 }
                 path = path.replace("%f_list_" + (i + 1) + "%", String.valueOf(name) + ChatColor.GRAY + " (" + sortedMap.get(i).getValue() + ")");
             }
