@@ -133,7 +133,7 @@ public class FactionsTabListener implements Listener {
                 updatePlayerVault(death);
             });
 
-            if(HCF.getPlugin().getFactionManager().getPlayerFaction(death.getUniqueId()) == null) {
+            if(HCF.getPlugin().getFactionManager().getPlayerFaction(death.getUniqueId()) != null) {
                 TaskUtil.runTaskNextTick(() -> {
                     for (Player member : HCF.getPlugin().getFactionManager().getPlayerFaction(death.getUniqueId()).getOnlinePlayers()) {
                         if (this.construct.hasTabList(member)) {
