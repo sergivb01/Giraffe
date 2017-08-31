@@ -18,8 +18,8 @@ public class DataPublisher
         }
         finally {
             if (jedis != null) {
-                this.main.getJedisPool().returnResource(jedis);
-                jedis.close();
+                //this.main.getJedisPool().returnResource(jedis);
+                //jedis.close();
             }
         }
     }

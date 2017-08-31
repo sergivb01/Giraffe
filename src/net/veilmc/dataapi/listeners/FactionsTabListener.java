@@ -8,12 +8,10 @@ import com.customhcf.hcf.faction.event.PlayerLeftFactionEvent;
 import com.customhcf.hcf.faction.type.PlayerFaction;
 import com.google.common.base.Optional;
 import me.joeleoli.construct.Construct;
-import me.joeleoli.construct.api.ConstructVersion;
 import me.joeleoli.construct.api.IConstructLibrary;
 import me.joeleoli.construct.api.IConstructPlayer;
 import me.joeleoli.construct.util.TaskUtil;
 import net.veilmc.dataapi.DataAPI;
-import net.veilmc.dataapi.events.PlayerMoveFullBlockEvent;
 import net.veilmc.dataapi.utils.TabUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -23,6 +21,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class FactionsTabListener implements Listener {
@@ -134,14 +133,16 @@ public class FactionsTabListener implements Listener {
                 updatePlayerVault(death);
             });
 
-            TaskUtil.runTaskNextTick(() -> {
-                for(Player member : HCF.getPlugin().getFactionManager().getPlayerFaction(death.getUniqueId()).getOnlinePlayers()){
-                    if(this.construct.hasTabList(member)){
-                        updateFactions(member);
-                        updateFactionsDetails(member);
+            if(HCF.getPlugin().getFactionManager().getPlayerFaction(death.getUniqueId()) == null) {
+                TaskUtil.runTaskNextTick(() -> {
+                    for (Player member : HCF.getPlugin().getFactionManager().getPlayerFaction(death.getUniqueId()).getOnlinePlayers()) {
+                        if (this.construct.hasTabList(member)) {
+                            updateFactions(member);
+                            updateFactionsDetails(member);
+                        }
                     }
-                }
-            });
+                });
+            }
 
             TaskUtil.runTaskNextTick(() -> {
                 for(Player on : Bukkit.getOnlinePlayers()){
@@ -261,13 +262,15 @@ public class FactionsTabListener implements Listener {
     }
 
     @EventHandler
-    public void onMove(PlayerMoveFullBlockEvent event) {
+    public void onMove(PlayerMoveEvent event) {
         if(!this.plugin.getToggleTab()) return;
-        Player player = event.getPlayer();
+        if(event.getFrom().getX() != event.getTo().getX() || event.getFrom().getZ() != event.getTo().getZ()) {
+            Player player = event.getPlayer();
 
-        if (!this.construct.hasTabList(player)) return;
+            if (!this.construct.hasTabList(player)) return;
 
-        updatePlayerLocation(player);
+            updatePlayerLocation(player);
+        }
     }
 
     public void initialUpdate(Player player) {
@@ -296,15 +299,7 @@ public class FactionsTabListener implements Listener {
         //End third row
 
 
-        //^^ 1.7 stuff
-        //vv 1.8 stuff
 
-        if(!tabPlayer.getVersion().equals(ConstructVersion.V1_8)) return;
-
-
-        tabPlayer.setPosition(70, ChatColor.RED + "For optimal");
-        tabPlayer.setPosition(71, ChatColor.RED + "performance");
-        tabPlayer.setPosition(72, ChatColor.RED + "please use 1.7");
 
     }
     public void updatePlayerKills(Player player){

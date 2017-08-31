@@ -10,7 +10,9 @@ import net.minecraft.util.com.google.common.io.ByteArrayDataInput;
 import net.minecraft.util.com.google.common.io.ByteArrayDataOutput;
 import net.minecraft.util.com.google.common.io.ByteStreams;
 import net.veilmc.dataapi.commands.*;
-import net.veilmc.dataapi.listeners.*;
+import net.veilmc.dataapi.listeners.FactionsTabListener;
+import net.veilmc.dataapi.listeners.LobbyTabListener;
+import net.veilmc.dataapi.listeners.PlayerDataListener;
 import net.veilmc.dataapi.redis.DataPublisher;
 import net.veilmc.dataapi.redis.DataSubscriber;
 import org.apache.commons.collections4.map.HashedMap;
@@ -23,12 +25,12 @@ import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import java.io.File;
 import java.util.*;
 
-import static org.bukkit.Bukkit.getScheduler;
 
 public class DataAPI extends JavaPlugin implements PluginMessageListener {
     private Jedis jedis = null;
@@ -37,9 +39,9 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
     private DataSubscriber subscriber;
     private JedisPool pool;
     private String serverType;
-    private DataAPI instance;
     private List<Player> playerToSave;
     private int playerss;
+    private static DataAPI instance;
 
     public DataAPI() {
         this.useTab = true;
@@ -49,14 +51,14 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
     }
 
     public void onDisable() {
+        saveServerData(false);
+        getLogger().info("SAVED SERVER DATAAA");
         this.subscriber.getJedisPubSub().unsubscribe();
         this.pool.destroy();
-        this.instance = null;
     }
 
     public void onEnable() {
         instance = this;
-
         //Configuration stuff
         final File configFile = new File(this.getDataFolder() + "/config.yml");
         if (!configFile.exists()) {
@@ -75,9 +77,8 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
 
         serverType = this.getConfig().getString("serverType", "hcf");
 
-        this.getServer().getPluginManager().registerEvents(new InjectorListener(this), this);
-        this.getServer().getPluginManager().registerEvents(new PlayerMoveListener(), this);
         this.getServer().getPluginManager().registerEvents(new PlayerDataListener(this), this);
+
         if(serverType.equals("lobby")) {
             this.getServer().getPluginManager().registerEvents(new LobbyTabListener(this), this);
             getLogger().info("LOBBY MODEEEEEEEEEEEEEE");
@@ -94,14 +95,16 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
             getLogger().info("HCF MODEEEEEEEEEEEEEEEEE (" + serverType + ")");
         }
 
-        getScheduler().scheduleSyncRepeatingTask(this, this::saveServerData, 5 * 20L, 5 * 20L);
-        getScheduler().scheduleSyncRepeatingTask(this, () -> { //Save data of single player every 15 seconds.
+        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> { //Save data of single player every 15 seconds.
+            saveServerData(true);
+        }, 5 * 20L, 5 * 20L);
+        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> { //Save data of single player every 15 seconds.
             if (!playerToSave.isEmpty()) {
                 Player next = playerToSave.get(0);
                 saveSinglePlayerData(next, true);
                 Collections.rotate(playerToSave, -1);
             }
-        }, 10 * 20L, 10 * 20L);
+        }, 5 * 20L, 5 * 20L);
 
 
     }
@@ -156,8 +159,9 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
 
     }
 
-    public void saveServerData(){
+    public void saveServerData(boolean up){
         Map<String, String> serverStatus = new HashMap<>();
+        serverStatus.put("up", String.valueOf(up));
         serverStatus.put("online", String.valueOf(Bukkit.getOnlinePlayers().size()));
         serverStatus.put("max", String.valueOf(Bukkit.getMaxPlayers()));
         serverStatus.put("whitelist", String.valueOf(Bukkit.hasWhitelist()));
@@ -167,8 +171,9 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
         serverStatus.put("tps2", String.valueOf(Bukkit.spigot().getTPS()[2]));
 
         try {
-            jedis.hmset("data:servers:status:" + serverType, serverStatus);
+            getJedis().hmset("data:servers:status:" + serverType, serverStatus);
         }catch(Exception ex){
+            ex.printStackTrace();
             getLogger().warning("ERROR WHILE TRYING TO UPDATE SERVER STATUS!");
         }
         //getJedisPool().returnResource(jedis);
@@ -225,11 +230,7 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
         }
     }
 
-    public DataAPI getInstance(){ return instance; }
-
     public DataPublisher getPublisher() { return publisher; }
-
-    public DataSubscriber getSubscriber() { return subscriber; }
 
     public JedisPool getJedisPool() {
         return this.pool;
@@ -238,8 +239,6 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
     private Messenger getMessenger() { return Bukkit.getMessenger(); }
 
     public List<Player> getPlayerToSave(){ return playerToSave; }
-
-    public String getServerType(){ return serverType; }
 
     public void toggleTab(){ useTab = !useTab;}
 
@@ -281,6 +280,34 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
 
     public int getPlayerss(){ return playerss; }
 
-    public Jedis getJedis(){ return this.jedis; }
+    public Jedis getJedis() {
+        try {
+            jedis.ping();
+        } catch (JedisConnectionException ex) {
+            //ex.printStackTrace();
+            this.subscriber.getJedisPubSub().unsubscribe();
+            this.pool.destroy();
+            getLogger().info("Fixing IT!");
+            try {
+                JedisPoolConfig poolConfig = new JedisPoolConfig();
+                poolConfig.setTestWhileIdle(true);
+                poolConfig.setMinEvictableIdleTimeMillis(60000);
+                poolConfig.setTimeBetweenEvictionRunsMillis(30000);
+                poolConfig.setNumTestsPerEvictionRun(-1);
+                this.pool = new JedisPool(poolConfig, this.getConfig().getString("redis-server"), this.getConfig().getInt("redis-port"));
+                this.jedis = this.getJedisPool().getResource();
+                this.publisher = new DataPublisher(this);
+                this.subscriber = new DataSubscriber(this);
+
+            } catch (JedisConnectionException e) {
+                e.printStackTrace();
+                this.getServer().getPluginManager().disablePlugin(this);
+            }
+        }
+        return jedis;
+
+    }
+
+    public static DataAPI getInstance(){ return instance; }
 
 }

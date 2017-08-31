@@ -1,7 +1,6 @@
 package net.veilmc.dataapi.listeners;
 
 import me.joeleoli.construct.Construct;
-import me.joeleoli.construct.api.ConstructVersion;
 import me.joeleoli.construct.api.IConstructLibrary;
 import me.joeleoli.construct.api.IConstructPlayer;
 import me.joeleoli.construct.util.TaskUtil;
@@ -161,13 +160,6 @@ public class LobbyTabListener implements Listener {
         tabPlayer.setPosition(59, c((profile.containsKey("lite_faction_balance") ? ("&7Balance: &a$" +  profile.get("hcf_faction_balance")) : " ")));
         tabPlayer.setPosition(60, c(""));
 
-        if(!tabPlayer.getVersion().equals(ConstructVersion.V1_8)) return;
-
-
-
-        tabPlayer.setPosition(70, c("&cFor optimal"));
-        tabPlayer.setPosition(71, c("&cperformance"));
-        tabPlayer.setPosition(72, c("&cplease use 1.7"));
 
 
     }

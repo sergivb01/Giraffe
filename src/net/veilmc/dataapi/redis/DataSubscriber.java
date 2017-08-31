@@ -107,7 +107,4 @@ public class DataSubscriber
         return this.jedisPubSub;
     }
 
-    public Jedis getJedis() {
-        return this.jedis;
-    }
 }
