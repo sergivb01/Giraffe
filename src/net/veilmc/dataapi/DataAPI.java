@@ -25,7 +25,6 @@ import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import java.io.File;
@@ -282,19 +281,20 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
 
     public Jedis getJedis() {
         try {
-            jedis.ping();
-        } catch (JedisConnectionException ex) {
+            jedis.set("test:test:test", "testing");
+        } catch (Exception ex) {
             //ex.printStackTrace();
             this.subscriber.getJedisPubSub().unsubscribe();
             this.pool.destroy();
             getLogger().info("Fixing IT!");
             try {
-                JedisPoolConfig poolConfig = new JedisPoolConfig();
-                poolConfig.setTestWhileIdle(true);
-                poolConfig.setMinEvictableIdleTimeMillis(60000);
-                poolConfig.setTimeBetweenEvictionRunsMillis(30000);
-                poolConfig.setNumTestsPerEvictionRun(-1);
-                this.pool = new JedisPool(poolConfig, this.getConfig().getString("redis-server"), this.getConfig().getInt("redis-port"));
+                //JedisPoolConfig poolConfig = new JedisPoolConfig();
+                //poolConfig.setTestWhileIdle(true);
+                //poolConfig.setMinEvictableIdleTimeMillis(60000);
+                //poolConfig.setTimeBetweenEvictionRunsMillis(30000);
+                //poolConfig.setNumTestsPerEvictionRun(-1);
+                //this.pool = new JedisPool(poolConfig, this.getConfig().getString("redis-server"), this.getConfig().getInt("redis-port"));
+                this.pool = new JedisPool(this.getConfig().getString("redis-server"), this.getConfig().getInt("redis-port"));
                 this.jedis = this.getJedisPool().getResource();
                 this.publisher = new DataPublisher(this);
                 this.subscriber = new DataSubscriber(this);
