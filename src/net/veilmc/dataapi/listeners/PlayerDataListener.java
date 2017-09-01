@@ -1,9 +1,7 @@
 package net.veilmc.dataapi.listeners;
 
 import com.customhcf.base.BasePlugin;
-import com.customhcf.base.user.BaseUser;
 import net.veilmc.dataapi.DataAPI;
-import org.apache.commons.collections4.map.HashedMap;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -13,8 +11,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.Map;
 
 public class PlayerDataListener implements Listener{
     private DataAPI plugin;
@@ -27,7 +23,8 @@ public class PlayerDataListener implements Listener{
     public void onJoin(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
 
-        if(this.plugin.getJedis().exists("data:players:" + player.getUniqueId().toString())) {
+        //TODO: Improve it. Removed due lag
+        /*if(this.plugin.getJedis().exists("data:players:" + player.getUniqueId().toString())) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                 BaseUser baseUser = BasePlugin.getPlugin().getUserManager().getUser(player.getUniqueId()); //Player data fromm base
                 Map<String, String> playerData = new HashedMap<>();
@@ -56,10 +53,10 @@ public class PlayerDataListener implements Listener{
                 //plugin.getJedisPool().returnResource(this.plugin.getJedis());
                 //plugin.getJedis().close();
             }, 3 * 20L);
-        }else{
+        }else{*/
             plugin.saveSinglePlayerData(player, true);
             plugin.getLogger().info("Saved " + player.getName() + " data as he joined the game.");
-        }
+        //}
 
 
         if(player.hasPermission("rank.staff")){ //staff notification about server switched
