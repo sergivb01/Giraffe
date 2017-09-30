@@ -38,7 +38,7 @@ public class FactionsTabListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        if(!this.plugin.getToggleTab()){
+        if(!this.plugin.isUseTab()){
             event.getPlayer().sendMessage(ChatColor.RED + "Your tab is currently disabled.");
             return;
         }
@@ -81,7 +81,7 @@ public class FactionsTabListener implements Listener {
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        if(!this.plugin.getToggleTab()) return;
+        if(!this.plugin.isUseTab()) return;
         this.construct.removeTabList(event.getPlayer());
 
 
@@ -114,13 +114,13 @@ public class FactionsTabListener implements Listener {
 
     @EventHandler
     public void onKick(PlayerKickEvent event) {
-        if(!this.plugin.getToggleTab()) return;
+        if(!this.plugin.isUseTab()) return;
         this.construct.removeTabList(event.getPlayer());
     }
 
     @EventHandler
     public void onDeathKill(PlayerDeathEvent event){
-        if(!this.plugin.getToggleTab()) return;
+        if(!this.plugin.isUseTab()) return;
         if(event.getEntity().getKiller() != null){
             Player player = event.getEntity().getKiller();
             Player death = event.getEntity();
@@ -157,7 +157,7 @@ public class FactionsTabListener implements Listener {
 
     @EventHandler
     public void onDtrChange(FactionDtrChangeEvent event){
-        if(!this.plugin.getToggleTab()) return;
+        if(!this.plugin.isUseTab()) return;
 
         if(event.getRaidable() instanceof PlayerFaction){
             PlayerFaction playerFaction = (PlayerFaction) event.getRaidable();
@@ -171,7 +171,7 @@ public class FactionsTabListener implements Listener {
 
     @EventHandler
     public void factionLeft(PlayerLeftFactionEvent event){
-        if(!this.plugin.getToggleTab()) return;
+        if(!this.plugin.isUseTab()) return;
 
         Player player;
         final Optional<Player> optional = event.getPlayer();
@@ -207,7 +207,7 @@ public class FactionsTabListener implements Listener {
 
     @EventHandler
     public void factionJoined(PlayerJoinedFactionEvent event){
-        if(!this.plugin.getToggleTab()) return;
+        if(!this.plugin.isUseTab()) return;
 
         Player player;
         final Optional<Player> optional = event.getPlayer();
@@ -239,7 +239,7 @@ public class FactionsTabListener implements Listener {
     @EventHandler
     public void factionRename(FactionRenameEvent event){
             if(!(event.getFaction() instanceof PlayerFaction)) return;
-            if(!this.plugin.getToggleTab()) return;
+            if(!this.plugin.isUseTab()) return;
 
             PlayerFaction playerFaction = (PlayerFaction) event.getFaction();
 
@@ -263,7 +263,7 @@ public class FactionsTabListener implements Listener {
 
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
-        if(!this.plugin.getToggleTab()) return;
+        if(!this.plugin.isUseTab()) return;
         if(event.getFrom().getX() != event.getTo().getX() || event.getFrom().getZ() != event.getTo().getZ()) {
             Player player = event.getPlayer();
 

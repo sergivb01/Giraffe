@@ -1,5 +1,6 @@
 package net.veilmc.dataapi.commands;
 
+import net.minecraft.util.org.apache.commons.lang3.StringUtils;
 import net.veilmc.dataapi.Giraffe;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -47,7 +48,7 @@ public class ReportCommand implements CommandExecutor{
             }
             ReportCommand.COOLDOWNS.remove(player.getUniqueId());
         }
-        //this.plugin.getPublisher().write("report;" + player.getDisplayName() + ";" + Bukkit.getServerName() + ";" + StringUtils.join(args, " ").replace(";", ":") + ";" + reported.getDisplayName());
+        this.plugin.getPublisher().write("report;" + player.getDisplayName() + ";" + Bukkit.getServerName() + ";" + StringUtils.join(args, " ").replace(";", ":") + ";" + reported.getDisplayName());
         player.sendMessage(ChatColor.GREEN + "Staff have been notified of your player report.");
         ReportCommand.COOLDOWNS.put(player.getUniqueId(), System.currentTimeMillis());
 

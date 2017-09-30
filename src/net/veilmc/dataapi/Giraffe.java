@@ -7,6 +7,7 @@ import com.customhcf.hcf.deathban.Deathban;
 import com.customhcf.hcf.faction.type.PlayerFaction;
 import com.customhcf.hcf.user.FactionUser;
 import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.util.com.google.common.io.ByteArrayDataInput;
 import net.minecraft.util.com.google.common.io.ByteArrayDataOutput;
 import net.minecraft.util.com.google.common.io.ByteStreams;
@@ -30,11 +31,11 @@ import java.io.File;
 import java.util.*;
 
 public class Giraffe extends JavaPlugin implements PluginMessageListener {
-    private boolean useTab;
-    private String serverType;
-    private List<Player> playerToSave;
-    private int playerss;
-    private static Giraffe instance;
+    @Getter @Setter private boolean useTab;
+    @Getter private String serverType;
+    @Getter private List<Player> playerToSave;
+    @Getter private int playerss;
+    @Getter private static Giraffe instance;
     @Getter private DataSubscriber subscriber;
     @Getter private DataPublisher publisher;
     @Getter private JedisPool pool;
@@ -47,6 +48,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
     }
 
     public void onDisable() {
+        saveServerData(false);
         this.subscriber.getJedisPubSub().unsubscribe();
         this.pool.destroy();
 
@@ -95,6 +97,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> { //Save data of single player every 15 seconds.
             saveServerData(true);
         }, 5 * 20L, 5 * 20L);
+
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> { //Save data of single player every 15 seconds.
             if (!playerToSave.isEmpty()) {
                 Player next = playerToSave.get(0);
@@ -115,6 +118,10 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
         globalInfo.put("online", (online ? "true" : "false"));
         globalInfo.put("lastServer", serverType);
         globalInfo.put("nickname", player.getDisplayName());
+
+        globalInfo.put(cleanServer + "last_connection", String.valueOf(System.currentTimeMillis()));
+        globalInfo.put(cleanServer + "rank", "todo"); //TODO: Add permission here...
+
         if(!serverType.equalsIgnoreCase("lobby")) {
             final FactionUser factionUser = HCF.getInstance().getUserManager().getUser(player.getUniqueId());
             globalInfo.put(cleanServer + "playtime", String.valueOf(BasePlugin.getPlugin().getPlayTimeManager().getTotalPlayTime(player.getUniqueId())));
@@ -144,6 +151,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
             globalInfo.put("options_pm", String.valueOf(baseUser.isMessagesVisible()));
             globalInfo.put("options_sc", String.valueOf(baseUser.isStaffChatVisible()));
             globalInfo.put("options_gc", String.valueOf(baseUser.isGlobalChatVisible()));
+
         }
 
         Jedis jedis = null;
@@ -156,12 +164,10 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
                 jedis.close();
             }
         }
-        //getJedisPool().returnResource(jedis);
-        //jedis.close();
 
     }
 
-    public void saveServerData(boolean up){
+    private void saveServerData(boolean up){
         Map<String, String> serverStatus = new HashMap<>();
         serverStatus.put("up", String.valueOf(up));
         serverStatus.put("online", String.valueOf(Bukkit.getOnlinePlayers().size()));
@@ -183,28 +189,12 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
                 jedis.close();
             }
         }
-        //getJedisPool().returnResource(jedis);
-        //jedis.close();
 
     }
 
     public void savePlayerGlobalData(){
         for(Player p : Bukkit.getOnlinePlayers()) {
             saveSinglePlayerData(p, true);
-        }
-    }
-
-    private void handleData(String data) {
-        if (data.startsWith("SendMessage;")) {
-            String player = data.split(":")[1];
-            StringBuilder message = new StringBuilder();
-            for (int i = 2; i < data.split(":").length; i++) {
-                message.append(data.split(":")[i]).append(" ");
-            }
-            if (Bukkit.getPlayer(player) != null) {
-                Player p = Bukkit.getPlayer(player);
-                p.sendMessage(message.toString());
-            }
         }
     }
 
@@ -224,33 +214,6 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
         }
     }
 
-    /*private void setupJedis(){
-        try {
-            this.pool = new JedisPool(this.getConfig().getString("redis-server"));
-            this.publisher = new DataPublisher(this);
-            this.subscriber = new DataSubscriber(this);
-            this.jedis = this.getJedisPool().getResource();
-            //this.jedis.select(2);
-        }catch (JedisConnectionException e) {
-            e.printStackTrace();
-            this.getServer().getPluginManager().disablePlugin(this);
-        }
-    }
-
-    public DataPublisher getPublisher() { return publisher; }
-
-    public JedisPool getJedisPool() {
-        return this.pool;
-    }
-
-    private Messenger getMessenger() { return Bukkit.getMessenger(); }
-
-    public List<Player> getPlayerToSave(){ return playerToSave; }*/
-
-    public void toggleTab(){ useTab = !useTab;}
-
-    public boolean getToggleTab(){ return useTab;}
-
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
         if (!channel.equals("RedisBungee")) {
@@ -262,20 +225,13 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
 
         if (subchannel.equals("PlayerCount")) {
             String server = in.readUTF();
-            int playerCount = in.readInt();
-
-            playerss = playerCount;
-            //player.sendMessage("Player count on server " + server + " is equal to " + playerCount);
-
+            playerss = in.readInt();
         }
 
     }
 
     public void getCount(Player player, String server) {
-
-        if (server == null) {
-            server = "ALL";
-        }
+        if (server == null) server = "ALL";
 
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("PlayerCount");
@@ -285,41 +241,5 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
 
     }
 
-    public int getPlayerss(){ return playerss; }
-
-    /*public Jedis getJedis() {
-        try {
-            jedis.set("test:test:test", "testing");
-        } catch (Exception ex) {
-            //ex.printStackTrace();
-            this.subscriber.getJedisPubSub().unsubscribe();
-            this.pool.destroy();
-            getLogger().info("Fixing IT!");
-            try {
-                //JedisPoolConfig poolConfig = new JedisPoolConfig();
-                //poolConfig.setTestWhileIdle(true);
-                //poolConfig.setMinEvictableIdleTimeMillis(60000);
-                //poolConfig.setTimeBetweenEvictionRunsMillis(30000);
-                //poolConfig.setNumTestsPerEvictionRun(-1);
-                //this.pool = new JedisPool(poolConfig, this.getConfig().getString("redis-server"), this.getConfig().getInt("redis-port"));
-                this.pool = new JedisPool(this.getConfig().getString("redis-server"), this.getConfig().getInt("redis-port"));
-                this.jedis = this.getJedisPool().getResource();
-                this.publisher = new DataPublisher(this);
-                this.subscriber = new DataSubscriber(this);
-
-            } catch (JedisConnectionException e) {
-                e.printStackTrace();
-                this.getServer().getPluginManager().disablePlugin(this);
-            }
-        }
-        return jedis;
-
-    }*/
-
-    public static Giraffe getInstance(){ return instance; }
-
-    public List<Player> getPlayerToSave() {
-        return playerToSave;
-    }
 
 }

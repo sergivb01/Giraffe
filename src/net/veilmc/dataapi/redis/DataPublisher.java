@@ -15,7 +15,7 @@ public class DataPublisher
         Jedis jedis = null;
         try {
             jedis = this.main.getPool().getResource();
-            jedis.publish("ares", message);
+            jedis.publish("giraffe", message);
             this.main.getPool().returnResource(jedis);
         }
         finally {

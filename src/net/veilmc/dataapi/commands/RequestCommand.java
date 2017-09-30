@@ -1,6 +1,8 @@
 package net.veilmc.dataapi.commands;
 
+import net.minecraft.util.org.apache.commons.lang3.StringUtils;
 import net.veilmc.dataapi.Giraffe;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -37,7 +39,7 @@ public class RequestCommand implements CommandExecutor{
             }
             RequestCommand.COOLDOWNS.remove(player.getUniqueId());
         }
-        //this.plugin.getPublisher().write("request;" + player.getDisplayName() + ";" + Bukkit.getServerName() + ";" + StringUtils.join(args, " ").replace(";", ":"));
+        this.plugin.getPublisher().write("request;" + player.getDisplayName() + ";" + Bukkit.getServerName() + ";" + StringUtils.join(args, " ").replace(";", ":"));
         player.sendMessage(ChatColor.GREEN + "Staff have been notified of your request.");
         RequestCommand.COOLDOWNS.put(player.getUniqueId(), System.currentTimeMillis());
 

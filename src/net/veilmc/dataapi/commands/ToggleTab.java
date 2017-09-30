@@ -18,11 +18,11 @@ public class ToggleTab implements CommandExecutor{
     }
 
     public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
-        this.plugin.toggleTab();
-        sender.sendMessage(ChatColor.YELLOW + "Custom tab is now " + (this.plugin.getToggleTab() ? (ChatColor.GREEN + "enabled") : (ChatColor.RED + "disabled")) + ChatColor.YELLOW + "!");
+        this.plugin.setUseTab(!this.plugin.isUseTab());
+        sender.sendMessage(ChatColor.YELLOW + "Custom tab is now " + (this.plugin.isUseTab() ? (ChatColor.GREEN + "enabled") : (ChatColor.RED + "disabled")) + ChatColor.YELLOW + "!");
 
         for(Player player : Bukkit.getOnlinePlayers()){
-            if(this.plugin.getToggleTab()){
+            if(this.plugin.isUseTab()){
                 if(!Construct.getLibrary().hasTabList(player)){
                     Bukkit.getPluginManager().callEvent(new PlayerJoinEvent(player, "hello"));
                     player.sendMessage(ChatColor.GREEN + "You tab has been enabled.");

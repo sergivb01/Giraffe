@@ -25,14 +25,14 @@ public class DataSubscriber
 
     public void subscribe() {
         this.jedisPubSub = this.get();
-        new Thread(() -> DataSubscriber.this.jedis.subscribe(DataSubscriber.this.jedisPubSub, "ares")).start();
+        new Thread(() -> DataSubscriber.this.jedis.subscribe(DataSubscriber.this.jedisPubSub, "giraffe")).start();
     }
 
     private JedisPubSub get() {
         return new JedisPubSub() {
             @Override
             public void onMessage(final String channel, final String message) {
-                if (channel.equalsIgnoreCase("ares")) {
+                if (channel.equalsIgnoreCase("giraffe")) {
                     final String[] args = message.split(";");
                     if (args.length > 2) {
                         final String command = args[0].toLowerCase();

@@ -44,7 +44,7 @@ public class LobbyTabListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        if(!this.plugin.getToggleTab()){
+        if(!this.plugin.isUseTab()){
             event.getPlayer().sendMessage(ChatColor.RED + "Your tab is currently disabled.");
             return;
         }
@@ -61,7 +61,7 @@ public class LobbyTabListener implements Listener {
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        if(!this.plugin.getToggleTab()) return;
+        if(!this.plugin.isUseTab()) return;
 
         TaskUtil.runTaskNextTick(() -> {
             this.construct.removeTabList(event.getPlayer());
@@ -71,7 +71,7 @@ public class LobbyTabListener implements Listener {
 
     @EventHandler
     public void onKick(PlayerKickEvent event) {
-        if(!this.plugin.getToggleTab()) return;
+        if(!this.plugin.isUseTab()) return;
         this.construct.removeTabList(event.getPlayer());
     }
 
