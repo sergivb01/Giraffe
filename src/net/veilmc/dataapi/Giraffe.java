@@ -8,6 +8,7 @@ import com.customhcf.hcf.faction.type.PlayerFaction;
 import com.customhcf.hcf.user.FactionUser;
 import lombok.Getter;
 import lombok.Setter;
+import me.joeleoli.construct.util.TaskUtil;
 import net.minecraft.util.com.google.common.io.ByteArrayDataInput;
 import net.minecraft.util.com.google.common.io.ByteArrayDataOutput;
 import net.minecraft.util.com.google.common.io.ByteStreams;
@@ -49,8 +50,10 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
 
     public void onDisable() {
         saveServerData(false);
-        this.subscriber.getJedisPubSub().unsubscribe();
-        this.pool.destroy();
+        TaskUtil.runTaskNextTick(()->{
+            this.subscriber.getJedisPubSub().unsubscribe();
+            this.pool.destroy();
+        });
 
         instance = null;
     }
@@ -101,96 +104,102 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> { //Save data of single player every 15 seconds.
             if (!playerToSave.isEmpty()) {
                 Player next = playerToSave.get(0);
-                saveSinglePlayerData(next, true, false);
+                TaskUtil.runTaskNextTick(()->{
+                    saveSinglePlayerData(next, true, false);
+                });
                 Collections.rotate(playerToSave, -1);
             }
-        }, 5 * 20L, 5 * 20L);
+        }, 7 * 20L, 7 * 20L);
 
 
     }
 
     public void saveSinglePlayerData(Player player, boolean online, boolean isNotRegular){
-        final String cleanServer = serverType.trim().toLowerCase() + "_";
-        Map<String, String> globalInfo = new HashedMap<>();
+        new Thread(() -> {
+            final String cleanServer = serverType.trim().toLowerCase() + "_";
+            Map<String, String> globalInfo = new HashedMap<>();
 
-        globalInfo.put("nickname", player.getDisplayName());
-        globalInfo.put("address", player.getAddress().getHostName());
-        globalInfo.put("online", (online ? "true" : "false"));
-        globalInfo.put("lastServer", serverType);
-        globalInfo.put("nickname", player.getDisplayName());
+            globalInfo.put("nickname", player.getDisplayName());
+            globalInfo.put("address", player.getAddress().getHostName());
+            globalInfo.put("online", (online ? "true" : "false"));
+            globalInfo.put("lastServer", serverType);
+            globalInfo.put("nickname", player.getDisplayName());
 
-        if(isNotRegular) {
-            globalInfo.put(cleanServer + "last_connection", String.valueOf(System.currentTimeMillis()));
-        }
-        globalInfo.put(cleanServer + "rank", "todo"); //TODO: Add permission here...
-
-        if(!serverType.equalsIgnoreCase("lobby")) {
-            final FactionUser factionUser = HCF.getInstance().getUserManager().getUser(player.getUniqueId());
-            globalInfo.put(cleanServer + "playtime", String.valueOf(BasePlugin.getPlugin().getPlayTimeManager().getTotalPlayTime(player.getUniqueId())));
-            globalInfo.put(cleanServer + "kills", String.valueOf(factionUser.getKills()));
-            globalInfo.put(cleanServer + "deaths", String.valueOf(factionUser.getDeaths()));
-            globalInfo.put(cleanServer + "diamonds", String.valueOf(factionUser.getDiamondsMined()));
-            globalInfo.put(cleanServer + "lives", String.valueOf(HCF.getInstance().getDeathbanManager().getLives(player.getUniqueId())));
-            globalInfo.put(cleanServer + "balance", String.valueOf(HCF.getInstance().getEconomyManager().getBalance(player.getUniqueId())));
-
-            final Deathban deathban = HCF.getInstance().getUserManager().getUser(player.getUniqueId()).getDeathban();
-            globalInfo.put(cleanServer + "deathban_remaining", (deathban == null ? "Not deathbanned" : String.valueOf(deathban.getRemaining())));
-            globalInfo.put(cleanServer + "deathban_reason", (deathban == null ? "Not deathbanned" : deathban.getReason()));
-
-            final PlayerFaction playerFaction = HCF.getInstance().getFactionManager().getPlayerFaction(player.getUniqueId());
-            globalInfo.put(cleanServer + "faction_name", (playerFaction == null ? "No Faction" : playerFaction.getName()));
-            globalInfo.put(cleanServer + "faction_role", (playerFaction == null ? "No Faction" : playerFaction.getMember(player.getUniqueId()).getRole().getName()));
-            globalInfo.put(cleanServer + "faction_online", (playerFaction == null ? "No Faction" : playerFaction.getOnlineMembers().size() + "/" + playerFaction.getMembers().size()));
-            globalInfo.put(cleanServer + "faction_dtr", (playerFaction == null ? "No Faction" : String.valueOf(playerFaction.getDeathsUntilRaidable())));
-            globalInfo.put(cleanServer + "faction_dtrregen", (playerFaction == null ? "No Faction" : String.valueOf(playerFaction.getRemainingRegenerationTime())));
-            globalInfo.put(cleanServer + "faction_balance", (playerFaction == null ? "No Faction" : String.valueOf(playerFaction.getBalance())));
-
-            final BaseUser baseUser = BasePlugin.getPlugin().getUserManager().getUser(player.getUniqueId());
-            globalInfo.put("staff_modmode", String.valueOf(baseUser.isStaffUtil()));
-            globalInfo.put("staff_vanish", String.valueOf(baseUser.isVanished()));
-            globalInfo.put("staff_sc", String.valueOf(baseUser.isInStaffChat()));
-            globalInfo.put("options_sounds", String.valueOf(baseUser.isMessagingSounds()));
-            globalInfo.put("options_pm", String.valueOf(baseUser.isMessagesVisible()));
-            globalInfo.put("options_sc", String.valueOf(baseUser.isStaffChatVisible()));
-            globalInfo.put("options_gc", String.valueOf(baseUser.isGlobalChatVisible()));
-
-        }
-
-        Jedis jedis = null;
-        try {
-            jedis = getPool().getResource();
-            jedis.hmset("data:players:" + player.getUniqueId().toString(), globalInfo);
-            getPool().returnResource(jedis);
-        }finally {
-            if (jedis != null) {
-                jedis.close();
+            if(isNotRegular) {
+                globalInfo.put(cleanServer + "last_connection", String.valueOf(System.currentTimeMillis()));
             }
-        }
+            globalInfo.put(cleanServer + "rank", "todo"); //TODO: Add permission here...
+
+            if(!serverType.equalsIgnoreCase("lobby")) {
+                final FactionUser factionUser = HCF.getInstance().getUserManager().getUser(player.getUniqueId());
+                globalInfo.put(cleanServer + "playtime", String.valueOf(BasePlugin.getPlugin().getPlayTimeManager().getTotalPlayTime(player.getUniqueId())));
+                globalInfo.put(cleanServer + "kills", String.valueOf(factionUser.getKills()));
+                globalInfo.put(cleanServer + "deaths", String.valueOf(factionUser.getDeaths()));
+                globalInfo.put(cleanServer + "diamonds", String.valueOf(factionUser.getDiamondsMined()));
+                globalInfo.put(cleanServer + "lives", String.valueOf(HCF.getInstance().getDeathbanManager().getLives(player.getUniqueId())));
+                globalInfo.put(cleanServer + "balance", String.valueOf(HCF.getInstance().getEconomyManager().getBalance(player.getUniqueId())));
+
+                final Deathban deathban = HCF.getInstance().getUserManager().getUser(player.getUniqueId()).getDeathban();
+                globalInfo.put(cleanServer + "deathban_remaining", (deathban == null ? "Not deathbanned" : String.valueOf(deathban.getRemaining())));
+                globalInfo.put(cleanServer + "deathban_reason", (deathban == null ? "Not deathbanned" : deathban.getReason()));
+
+                final PlayerFaction playerFaction = HCF.getInstance().getFactionManager().getPlayerFaction(player.getUniqueId());
+                globalInfo.put(cleanServer + "faction_name", (playerFaction == null ? "No Faction" : playerFaction.getName()));
+                globalInfo.put(cleanServer + "faction_role", (playerFaction == null ? "No Faction" : playerFaction.getMember(player.getUniqueId()).getRole().getName()));
+                globalInfo.put(cleanServer + "faction_online", (playerFaction == null ? "No Faction" : playerFaction.getOnlineMembers().size() + "/" + playerFaction.getMembers().size()));
+                globalInfo.put(cleanServer + "faction_dtr", (playerFaction == null ? "No Faction" : String.valueOf(playerFaction.getDeathsUntilRaidable())));
+                globalInfo.put(cleanServer + "faction_dtrregen", (playerFaction == null ? "No Faction" : String.valueOf(playerFaction.getRemainingRegenerationTime())));
+                globalInfo.put(cleanServer + "faction_balance", (playerFaction == null ? "No Faction" : String.valueOf(playerFaction.getBalance())));
+
+                final BaseUser baseUser = BasePlugin.getPlugin().getUserManager().getUser(player.getUniqueId());
+                globalInfo.put("staff_modmode", String.valueOf(baseUser.isStaffUtil()));
+                globalInfo.put("staff_vanish", String.valueOf(baseUser.isVanished()));
+                globalInfo.put("staff_sc", String.valueOf(baseUser.isInStaffChat()));
+                globalInfo.put("options_sounds", String.valueOf(baseUser.isMessagingSounds()));
+                globalInfo.put("options_pm", String.valueOf(baseUser.isMessagesVisible()));
+                globalInfo.put("options_sc", String.valueOf(baseUser.isStaffChatVisible()));
+                globalInfo.put("options_gc", String.valueOf(baseUser.isGlobalChatVisible()));
+
+            }
+
+            Jedis jedis = null;
+            try {
+                jedis = getPool().getResource();
+                jedis.hmset("data:players:" + player.getUniqueId().toString(), globalInfo);
+                getPool().returnResource(jedis);
+            }finally {
+                if (jedis != null) {
+                    jedis.close();
+                }
+            }
+        }).start();
 
     }
 
     private void saveServerData(boolean up){
-        Map<String, String> serverStatus = new HashMap<>();
-        serverStatus.put("up", String.valueOf(up));
-        serverStatus.put("online", String.valueOf(Bukkit.getOnlinePlayers().size()));
-        serverStatus.put("max", String.valueOf(Bukkit.getMaxPlayers()));
-        serverStatus.put("whitelist", String.valueOf(Bukkit.hasWhitelist()));
+        new Thread(() -> {
+            Map<String, String> serverStatus = new HashMap<>();
+            serverStatus.put("up", String.valueOf(up));
+            serverStatus.put("online", String.valueOf(Bukkit.getOnlinePlayers().size()));
+            serverStatus.put("max", String.valueOf(Bukkit.getMaxPlayers()));
+            serverStatus.put("whitelist", String.valueOf(Bukkit.hasWhitelist()));
 
-        serverStatus.put("tps0", String.valueOf(Bukkit.spigot().getTPS()[0]));
-        serverStatus.put("tps1", String.valueOf(Bukkit.spigot().getTPS()[1]));
-        serverStatus.put("tps2", String.valueOf(Bukkit.spigot().getTPS()[2]));
+            serverStatus.put("tps0", String.valueOf(Bukkit.spigot().getTPS()[0]));
+            serverStatus.put("tps1", String.valueOf(Bukkit.spigot().getTPS()[1]));
+            serverStatus.put("tps2", String.valueOf(Bukkit.spigot().getTPS()[2]));
 
 
-        Jedis jedis = null;
-        try {
-            jedis = getPool().getResource();
-            jedis.hmset("data:servers:status:" + serverType, serverStatus);
-            getPool().returnResource(jedis);
-        }finally {
-            if (jedis != null) {
-                jedis.close();
+            Jedis jedis = null;
+            try {
+                jedis = getPool().getResource();
+                jedis.hmset("data:servers:status:" + serverType, serverStatus);
+                getPool().returnResource(jedis);
+            }finally {
+                if (jedis != null) {
+                    jedis.close();
+                }
             }
-        }
+        }).start();
 
     }
 

@@ -269,7 +269,7 @@ public class FactionsTabListener implements Listener {
 
             if (!this.construct.hasTabList(player)) return;
 
-            updatePlayerLocation(player);
+            TaskUtil.runTaskNextTick(()-> updatePlayerLocation(player));
         }
     }
 
