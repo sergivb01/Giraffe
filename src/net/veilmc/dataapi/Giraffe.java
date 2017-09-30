@@ -203,6 +203,9 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
                 jedis = getPool().getResource();
                 jedis.hmset("data:servers:status:" + serverType, serverStatus);
                 getPool().returnResource(jedis);
+            }catch(Exception ex){
+                //ex.printStackTrace();
+                //Do nothing :d
             }finally {
                 if (jedis != null) {
                     jedis.close();
