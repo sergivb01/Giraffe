@@ -101,7 +101,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> { //Save data of single player every 15 seconds.
             if (!playerToSave.isEmpty()) {
                 Player next = playerToSave.get(0);
-                saveSinglePlayerData(next, true);
+                saveSinglePlayerData(next, true, false);
                 Collections.rotate(playerToSave, -1);
             }
         }, 5 * 20L, 5 * 20L);
@@ -109,7 +109,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
 
     }
 
-    public void saveSinglePlayerData(Player player, boolean online){
+    public void saveSinglePlayerData(Player player, boolean online, boolean isNotRegular){
         final String cleanServer = serverType.trim().toLowerCase() + "_";
         Map<String, String> globalInfo = new HashedMap<>();
 
@@ -119,7 +119,9 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
         globalInfo.put("lastServer", serverType);
         globalInfo.put("nickname", player.getDisplayName());
 
-        globalInfo.put(cleanServer + "last_connection", String.valueOf(System.currentTimeMillis()));
+        if(isNotRegular) {
+            globalInfo.put(cleanServer + "last_connection", String.valueOf(System.currentTimeMillis()));
+        }
         globalInfo.put(cleanServer + "rank", "todo"); //TODO: Add permission here...
 
         if(!serverType.equalsIgnoreCase("lobby")) {
@@ -194,7 +196,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
 
     public void savePlayerGlobalData(){
         for(Player p : Bukkit.getOnlinePlayers()) {
-            saveSinglePlayerData(p, true);
+            saveSinglePlayerData(p, true, false);
         }
     }
 

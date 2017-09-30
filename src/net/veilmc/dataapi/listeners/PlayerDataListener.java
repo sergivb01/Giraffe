@@ -57,12 +57,12 @@ public class PlayerDataListener implements Listener{
                     //Notification message.
                     player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&aYour options has been &eloaded &afrom the database."));
 
-                    plugin.saveSinglePlayerData(player, true); //Now save the data on database
+                    plugin.saveSinglePlayerData(player, true, true); //Now save the data on database
                     plugin.getLogger().info("Saved " + player.getName() + " data as he joined the game.");
 
                 }, 3 * 20L);
             }else{
-                plugin.saveSinglePlayerData(player, true);
+                plugin.saveSinglePlayerData(player, true, true);
                 plugin.getLogger().info("Saved " + player.getName() + " data as he joined the game.");
             }
 
@@ -84,7 +84,7 @@ public class PlayerDataListener implements Listener{
             new BukkitRunnable() {
                 public void run(){
                     try {
-                        plugin.saveSinglePlayerData(player, false);
+                        plugin.saveSinglePlayerData(player, false, true);
                     }catch(IndexOutOfBoundsException | NullPointerException ex){
                         Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Error while trying to save " + ChatColor.GRAY + player.getName() + ChatColor.RED + " data! (NullPointerException or IndexOutOfBoundsException)");
                     }
