@@ -106,6 +106,7 @@ public class PlayerDataListener implements Listener{
         if(player.hasPermission("rank.staff")){ //staff notification about server switched
             plugin.getPublisher().write("staffswitch;" + player.getName() + ";" + Bukkit.getServerName() + ";" + "joined the server.");
         }
+
     }
 
     @EventHandler

@@ -140,8 +140,9 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
                 globalInfo.put(cleanServer + "balance", String.valueOf(HCF.getInstance().getEconomyManager().getBalance(player.getUniqueId())));
 
                 final Deathban deathban = HCF.getInstance().getUserManager().getUser(player.getUniqueId()).getDeathban();
-                globalInfo.put(cleanServer + "deathban_remaining", (deathban == null ? "Not deathbanned" : String.valueOf(deathban.getRemaining())));
+                globalInfo.put(cleanServer + "deathban_expires", (deathban == null ? "Not deathbanned" : String.valueOf(deathban.getExpiryMillis())));
                 globalInfo.put(cleanServer + "deathban_reason", (deathban == null ? "Not deathbanned" : deathban.getReason()));
+                globalInfo.put(cleanServer + "deathban_creation", (deathban == null ? "Not deathbanned" : deathban.getReason()));
 
                 final PlayerFaction playerFaction = HCF.getInstance().getFactionManager().getPlayerFaction(player.getUniqueId());
                 globalInfo.put(cleanServer + "faction_name", (playerFaction == null ? "No Faction" : playerFaction.getName()));
@@ -150,6 +151,13 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
                 globalInfo.put(cleanServer + "faction_dtr", (playerFaction == null ? "No Faction" : String.valueOf(playerFaction.getDeathsUntilRaidable())));
                 globalInfo.put(cleanServer + "faction_dtrregen", (playerFaction == null ? "No Faction" : String.valueOf(playerFaction.getRemainingRegenerationTime())));
                 globalInfo.put(cleanServer + "faction_balance", (playerFaction == null ? "No Faction" : String.valueOf(playerFaction.getBalance())));
+
+                ArrayList<String> alliesNames = new ArrayList<>();
+                if(playerFaction != null){
+                    for(PlayerFaction playerFaction1 : playerFaction.getAlliedFactions())
+                        alliesNames.add(playerFaction1.getName());
+                }
+                globalInfo.put(cleanServer + "faction_allies", (alliesNames.size() <= 0 ? "No allies" : alliesNames.toString().replace("[", "").replace("]", "")));
 
                 final BaseUser baseUser = BasePlugin.getPlugin().getUserManager().getUser(player.getUniqueId());
                 globalInfo.put("staff_modmode", String.valueOf(baseUser.isStaffUtil()));
@@ -172,6 +180,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
                     jedis.close();
                 }
             }
+
         }).start();
 
     }
