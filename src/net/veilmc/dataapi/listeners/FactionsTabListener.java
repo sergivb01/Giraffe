@@ -11,7 +11,7 @@ import me.joeleoli.construct.Construct;
 import me.joeleoli.construct.api.IConstructLibrary;
 import me.joeleoli.construct.api.IConstructPlayer;
 import me.joeleoli.construct.util.TaskUtil;
-import net.veilmc.dataapi.DataAPI;
+import net.veilmc.dataapi.Giraffe;
 import net.veilmc.dataapi.utils.TabUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -26,10 +26,10 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class FactionsTabListener implements Listener {
     //TODO: Update stuff
-    private DataAPI plugin;
+    private Giraffe plugin;
     private IConstructLibrary construct;
 
-    public FactionsTabListener(DataAPI plugin) {
+    public FactionsTabListener(Giraffe plugin) {
         // Define construct before registering event listeners
         this.plugin = plugin;
         this.construct = Construct.getLibrary();
@@ -304,6 +304,7 @@ public class FactionsTabListener implements Listener {
     }
     public void updatePlayerKills(Player player){
         this.construct.getPlayer(player).setPosition(2, TabUtils.translate(player, "&7Kills:&a %player_kills%"));
+        this.construct.getPlayer(player).setPosition(3, TabUtils.translate(player, "&7Deaths:&a %player_deaths%"));
     }
 
     public void updatePlayerLocation(Player player){

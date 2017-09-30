@@ -1,7 +1,7 @@
 package net.veilmc.dataapi.commands;
 
 import me.joeleoli.construct.Construct;
-import net.veilmc.dataapi.DataAPI;
+import net.veilmc.dataapi.Giraffe;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -11,9 +11,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 public class ToggleTab implements CommandExecutor{
-    private DataAPI plugin;
+    private Giraffe plugin;
 
-    public ToggleTab(final DataAPI plugin) {
+    public ToggleTab(final Giraffe plugin) {
         this.plugin = plugin;
     }
 

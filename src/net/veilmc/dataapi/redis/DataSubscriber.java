@@ -3,7 +3,7 @@ package net.veilmc.dataapi.redis;
 import com.customhcf.base.BasePlugin;
 import com.customhcf.util.chat.ClickAction;
 import com.customhcf.util.chat.Text;
-import net.veilmc.dataapi.DataAPI;
+import net.veilmc.dataapi.Giraffe;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -15,9 +15,9 @@ public class DataSubscriber
 {
     private JedisPubSub jedisPubSub;
     private Jedis jedis;
-    private DataAPI main;
+    private Giraffe main;
 
-    public DataSubscriber(final DataAPI main) {
+    public DataSubscriber(final Giraffe main) {
         this.main = main;
         this.jedis = new Jedis(main.getConfig().getString("redis-server"));
         this.subscribe();

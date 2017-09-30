@@ -6,6 +6,7 @@ import com.customhcf.hcf.HCF;
 import com.customhcf.hcf.deathban.Deathban;
 import com.customhcf.hcf.faction.type.PlayerFaction;
 import com.customhcf.hcf.user.FactionUser;
+import lombok.Getter;
 import net.minecraft.util.com.google.common.io.ByteArrayDataInput;
 import net.minecraft.util.com.google.common.io.ByteArrayDataOutput;
 import net.minecraft.util.com.google.common.io.ByteStreams;
@@ -21,39 +22,35 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import java.io.File;
 import java.util.*;
 
-
-public class DataAPI extends JavaPlugin implements PluginMessageListener {
-    private Jedis jedis = null;
+public class Giraffe extends JavaPlugin implements PluginMessageListener {
     private boolean useTab;
-    private DataPublisher publisher;
-    private DataSubscriber subscriber;
-    private JedisPool pool;
     private String serverType;
     private List<Player> playerToSave;
     private int playerss;
-    private static DataAPI instance;
+    private static Giraffe instance;
+    @Getter private DataSubscriber subscriber;
+    @Getter private DataPublisher publisher;
+    @Getter private JedisPool pool;
 
-    public DataAPI() {
+    public Giraffe() {
         this.useTab = true;
         this.playerToSave = new ArrayList<>();
         this.playerss = 0;
-        this.pool = null;
+        //this.pool = null;
     }
 
     public void onDisable() {
-        saveServerData(false);
-        getLogger().info("SAVED SERVER DATAAA");
         this.subscriber.getJedisPubSub().unsubscribe();
         this.pool.destroy();
+
+        instance = null;
     }
 
     public void onEnable() {
@@ -65,13 +62,14 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
         }
         this.getConfig().options().copyDefaults(true);
 
-        getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-        getMessenger().registerIncomingPluginChannel(this, "BungeeCord", this);
+        this.pool = new JedisPool("95.85.43.227");
+        this.publisher = new DataPublisher(this);
+        this.subscriber = new DataSubscriber(this);
 
-        getMessenger().registerOutgoingPluginChannel(this, "RedisBungee");
-        getMessenger().registerIncomingPluginChannel(this, "RedisBungee", this);
+        this.getServer().getMessenger().registerOutgoingPluginChannel(this, "RedisBungee");
+        this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+        this.getServer().getMessenger().registerIncomingPluginChannel(this, "RedisBungee", this);
 
-        setupJedis();
         registerCommands();
 
         serverType = this.getConfig().getString("serverType", "hcf");
@@ -148,10 +146,15 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
             globalInfo.put("options_gc", String.valueOf(baseUser.isGlobalChatVisible()));
         }
 
+        Jedis jedis = null;
         try {
+            jedis = getPool().getResource();
             jedis.hmset("data:players:" + player.getUniqueId().toString(), globalInfo);
-        }catch(Exception ex){
-            getLogger().warning("Error while trying to save " + player.getName() + " data.");
+            getPool().returnResource(jedis);
+        }finally {
+            if (jedis != null) {
+                jedis.close();
+            }
         }
         //getJedisPool().returnResource(jedis);
         //jedis.close();
@@ -169,11 +172,16 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
         serverStatus.put("tps1", String.valueOf(Bukkit.spigot().getTPS()[1]));
         serverStatus.put("tps2", String.valueOf(Bukkit.spigot().getTPS()[2]));
 
+
+        Jedis jedis = null;
         try {
-            getJedis().hmset("data:servers:status:" + serverType, serverStatus);
-        }catch(Exception ex){
-            ex.printStackTrace();
-            getLogger().warning("ERROR WHILE TRYING TO UPDATE SERVER STATUS!");
+            jedis = getPool().getResource();
+            jedis.hmset("data:servers:status:" + serverType, serverStatus);
+            getPool().returnResource(jedis);
+        }finally {
+            if (jedis != null) {
+                jedis.close();
+            }
         }
         //getJedisPool().returnResource(jedis);
         //jedis.close();
@@ -216,7 +224,7 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
         }
     }
 
-    private void setupJedis(){
+    /*private void setupJedis(){
         try {
             this.pool = new JedisPool(this.getConfig().getString("redis-server"));
             this.publisher = new DataPublisher(this);
@@ -237,7 +245,7 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
 
     private Messenger getMessenger() { return Bukkit.getMessenger(); }
 
-    public List<Player> getPlayerToSave(){ return playerToSave; }
+    public List<Player> getPlayerToSave(){ return playerToSave; }*/
 
     public void toggleTab(){ useTab = !useTab;}
 
@@ -279,7 +287,7 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
 
     public int getPlayerss(){ return playerss; }
 
-    public Jedis getJedis() {
+    /*public Jedis getJedis() {
         try {
             jedis.set("test:test:test", "testing");
         } catch (Exception ex) {
@@ -306,8 +314,12 @@ public class DataAPI extends JavaPlugin implements PluginMessageListener {
         }
         return jedis;
 
-    }
+    }*/
 
-    public static DataAPI getInstance(){ return instance; }
+    public static Giraffe getInstance(){ return instance; }
+
+    public List<Player> getPlayerToSave() {
+        return playerToSave;
+    }
 
 }

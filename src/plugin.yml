@@ -1,15 +1,20 @@
-name: Foundation
-main: net.veilmc.dataapi.DataAPI
+name: Giraffe
+main: net.veilmc.dataapi.Giraffe
 version: 0.1
 author: sergivb01
-description: DataAPI plugin
+description: Giraffe plugin
 depend: [Construct]
 commands:
   syncdata:
   sc:
     aliases: [staffchat]
+    description: Private chat across servers for staff members
   report:
+    description: Allows users to report a player
   request:
     aliases: [helpop]
+    description: Allows users to request help
   staffserver:
+    description: Allows staff to teleport to another server
   toggletab:
+    description: Toggles player tab

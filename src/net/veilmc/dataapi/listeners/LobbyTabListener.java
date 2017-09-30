@@ -4,7 +4,7 @@ import me.joeleoli.construct.Construct;
 import me.joeleoli.construct.api.IConstructLibrary;
 import me.joeleoli.construct.api.IConstructPlayer;
 import me.joeleoli.construct.util.TaskUtil;
-import net.veilmc.dataapi.DataAPI;
+import net.veilmc.dataapi.Giraffe;
 import org.apache.commons.collections4.map.HashedMap;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -22,10 +22,10 @@ import static org.bukkit.Bukkit.getScheduler;
 
 public class LobbyTabListener implements Listener {
     //TODO: Update stuff
-    private DataAPI plugin;
+    private Giraffe plugin;
     private IConstructLibrary construct;
 
-    public LobbyTabListener(DataAPI plugin) {
+    public LobbyTabListener(Giraffe plugin) {
         // Define construct before registering event listeners
         this.plugin = plugin;
         this.construct = Construct.getLibrary();
@@ -85,10 +85,10 @@ public class LobbyTabListener implements Listener {
         Map<String, String> hcf = new HashedMap<>();
         Map<String, String> lite = new HashedMap<>();
         Map<String, String> profile = new HashedMap<>();
-        kits.putAll(this.plugin.getJedis().hgetAll("data:servers:status:kits"));
-        hcf.putAll(this.plugin.getJedis().hgetAll("data:servers:status:hcf"));
-        lite.putAll(this.plugin.getJedis().hgetAll("data:servers:status:lite"));
-        profile.putAll(this.plugin.getJedis().hgetAll("data:players:" + player.getUniqueId().toString()));
+        //kits.putAll(this.plugin.getJedis().hgetAll("data:servers:status:kits"));
+        //hcf.putAll(this.plugin.getJedis().hgetAll("data:servers:status:hcf"));
+        //lite.putAll(this.plugin.getJedis().hgetAll("data:servers:status:lite"));
+        //profile.putAll(this.plugin.getJedis().hgetAll("data:players:" + player.getUniqueId().toString()));
         //this.plugin.getJedisPool().returnResource(this.plugin.getJedis());
         //this.plugin.getJedis().close();
 

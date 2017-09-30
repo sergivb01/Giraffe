@@ -1,24 +1,25 @@
 package net.veilmc.dataapi.redis;
 
-import net.veilmc.dataapi.*;
-import redis.clients.jedis.*;
+import net.veilmc.dataapi.Giraffe;
+import redis.clients.jedis.Jedis;
 
 public class DataPublisher
 {
-    private DataAPI main;
+    private Giraffe main;
 
-    public DataPublisher(final DataAPI main) {
+    public DataPublisher(final Giraffe main) {
         this.main = main;
     }
 
     public void write(final String message) {
-        final Jedis jedis = this.main.getJedisPool().getResource();
+        Jedis jedis = null;
         try {
+            jedis = this.main.getPool().getResource();
             jedis.publish("ares", message);
+            this.main.getPool().returnResource(jedis);
         }
         finally {
             if (jedis != null) {
-                this.main.getJedisPool().returnResource(jedis);
                 jedis.close();
             }
         }

@@ -1,7 +1,6 @@
 package net.veilmc.dataapi.commands;
 
-import net.minecraft.util.org.apache.commons.lang3.StringUtils;
-import net.veilmc.dataapi.DataAPI;
+import net.veilmc.dataapi.Giraffe;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -14,10 +13,10 @@ import java.util.Map;
 import java.util.UUID;
 
 public class ReportCommand implements CommandExecutor{
-    private DataAPI plugin;
+    private Giraffe plugin;
     private static final Map<UUID, Long> COOLDOWNS;
 
-    public ReportCommand(final DataAPI plugin) {
+    public ReportCommand(final Giraffe plugin) {
         this.plugin = plugin;
     }
 
@@ -48,7 +47,7 @@ public class ReportCommand implements CommandExecutor{
             }
             ReportCommand.COOLDOWNS.remove(player.getUniqueId());
         }
-        this.plugin.getPublisher().write("report;" + player.getDisplayName() + ";" + Bukkit.getServerName() + ";" + StringUtils.join(args, " ").replace(";", ":") + ";" + reported.getDisplayName());
+        //this.plugin.getPublisher().write("report;" + player.getDisplayName() + ";" + Bukkit.getServerName() + ";" + StringUtils.join(args, " ").replace(";", ":") + ";" + reported.getDisplayName());
         player.sendMessage(ChatColor.GREEN + "Staff have been notified of your player report.");
         ReportCommand.COOLDOWNS.put(player.getUniqueId(), System.currentTimeMillis());
 

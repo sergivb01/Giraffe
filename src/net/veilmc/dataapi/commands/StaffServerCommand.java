@@ -2,7 +2,7 @@ package net.veilmc.dataapi.commands;
 
 import net.minecraft.util.com.google.common.io.ByteArrayDataOutput;
 import net.minecraft.util.com.google.common.io.ByteStreams;
-import net.veilmc.dataapi.DataAPI;
+import net.veilmc.dataapi.Giraffe;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -11,9 +11,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class StaffServerCommand implements CommandExecutor{
-    private DataAPI plugin;
+    private Giraffe plugin;
 
-    public StaffServerCommand(final DataAPI plugin) {
+    public StaffServerCommand(final Giraffe plugin) {
         this.plugin = plugin;
     }
 

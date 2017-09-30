@@ -1,8 +1,6 @@
 package net.veilmc.dataapi.commands;
 
-import net.minecraft.util.org.apache.commons.lang3.StringUtils;
-import net.veilmc.dataapi.DataAPI;
-import org.bukkit.Bukkit;
+import net.veilmc.dataapi.Giraffe;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -14,10 +12,10 @@ import java.util.Map;
 import java.util.UUID;
 
 public class RequestCommand implements CommandExecutor{
-    private DataAPI plugin;
+    private Giraffe plugin;
     private static final Map<UUID, Long> COOLDOWNS;
 
-    public RequestCommand(final DataAPI plugin) {
+    public RequestCommand(final Giraffe plugin) {
         this.plugin = plugin;
     }
 
@@ -39,7 +37,7 @@ public class RequestCommand implements CommandExecutor{
             }
             RequestCommand.COOLDOWNS.remove(player.getUniqueId());
         }
-        this.plugin.getPublisher().write("request;" + player.getDisplayName() + ";" + Bukkit.getServerName() + ";" + StringUtils.join(args, " ").replace(";", ":"));
+        //this.plugin.getPublisher().write("request;" + player.getDisplayName() + ";" + Bukkit.getServerName() + ";" + StringUtils.join(args, " ").replace(";", ":"));
         player.sendMessage(ChatColor.GREEN + "Staff have been notified of your request.");
         RequestCommand.COOLDOWNS.put(player.getUniqueId(), System.currentTimeMillis());
 
