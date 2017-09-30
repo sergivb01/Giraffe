@@ -215,12 +215,6 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
 
     }
 
-    public void savePlayerGlobalData(){
-        for(Player p : Bukkit.getOnlinePlayers()) {
-            saveSinglePlayerData(p, true, false);
-        }
-    }
-
     private void registerCommands(){
         this.getCommand("syncdata").setExecutor(new SyncDataCommand(this));
         this.getCommand("sc").setExecutor(new StaffChatCommand(this));
