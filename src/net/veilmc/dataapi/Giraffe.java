@@ -102,7 +102,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
 
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> { //Save data of single player every 15 seconds.
             saveServerData(true);
-        }, 5 * 20L, 5 * 20L);
+        }, 10 * 20L, 10 * 20L);
 
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> { //Save data of single player every 15 seconds.
             if (!playerToSave.isEmpty()) {
@@ -112,7 +112,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
                 });
                 Collections.rotate(playerToSave, -1);
             }
-        }, 7 * 20L, 7 * 20L);
+        }, 5 * 20L, 5 * 20L);
 
 
     }
