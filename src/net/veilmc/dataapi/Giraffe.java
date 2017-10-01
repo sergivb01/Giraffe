@@ -114,7 +114,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
             }
         }, 5 * 20L, 5 * 20L);
 
-
+        saveServerData(true);
     }
 
     public void saveSinglePlayerData(Player player, boolean online, boolean isNotRegular){
@@ -192,7 +192,6 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
 
     private void saveServerData(boolean up){
         new Thread(() -> {
-            double lag = Math.round((1.0 - Bukkit.spigot().getTPS()[0] / 20.0) * 100.0);
             String serverUptime = DurationFormatUtils.formatDurationWords(ManagementFactory.getRuntimeMXBean().getUptime(), true, true);
 
             Map<String, String> serverStatus = new HashMap<>();
@@ -201,7 +200,6 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
             serverStatus.put("max", String.valueOf(Bukkit.getMaxPlayers()));
             serverStatus.put("whitelist", String.valueOf(Bukkit.hasWhitelist()));
             serverStatus.put("uptime", serverUptime);
-            serverStatus.put("lag", String.valueOf((double)Math.round(lag * 10000.0) / 10000.0 + '%'));
             serverStatus.put("tps0", String.valueOf(Bukkit.spigot().getTPS()[0]));
             serverStatus.put("tps1", String.valueOf(Bukkit.spigot().getTPS()[1]));
             serverStatus.put("tps2", String.valueOf(Bukkit.spigot().getTPS()[2]));
