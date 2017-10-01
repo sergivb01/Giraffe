@@ -76,8 +76,13 @@ public class DataSubscriber
                                 }
                                 break;
                             }
+                            default:
+                                main.getLogger().warning("Recived data but i don't know how to handle it! \"" + message + "\"");
+                                break;
                         }
                     }
+                }else{
+                    main.getLogger().warning("Recived data from \"" + channel + "\" i don't know how to handle it! \"" + message + "\"");
                 }
             }
 

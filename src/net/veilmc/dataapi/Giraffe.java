@@ -52,6 +52,10 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
     }
 
     public void onDisable() {
+        for(Player player : Bukkit.getOnlinePlayers()){
+            saveSinglePlayerData(player, false, true);
+        }
+
         saveServerData(false);
         TaskUtil.runTaskNextTick(()->{
             this.subscriber.getJedisPubSub().unsubscribe();
@@ -107,9 +111,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> { //Save data of single player every 15 seconds.
             if (!playerToSave.isEmpty()) {
                 Player next = playerToSave.get(0);
-                TaskUtil.runTaskNextTick(()->{
-                    saveSinglePlayerData(next, true, false);
-                });
+                TaskUtil.runTaskNextTick(()-> saveSinglePlayerData(next, true, false));
                 Collections.rotate(playerToSave, -1);
             }
         }, 5 * 20L, 5 * 20L);
