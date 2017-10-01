@@ -19,6 +19,7 @@ import net.veilmc.dataapi.listeners.PlayerDataListener;
 import net.veilmc.dataapi.redis.DataPublisher;
 import net.veilmc.dataapi.redis.DataSubscriber;
 import org.apache.commons.collections4.map.HashedMap;
+import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.PluginCommand;
@@ -27,8 +28,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 import java.io.File;
+import java.lang.management.ManagementFactory;
 import java.util.*;
 
 public class Giraffe extends JavaPlugin implements PluginMessageListener {
@@ -128,23 +131,25 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
             if(isNotRegular) {
                 globalInfo.put(cleanServer + "last_connection", String.valueOf(System.currentTimeMillis()));
             }
-            globalInfo.put(cleanServer + "rank", "todo"); //TODO: Add permission here...
+            globalInfo.put(cleanServer + "rank", PermissionsEx.getUser(player).getGroups()[0].getName()); //TODO: Add permission here...
 
             if(!serverType.equalsIgnoreCase("lobby")) {
-                final FactionUser factionUser = HCF.getInstance().getUserManager().getUser(player.getUniqueId());
+                final HCF hcf = HCF.getInstance();
+
+                final FactionUser factionUser = hcf.getUserManager().getUser(player.getUniqueId());
                 globalInfo.put(cleanServer + "playtime", String.valueOf(BasePlugin.getPlugin().getPlayTimeManager().getTotalPlayTime(player.getUniqueId())));
                 globalInfo.put(cleanServer + "kills", String.valueOf(factionUser.getKills()));
                 globalInfo.put(cleanServer + "deaths", String.valueOf(factionUser.getDeaths()));
                 globalInfo.put(cleanServer + "diamonds", String.valueOf(factionUser.getDiamondsMined()));
-                globalInfo.put(cleanServer + "lives", String.valueOf(HCF.getInstance().getDeathbanManager().getLives(player.getUniqueId())));
-                globalInfo.put(cleanServer + "balance", String.valueOf(HCF.getInstance().getEconomyManager().getBalance(player.getUniqueId())));
+                globalInfo.put(cleanServer + "lives", String.valueOf(hcf.getDeathbanManager().getLives(player.getUniqueId())));
+                globalInfo.put(cleanServer + "balance", String.valueOf(hcf.getEconomyManager().getBalance(player.getUniqueId())));
 
-                final Deathban deathban = HCF.getInstance().getUserManager().getUser(player.getUniqueId()).getDeathban();
+                final Deathban deathban = hcf.getUserManager().getUser(player.getUniqueId()).getDeathban();
                 globalInfo.put(cleanServer + "deathban_expires", (deathban == null ? "Not deathbanned" : String.valueOf(deathban.getExpiryMillis())));
                 globalInfo.put(cleanServer + "deathban_reason", (deathban == null ? "Not deathbanned" : deathban.getReason()));
                 globalInfo.put(cleanServer + "deathban_creation", (deathban == null ? "Not deathbanned" : deathban.getReason()));
 
-                final PlayerFaction playerFaction = HCF.getInstance().getFactionManager().getPlayerFaction(player.getUniqueId());
+                final PlayerFaction playerFaction = hcf.getFactionManager().getPlayerFaction(player.getUniqueId());
                 globalInfo.put(cleanServer + "faction_name", (playerFaction == null ? "No Faction" : playerFaction.getName()));
                 globalInfo.put(cleanServer + "faction_role", (playerFaction == null ? "No Faction" : playerFaction.getMember(player.getUniqueId()).getRole().getName()));
                 globalInfo.put(cleanServer + "faction_online", (playerFaction == null ? "No Faction" : playerFaction.getOnlineMembers().size() + "/" + playerFaction.getMembers().size()));
@@ -187,16 +192,19 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
 
     private void saveServerData(boolean up){
         new Thread(() -> {
+            double lag = Math.round((1.0 - Bukkit.spigot().getTPS()[0] / 20.0) * 100.0);
+            String serverUptime = DurationFormatUtils.formatDurationWords(ManagementFactory.getRuntimeMXBean().getUptime(), true, true);
+
             Map<String, String> serverStatus = new HashMap<>();
             serverStatus.put("up", String.valueOf(up));
             serverStatus.put("online", String.valueOf(Bukkit.getOnlinePlayers().size()));
             serverStatus.put("max", String.valueOf(Bukkit.getMaxPlayers()));
             serverStatus.put("whitelist", String.valueOf(Bukkit.hasWhitelist()));
-
+            serverStatus.put("uptime", serverUptime);
+            serverStatus.put("lag", String.valueOf((double)Math.round(lag * 10000.0) / 10000.0 + '%'));
             serverStatus.put("tps0", String.valueOf(Bukkit.spigot().getTPS()[0]));
             serverStatus.put("tps1", String.valueOf(Bukkit.spigot().getTPS()[1]));
             serverStatus.put("tps2", String.valueOf(Bukkit.spigot().getTPS()[2]));
-
 
             Jedis jedis = null;
             try {
