@@ -25,6 +25,7 @@ public class PlayerDataListener implements Listener{
         final Player player = event.getPlayer();
 
         TaskUtil.runTaskNextTick(()->{
+            plugin.addToList(player);
             plugin.saveSinglePlayerData(player, true, true);
             plugin.getLogger().info("Saved " + player.getName() + " data as he joined the game.");
         });

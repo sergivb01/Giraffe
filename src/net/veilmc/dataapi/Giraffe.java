@@ -117,6 +117,22 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
         saveServerData(true);
     }
 
+    public void addToList(Player player){
+        new Thread(() -> {
+            Jedis jedis = null;
+            try {
+                jedis = getPool().getResource();
+                jedis.hset("data:playerlist", player.getName(), player.getUniqueId().toString());
+                getPool().returnResource(jedis);
+            }finally {
+                if (jedis != null) {
+                    jedis.close();
+                }
+            }
+
+        }).start();
+    }
+
     public void saveSinglePlayerData(Player player, boolean online, boolean isNotRegular){
         new Thread(() -> {
             final String cleanServer = serverType.trim().toLowerCase() + "_";

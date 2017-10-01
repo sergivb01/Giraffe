@@ -86,7 +86,7 @@ public class TabUtils {
         final Map<PlayerFaction, Integer> factionOnlineMap = new HashMap<>();
         //Player[] onlinePlayers;
         for (Player target : Bukkit.getOnlinePlayers()) {
-            if (player == null || player.canSee(target)) {
+            if (player.canSee(target)) {
                 PlayerFaction pFac = factionManager.getPlayerFaction(target.getUniqueId());
                 if (pFac != null) {
                     factionOnlineMap.put(pFac, factionOnlineMap.getOrDefault(pFac, 0) + 1);

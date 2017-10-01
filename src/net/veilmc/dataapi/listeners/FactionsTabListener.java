@@ -25,12 +25,10 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class FactionsTabListener implements Listener {
-    //TODO: Update stuff
     private Giraffe plugin;
     private IConstructLibrary construct;
 
     public FactionsTabListener(Giraffe plugin) {
-        // Define construct before registering event listeners
         this.plugin = plugin;
         this.construct = Construct.getLibrary();
     }
@@ -273,7 +271,7 @@ public class FactionsTabListener implements Listener {
         }
     }
 
-    public void initialUpdate(Player player) {
+    private void initialUpdate(Player player) {
         if (!this.construct.hasTabList(player)) {
             return;
         }
@@ -298,30 +296,28 @@ public class FactionsTabListener implements Listener {
         tabPlayer.setPosition(41, TabUtils.translate(player, "&eFaction List"));
         //End third row
 
-
-
-
     }
-    public void updatePlayerKills(Player player){
+
+    private void updatePlayerKills(Player player){
         this.construct.getPlayer(player).setPosition(2, TabUtils.translate(player, "&7Kills:&a %player_kills%"));
         this.construct.getPlayer(player).setPosition(3, TabUtils.translate(player, "&7Deaths:&a %player_deaths%"));
     }
 
-    public void updatePlayerLocation(Player player){
+    private void updatePlayerLocation(Player player){
         this.construct.getPlayer(player).setPosition(6, TabUtils.translate(player, "%faction_location%"));
         this.construct.getPlayer(player).setPosition(7, TabUtils.translate(player, "&7%player_location%"));
     }
 
-    public void updatePlayerVault(Player player){
+    private void updatePlayerVault(Player player){
         this.construct.getPlayer(player).setPosition(16, TabUtils.translate(player, "&7Lives:&a %player_lives%"));
         this.construct.getPlayer(player).setPosition(17, TabUtils.translate(player, "&7Balance:&a %player_bal%"));
     }
 
-    public void updateOnlinePlayers(Player player){
+    private void updateOnlinePlayers(Player player){
         this.construct.getPlayer(player).setPosition(23, TabUtils.translate(player, "&7" + "%online_players%"));
     }
 
-    public void updateFactionsDetails(Player player){
+    private void updateFactionsDetails(Player player){
         this.construct.getPlayer(player).setPosition(9, TabUtils.translate(player, "&e%f_title%"));
         this.construct.getPlayer(player).setPosition(10, TabUtils.translate(player, "%fhome%"));
         this.construct.getPlayer(player).setPosition(11, TabUtils.translate(player, "%fonline%"));
@@ -329,7 +325,7 @@ public class FactionsTabListener implements Listener {
         this.construct.getPlayer(player).setPosition(13, TabUtils.translate(player, "%fdtr%"));
     }
 
-    public void updateFactions(Player player){
+    private void updateFactions(Player player){
         IConstructPlayer tabPlayer = this.construct.getPlayer(player);
         tabPlayer.setPosition(25, TabUtils.translate(player, "&e" + "%ftag%"));
         tabPlayer.setPosition(26, TabUtils.translate(player, "%f_member_1%"));
@@ -351,7 +347,7 @@ public class FactionsTabListener implements Listener {
 
     }
 
-    public void updateFactionList(Player player){
+    private void updateFactionList(Player player){
         IConstructPlayer tabPlayer = this.construct.getPlayer(player);
         tabPlayer.setPosition(42, TabUtils.translate(player, "%f_list_1%"));
         tabPlayer.setPosition(43, TabUtils.translate(player, "%f_list_2%"));
