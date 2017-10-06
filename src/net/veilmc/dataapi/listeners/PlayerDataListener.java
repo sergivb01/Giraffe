@@ -4,7 +4,6 @@ import com.customhcf.base.BasePlugin;
 import me.joeleoli.construct.util.TaskUtil;
 import net.veilmc.dataapi.Giraffe;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -38,11 +37,7 @@ public class PlayerDataListener implements Listener{
     public void onUserQuit(PlayerQuitEvent event){
         final Player player = event.getPlayer();
         TaskUtil.runTaskNextTick(()->{
-            try {
-                plugin.saveSinglePlayerData(player, false, true);
-            }catch(IndexOutOfBoundsException | NullPointerException ex){
-                Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Error while trying to save " + ChatColor.GRAY + player.getName() + ChatColor.RED + " data! (NullPointerException or IndexOutOfBoundsException)");
-            }
+            plugin.saveSinglePlayerData(player, false, true);
             plugin.getLogger().info("Saved " + player.getName() + " data as he quit the game.");
         });
 

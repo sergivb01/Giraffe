@@ -21,7 +21,6 @@ import java.util.Random;
 import static org.bukkit.Bukkit.getScheduler;
 
 public class LobbyTabListener implements Listener {
-    //TODO: Update stuff
     private Giraffe plugin;
     private IConstructLibrary construct;
 

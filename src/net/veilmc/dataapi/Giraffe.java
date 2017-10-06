@@ -1,11 +1,11 @@
 package net.veilmc.dataapi;
 
 import com.customhcf.base.BasePlugin;
-import com.customhcf.base.user.BaseUser;
 import com.customhcf.hcf.HCF;
 import com.customhcf.hcf.deathban.Deathban;
 import com.customhcf.hcf.faction.type.PlayerFaction;
 import com.customhcf.hcf.user.FactionUser;
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import me.joeleoli.construct.util.TaskUtil;
@@ -139,64 +139,44 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
         new Thread(() -> {
             final String cleanServer = serverType.trim().toLowerCase() + "_";
             Map<String, String> globalInfo = new HashedMap<>();
+            Map<String, String> serverInfo = new HashedMap<>();
 
             globalInfo.put("nickname", player.getDisplayName());
             globalInfo.put("address", player.getAddress().getHostName());
             globalInfo.put("online", (online ? "true" : "false"));
             globalInfo.put("lastServer", serverType);
-            globalInfo.put("nickname", player.getDisplayName());
 
             if(isNotRegular) {
                 globalInfo.put(cleanServer + "last_connection", String.valueOf(System.currentTimeMillis()));
             }
-            globalInfo.put(cleanServer + "rank", PermissionsEx.getUser(player).getGroups()[0].getName()); //TODO: Add permission here...
+            globalInfo.put(cleanServer + "rank", PermissionsEx.getUser(player).getGroups()[0].getName());
 
             if(!serverType.equalsIgnoreCase("lobby")) {
+                /* ================================================================================================================ */
                 final HCF hcf = HCF.getInstance();
-
                 final FactionUser factionUser = hcf.getUserManager().getUser(player.getUniqueId());
-                globalInfo.put(cleanServer + "playtime", String.valueOf(BasePlugin.getPlugin().getPlayTimeManager().getTotalPlayTime(player.getUniqueId())));
-                globalInfo.put(cleanServer + "kills", String.valueOf(factionUser.getKills()));
-                globalInfo.put(cleanServer + "deaths", String.valueOf(factionUser.getDeaths()));
-                globalInfo.put(cleanServer + "diamonds", String.valueOf(factionUser.getDiamondsMined()));
-                globalInfo.put(cleanServer + "lives", String.valueOf(hcf.getDeathbanManager().getLives(player.getUniqueId())));
-                globalInfo.put(cleanServer + "balance", String.valueOf(hcf.getEconomyManager().getBalance(player.getUniqueId())));
-
                 final Deathban deathban = hcf.getUserManager().getUser(player.getUniqueId()).getDeathban();
-                globalInfo.put(cleanServer + "deathban_expires", (deathban == null ? "Not deathbanned" : String.valueOf(deathban.getExpiryMillis())));
-                globalInfo.put(cleanServer + "deathban_reason", (deathban == null ? "Not deathbanned" : deathban.getReason()));
-                globalInfo.put(cleanServer + "deathban_creation", (deathban == null ? "Not deathbanned" : deathban.getReason()));
-
                 final PlayerFaction playerFaction = hcf.getFactionManager().getPlayerFaction(player.getUniqueId());
-                globalInfo.put(cleanServer + "faction_name", (playerFaction == null ? "No Faction" : playerFaction.getName()));
-                globalInfo.put(cleanServer + "faction_role", (playerFaction == null ? "No Faction" : playerFaction.getMember(player.getUniqueId()).getRole().getName()));
-                globalInfo.put(cleanServer + "faction_online", (playerFaction == null ? "No Faction" : playerFaction.getOnlineMembers().size() + "/" + playerFaction.getMembers().size()));
-                globalInfo.put(cleanServer + "faction_dtr", (playerFaction == null ? "No Faction" : String.valueOf(playerFaction.getDeathsUntilRaidable())));
-                globalInfo.put(cleanServer + "faction_dtrregen", (playerFaction == null ? "No Faction" : String.valueOf(playerFaction.getRemainingRegenerationTime())));
-                globalInfo.put(cleanServer + "faction_balance", (playerFaction == null ? "No Faction" : String.valueOf(playerFaction.getBalance())));
 
-                ArrayList<String> alliesNames = new ArrayList<>();
-                if(playerFaction != null){
-                    for(PlayerFaction playerFaction1 : playerFaction.getAlliedFactions())
-                        alliesNames.add(playerFaction1.getName());
-                }
-                globalInfo.put(cleanServer + "faction_allies", (alliesNames.size() <= 0 ? "No allies" : alliesNames.toString().replace("[", "").replace("]", "")));
+                serverInfo.put("playtime", String.valueOf(BasePlugin.getPlugin().getPlayTimeManager().getTotalPlayTime(player.getUniqueId())));
+                serverInfo.put("kills", String.valueOf(factionUser.getKills()));
+                serverInfo.put("deaths", String.valueOf(factionUser.getDeaths()));
+                serverInfo.put("diamonds", String.valueOf(factionUser.getDiamondsMined()));
+                serverInfo.put("lives", String.valueOf(hcf.getDeathbanManager().getLives(player.getUniqueId())));
+                serverInfo.put("balance", String.valueOf(hcf.getEconomyManager().getBalance(player.getUniqueId())));
 
-                final BaseUser baseUser = BasePlugin.getPlugin().getUserManager().getUser(player.getUniqueId());
-                globalInfo.put("staff_modmode", String.valueOf(baseUser.isStaffUtil()));
-                globalInfo.put("staff_vanish", String.valueOf(baseUser.isVanished()));
-                globalInfo.put("staff_sc", String.valueOf(baseUser.isInStaffChat()));
-                globalInfo.put("options_sounds", String.valueOf(baseUser.isMessagingSounds()));
-                globalInfo.put("options_pm", String.valueOf(baseUser.isMessagesVisible()));
-                globalInfo.put("options_sc", String.valueOf(baseUser.isStaffChatVisible()));
-                globalInfo.put("options_gc", String.valueOf(baseUser.isGlobalChatVisible()));
+                serverInfo.put("deathban_expires", (deathban == null ? "Not deathbanned" : String.valueOf(deathban.getExpiryMillis())));
+                serverInfo.put("deathban_reason", (deathban == null ? "Not deathbanned" : deathban.getReason()));
+                serverInfo.put("deathban_creation", (deathban == null ? "Not deathbanned" : deathban.getReason()));
 
+                serverInfo.put("faction_name", (playerFaction == null ? "No Faction" : playerFaction.getName()));
             }
 
             Jedis jedis = null;
             try {
                 jedis = getPool().getResource();
-                jedis.hmset("data:players:" + player.getUniqueId().toString(), globalInfo);
+                jedis.hmset("data:players:global:" + player.getUniqueId().toString(), globalInfo);
+                jedis.hmset("data:players:" + serverType.trim().toLowerCase() + ":" + player.getUniqueId().toString(), serverInfo);
                 getPool().returnResource(jedis);
             }finally {
                 if (jedis != null) {
@@ -208,7 +188,43 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
 
     }
 
-    private void saveServerData(boolean up){
+    public void saveFaction(PlayerFaction playerFaction){
+        Preconditions.checkNotNull(playerFaction, "Can't save a null faction!");
+
+        new Thread(()->{
+            final String cleanServer = serverType.trim().toLowerCase();
+            Map<String, String> factionInfo = new HashedMap<>();
+
+            factionInfo.put("faction_name", playerFaction.getName());
+            factionInfo.put("faction_leader", playerFaction.getLeader().getName());
+            factionInfo.put("faction_online", playerFaction.getOnlineMembers().size() + "/" + playerFaction.getMembers().size());
+            factionInfo.put("faction_dtr", String.valueOf(playerFaction.getDeathsUntilRaidable()));
+            factionInfo.put("faction_dtrregen", String.valueOf(playerFaction.getRemainingRegenerationTime()));
+            factionInfo.put("faction_balance", String.valueOf(playerFaction.getBalance()));
+
+            ArrayList<String> alliesNames = new ArrayList<>();
+
+            for(PlayerFaction playerFaction1 : playerFaction.getAlliedFactions()) {
+                alliesNames.add(playerFaction1.getName());
+            }
+
+            factionInfo.put("faction_allies", (alliesNames.size() <= 0 ? "No allies" : alliesNames.toString().replace("[", "").replace("]", "")));
+
+            Jedis jedis = null;
+            try {
+                jedis = getPool().getResource();
+                jedis.hmset("data:factionlist:" + cleanServer + ":" + playerFaction.getName(), factionInfo);
+                getPool().returnResource(jedis);
+            }finally {
+                if (jedis != null) {
+                    jedis.close();
+                }
+            }
+        }).start();
+    }
+
+
+    public void saveServerData(boolean up){
         new Thread(() -> {
             String serverUptime = DurationFormatUtils.formatDurationWords(ManagementFactory.getRuntimeMXBean().getUptime(), true, true);
 
