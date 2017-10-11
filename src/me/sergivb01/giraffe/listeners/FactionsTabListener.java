@@ -343,7 +343,6 @@ public class FactionsTabListener implements Listener {
         tabPlayer.setPosition(38, TabUtils.translate(player, "%f_member_13%"));
         tabPlayer.setPosition(39, TabUtils.translate(player, "%f_member_14%"));
         tabPlayer.setPosition(40, TabUtils.translate(player, "%f_member_15%"));
-        //End second row
 
     }
 
