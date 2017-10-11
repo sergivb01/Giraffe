@@ -1,4 +1,4 @@
-redis-server: 95.85.43.227
+redis-server: 158.69.123.169
 redis-port: 6379
-#Currently: hcf/lite - Soon lobby!
+#Lobby is in progress, please do not use
 serverType: "hcf"

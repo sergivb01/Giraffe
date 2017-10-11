@@ -24,6 +24,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import redis.clients.jedis.Jedis;
@@ -74,7 +75,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
         }
         this.getConfig().options().copyDefaults(true);
 
-        this.pool = new JedisPool("95.85.43.227");
+        this.pool = new JedisPool(getConfig().getString("redis-server"));
         this.publisher = new DataPublisher(this);
         this.subscriber = new DataSubscriber(this);
 
@@ -116,6 +117,10 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
                 Collections.rotate(playerToSave, -1);
             }
         }, 5 * 20L, 5 * 20L);
+
+        for(Player target : Bukkit.getOnlinePlayers()){
+            Bukkit.getPluginManager().callEvent(new PlayerJoinEvent(target, "ltd_es_una_puta"));
+        }
 
         saveServerData(true);
     }
@@ -195,25 +200,36 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
             final String cleanServer = serverType.trim().toLowerCase();
             Map<String, String> factionInfo = new HashedMap<>();
 
-            factionInfo.put("faction_name", playerFaction.getName());
-            factionInfo.put("faction_leader", playerFaction.getLeader().getName());
-            factionInfo.put("faction_online", playerFaction.getOnlineMembers().size() + "/" + playerFaction.getMembers().size());
-            factionInfo.put("faction_dtr", String.valueOf(playerFaction.getDeathsUntilRaidable()));
-            factionInfo.put("faction_dtrregen", String.valueOf(playerFaction.getRemainingRegenerationTime()));
-            factionInfo.put("faction_balance", String.valueOf(playerFaction.getBalance()));
+            //TODO: Check if it's null, if it does, remove faction from jedis db => faction was disbaned
+            boolean remove = false;
+            if(playerFaction.getName() == null){
+                remove = true;
+            }else {
 
-            ArrayList<String> alliesNames = new ArrayList<>();
+                factionInfo.put("faction_name", playerFaction.getName());
+                factionInfo.put("faction_leader", playerFaction.getLeader().getName());
+                factionInfo.put("faction_online", playerFaction.getOnlineMembers().size() + "/" + playerFaction.getMembers().size());
+                factionInfo.put("faction_dtr", String.valueOf(playerFaction.getDeathsUntilRaidable()));
+                factionInfo.put("faction_dtrregen", String.valueOf(playerFaction.getRemainingRegenerationTime()));
+                factionInfo.put("faction_balance", String.valueOf(playerFaction.getBalance()));
 
-            for(PlayerFaction playerFaction1 : playerFaction.getAlliedFactions()) {
-                alliesNames.add(playerFaction1.getName());
+                ArrayList<String> alliesNames = new ArrayList<>();
+
+                for (PlayerFaction playerFaction1 : playerFaction.getAlliedFactions()) {
+                    alliesNames.add(playerFaction1.getName());
+                }
+                factionInfo.put("faction_allies", (alliesNames.size() <= 0 ? "No allies" : alliesNames.toString().replace("[", "").replace("]", "")));
             }
-
-            factionInfo.put("faction_allies", (alliesNames.size() <= 0 ? "No allies" : alliesNames.toString().replace("[", "").replace("]", "")));
 
             Jedis jedis = null;
             try {
                 jedis = getPool().getResource();
-                jedis.hmset("data:factionlist:" + cleanServer + ":" + playerFaction.getName(), factionInfo);
+                if(remove) {
+                    jedis.del("data:factionlist:" + cleanServer + ":" + playerFaction.getName());
+                }else{
+                    jedis.hmset("data:factionlist:" + cleanServer + ":" + playerFaction.getName(), factionInfo);
+
+                }
                 getPool().returnResource(jedis);
             }finally {
                 if (jedis != null) {

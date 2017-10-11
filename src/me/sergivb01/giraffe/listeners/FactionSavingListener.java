@@ -31,8 +31,9 @@ public class FactionSavingListener implements Listener{
     }
 
     @EventHandler
-    public void onPlayerLeftFaction(PlayerLeftFactionEvent event){
-        this.plugin.saveFaction(event.getFaction());
+    public void onPlayerLeftFaction(PlayerLeaveFactionEvent event){
+        if(!(event.getFaction() instanceof PlayerFaction)) return;
+        this.plugin.saveFaction((PlayerFaction) event.getFaction());
         this.plugin.getLogger().info("Saving faction " + event.getFaction().getName() + " because " + event.getPlayer().get().getName() + " left the faction.");
     }
 
