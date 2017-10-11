@@ -343,5 +343,9 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
         }
     }
 
+    public String getServerName(){
+        return serverType.trim().toLowerCase();
+    }
+
 
 }

@@ -27,6 +27,7 @@ public class PlayerDataListener implements Listener{
             plugin.addToList(player);
             plugin.saveSinglePlayerData(player, true, true);
             plugin.getLogger().info("Saved " + player.getName() + " data as he joined the game.");
+            //TabTitleManager.setHeaderAndFooter(player, "§6§lVeilMC Network", "§eveilmc.net §7| §ets.veilmc.net");
         });
 
         if(!plugin.getPlayerToSave().contains(player)) plugin.getPlayerToSave().add(player); //Player needs to be added to save-data list :p

@@ -4,6 +4,7 @@ import com.customhcf.base.BasePlugin;
 import com.customhcf.base.command.BaseCommand;
 import com.customhcf.base.user.ServerParticipator;
 import me.sergivb01.giraffe.Giraffe;
+import net.minecraft.util.org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -33,8 +34,8 @@ public class StaffChatCommand implements CommandExecutor{
             target = participator;
         } else {
             Player targetPlayer = Bukkit.getPlayerExact(args[0]);
-            if (targetPlayer == null || !BaseCommand.canSee(sender, targetPlayer) || !sender.hasPermission("dataapi.command.sc.others")) {
-                //plugin.getPublisher().write("staffchat;" + sender.getName() + ";" + Bukkit.getServerName() + ";" + StringUtils.join(args, " ").replace(";", ":"));
+            if (targetPlayer == null || !BaseCommand.canSee(sender, targetPlayer) || !sender.hasPermission("command.staffchat.others")) {
+                plugin.getPublisher().write("staffchat;" + sender.getName() + ";" + Bukkit.getServerName() + ";" + StringUtils.join(args, " ").replace(";", ":"));
                 return true;
             }
             target = BasePlugin.getPlugin().getUserManager().getUser(targetPlayer.getUniqueId());
