@@ -200,10 +200,10 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
             final String cleanServer = serverType.trim().toLowerCase();
             Map<String, String> factionInfo = new HashedMap<>();
 
-            //TODO: Check if it's null, if it does, remove faction from jedis db => faction was disbaned
             boolean remove = false;
             if(playerFaction.getName() == null){
                 remove = true;
+                this.getLogger().warning("Removing ");
             }else {
 
                 factionInfo.put("faction_name", playerFaction.getName());
