@@ -1,5 +1,5 @@
 name: Giraffe
-main: net.veilmc.dataapi.Giraffe
+main: me.sergivb01.giraffe.Giraffe
 version: 0.1
 author: sergivb01
 description: Giraffe plugin

@@ -1,4 +1,4 @@
-package net.veilmc.dataapi.listeners;
+package me.sergivb01.giraffe.listeners;
 
 import com.customhcf.hcf.HCF;
 import com.customhcf.hcf.faction.event.FactionDtrChangeEvent;
@@ -11,8 +11,8 @@ import me.joeleoli.construct.Construct;
 import me.joeleoli.construct.api.IConstructLibrary;
 import me.joeleoli.construct.api.IConstructPlayer;
 import me.joeleoli.construct.util.TaskUtil;
-import net.veilmc.dataapi.Giraffe;
-import net.veilmc.dataapi.utils.TabUtils;
+import me.sergivb01.giraffe.utils.TabUtils;
+import me.sergivb01.giraffe.Giraffe;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -283,7 +283,7 @@ public class FactionsTabListener implements Listener {
         tabPlayer.setPosition(5, TabUtils.translate(player, "&eYour location"));
         updatePlayerLocation(player);
         updateFactionsDetails(player);
-        tabPlayer.setPosition(15, TabUtils.translate(player, "&ePlayer Vault"));
+        tabPlayer.setPosition(9, TabUtils.translate(player, "&ePlayer Vault"));
         updatePlayerVault(player);
         //End first row
 
@@ -308,21 +308,21 @@ public class FactionsTabListener implements Listener {
         this.construct.getPlayer(player).setPosition(7, TabUtils.translate(player, "&7%player_location%"));
     }
 
-    private void updatePlayerVault(Player player){
-        this.construct.getPlayer(player).setPosition(16, TabUtils.translate(player, "&7Lives:&a %player_lives%"));
-        this.construct.getPlayer(player).setPosition(17, TabUtils.translate(player, "&7Balance:&a %player_bal%"));
-    }
-
     private void updateOnlinePlayers(Player player){
         this.construct.getPlayer(player).setPosition(23, TabUtils.translate(player, "&7" + "%online_players%"));
     }
 
+    private void updatePlayerVault(Player player){
+        this.construct.getPlayer(player).setPosition(10, TabUtils.translate(player, "&7Lives:&a %player_lives%"));
+        this.construct.getPlayer(player).setPosition(11, TabUtils.translate(player, "&7Balance:&a %player_bal%"));
+    }
+
     private void updateFactionsDetails(Player player){
-        this.construct.getPlayer(player).setPosition(9, TabUtils.translate(player, "&e%f_title%"));
-        this.construct.getPlayer(player).setPosition(10, TabUtils.translate(player, "%fhome%"));
-        this.construct.getPlayer(player).setPosition(11, TabUtils.translate(player, "%fonline%"));
-        this.construct.getPlayer(player).setPosition(12, TabUtils.translate(player, "%fbal%"));
-        this.construct.getPlayer(player).setPosition(13, TabUtils.translate(player, "%fdtr%"));
+        this.construct.getPlayer(player).setPosition(13, TabUtils.translate(player, "&e%f_title%"));
+        this.construct.getPlayer(player).setPosition(14, TabUtils.translate(player, "%fhome%"));
+        this.construct.getPlayer(player).setPosition(15, TabUtils.translate(player, "%fonline%"));
+        this.construct.getPlayer(player).setPosition(16, TabUtils.translate(player, "%fbal%"));
+        this.construct.getPlayer(player).setPosition(17, TabUtils.translate(player, "%fdtr%"));
     }
 
     private void updateFactions(Player player){

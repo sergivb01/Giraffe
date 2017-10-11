@@ -1,7 +1,7 @@
-package net.veilmc.dataapi.commands;
+package me.sergivb01.giraffe.commands;
 
 import net.minecraft.util.org.apache.commons.lang3.StringUtils;
-import net.veilmc.dataapi.Giraffe;
+import me.sergivb01.giraffe.Giraffe;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

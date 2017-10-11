@@ -1,6 +1,6 @@
-package net.veilmc.dataapi.redis;
+package me.sergivb01.giraffe.redis;
 
-import net.veilmc.dataapi.Giraffe;
+import me.sergivb01.giraffe.Giraffe;
 import redis.clients.jedis.Jedis;
 
 public class DataPublisher

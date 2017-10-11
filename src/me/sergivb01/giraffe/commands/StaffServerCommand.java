@@ -1,8 +1,8 @@
-package net.veilmc.dataapi.commands;
+package me.sergivb01.giraffe.commands;
 
+import me.sergivb01.giraffe.Giraffe;
 import net.minecraft.util.com.google.common.io.ByteArrayDataOutput;
 import net.minecraft.util.com.google.common.io.ByteStreams;
-import net.veilmc.dataapi.Giraffe;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

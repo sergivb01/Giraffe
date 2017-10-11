@@ -1,4 +1,4 @@
-package net.veilmc.dataapi.utils.chat;
+package me.sergivb01.giraffe.utils.chat;
 
 import net.minecraft.server.v1_7_R4.*;
 import org.bukkit.Bukkit;

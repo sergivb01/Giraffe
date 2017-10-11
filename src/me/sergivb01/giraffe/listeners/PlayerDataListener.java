@@ -1,8 +1,8 @@
-package net.veilmc.dataapi.listeners;
+package me.sergivb01.giraffe.listeners;
 
 import com.customhcf.base.BasePlugin;
 import me.joeleoli.construct.util.TaskUtil;
-import net.veilmc.dataapi.Giraffe;
+import me.sergivb01.giraffe.Giraffe;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

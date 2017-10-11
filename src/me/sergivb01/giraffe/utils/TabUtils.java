@@ -1,4 +1,4 @@
-package net.veilmc.dataapi.utils;
+package me.sergivb01.giraffe.utils;
 
 import com.customhcf.hcf.HCF;
 import com.customhcf.hcf.faction.FactionManager;

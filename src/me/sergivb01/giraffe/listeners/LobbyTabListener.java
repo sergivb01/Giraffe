@@ -1,10 +1,10 @@
-package net.veilmc.dataapi.listeners;
+package me.sergivb01.giraffe.listeners;
 
 import me.joeleoli.construct.Construct;
 import me.joeleoli.construct.api.IConstructLibrary;
 import me.joeleoli.construct.api.IConstructPlayer;
 import me.joeleoli.construct.util.TaskUtil;
-import net.veilmc.dataapi.Giraffe;
+import me.sergivb01.giraffe.Giraffe;
 import org.apache.commons.collections4.map.HashedMap;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

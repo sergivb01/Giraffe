@@ -1,23 +1,23 @@
-package net.veilmc.dataapi;
+package me.sergivb01.giraffe;
 
 import com.customhcf.base.BasePlugin;
 import com.customhcf.hcf.HCF;
 import com.customhcf.hcf.deathban.Deathban;
 import com.customhcf.hcf.faction.type.PlayerFaction;
 import com.customhcf.hcf.user.FactionUser;
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import me.joeleoli.construct.util.TaskUtil;
+import me.sergivb01.giraffe.commands.*;
+import me.sergivb01.giraffe.listeners.FactionSavingListener;
+import me.sergivb01.giraffe.listeners.FactionsTabListener;
+import me.sergivb01.giraffe.listeners.LobbyTabListener;
+import me.sergivb01.giraffe.listeners.PlayerDataListener;
+import me.sergivb01.giraffe.redis.DataPublisher;
+import me.sergivb01.giraffe.redis.DataSubscriber;
 import net.minecraft.util.com.google.common.io.ByteArrayDataInput;
 import net.minecraft.util.com.google.common.io.ByteArrayDataOutput;
 import net.minecraft.util.com.google.common.io.ByteStreams;
-import net.veilmc.dataapi.commands.*;
-import net.veilmc.dataapi.listeners.FactionsTabListener;
-import net.veilmc.dataapi.listeners.LobbyTabListener;
-import net.veilmc.dataapi.listeners.PlayerDataListener;
-import net.veilmc.dataapi.redis.DataPublisher;
-import net.veilmc.dataapi.redis.DataSubscriber;
 import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.Bukkit;
@@ -97,6 +97,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
             getLogger().info("LOBBY MODEEEEEEEEEEEEEE");
         }else{
             this.getServer().getPluginManager().registerEvents(new FactionsTabListener(this), this);
+            this.getServer().getPluginManager().registerEvents(new FactionSavingListener(this), this);
             getLogger().info("HCF MODEEEEEEEEEEEEEEEEE (" + serverType + ")");
             getLogger().info("HCF MODEEEEEEEEEEEEEEEEE (" + serverType + ")");
             getLogger().info("HCF MODEEEEEEEEEEEEEEEEE (" + serverType + ")");
@@ -189,7 +190,6 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
     }
 
     public void saveFaction(PlayerFaction playerFaction){
-        Preconditions.checkNotNull(playerFaction, "Can't save a null faction!");
 
         new Thread(()->{
             final String cleanServer = serverType.trim().toLowerCase();

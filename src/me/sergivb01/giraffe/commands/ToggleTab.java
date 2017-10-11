@@ -1,7 +1,7 @@
-package net.veilmc.dataapi.commands;
+package me.sergivb01.giraffe.commands;
 
 import me.joeleoli.construct.Construct;
-import net.veilmc.dataapi.Giraffe;
+import me.sergivb01.giraffe.Giraffe;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;

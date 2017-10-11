@@ -1,9 +1,9 @@
-package net.veilmc.dataapi.redis;
+package me.sergivb01.giraffe.redis;
 
 import com.customhcf.base.BasePlugin;
 import com.customhcf.util.chat.ClickAction;
 import com.customhcf.util.chat.Text;
-import net.veilmc.dataapi.Giraffe;
+import me.sergivb01.giraffe.Giraffe;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
