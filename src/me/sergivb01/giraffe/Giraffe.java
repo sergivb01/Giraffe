@@ -270,10 +270,12 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
     }
 
     private void registerCommands(){
-        this.getCommand("syncdata").setExecutor(new SyncDataCommand(this));
-        this.getCommand("sc").setExecutor(new StaffChatCommand(this));
-        this.getCommand("request").setExecutor(new RequestCommand(this));
-        this.getCommand("report").setExecutor(new ReportCommand(this));
+        if(!this.getServerName().equalsIgnoreCase("lobby")) {
+            this.getCommand("syncdata").setExecutor(new SyncDataCommand(this));
+            this.getCommand("sc").setExecutor(new StaffChatCommand(this));
+            this.getCommand("request").setExecutor(new RequestCommand(this));
+            this.getCommand("report").setExecutor(new ReportCommand(this));
+        }
         this.getCommand("toggletab").setExecutor(new ToggleTab(this));
         this.getCommand("staffserver").setExecutor(new StaffServerCommand(this));
 
