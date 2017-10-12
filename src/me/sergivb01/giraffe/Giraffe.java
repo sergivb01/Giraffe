@@ -90,9 +90,9 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         this.getServer().getMessenger().registerIncomingPluginChannel(this, "RedisBungee", this);
 
-        registerCommands();
-
         serverType = this.getConfig().getString("serverType", "hcf");
+
+        registerCommands();
 
         this.getServer().getPluginManager().registerEvents(new PlayerDataListener(this), this);
 

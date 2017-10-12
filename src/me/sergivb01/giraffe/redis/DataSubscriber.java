@@ -43,7 +43,7 @@ public class DataSubscriber
                             case "staffchat": {
                                 for (final Player staff : Bukkit.getOnlinePlayers()) {
                                     if (staff.hasPermission("rank.staff") && BasePlugin.getPlugin().getUserManager().getUser(staff.getUniqueId()).isStaffChatVisible()) {
-                                        staff.sendMessage(ChatColor.BLUE + "(Staff)" + ChatColor.DARK_AQUA + "[" + server + "] " + ChatColor.AQUA + sender + ": " + msg);
+                                        staff.sendMessage(ChatColor.BLUE + "(Staff) " +ChatColor.DARK_AQUA + "[" + server + "] " + ChatColor.AQUA + sender + ": " + msg);
                                     }
                                 }
                                 break;
@@ -70,7 +70,7 @@ public class DataSubscriber
                             case "staffswitch": {
                                 for (final Player staff2 : Bukkit.getOnlinePlayers()) {
                                     if (staff2.hasPermission("rank.staff") && BasePlugin.getPlugin().getUserManager().getUser(staff2.getUniqueId()).isStaffChatVisible()) {
-                                        staff2.sendMessage(ChatColor.BLUE + "(Staff)" + ChatColor.DARK_AQUA + "[" + server + "] " + ChatColor.AQUA + sender + " " + msg);
+                                        staff2.sendMessage(ChatColor.BLUE + "(Staff) " +ChatColor.DARK_AQUA + "[" + server + "] " + ChatColor.AQUA + sender + " " + msg);
                                     }
                                 }
                                 break;
