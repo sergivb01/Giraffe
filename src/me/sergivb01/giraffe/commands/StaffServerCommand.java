@@ -33,11 +33,13 @@ public class StaffServerCommand implements CommandExecutor{
 
         Bukkit.dispatchCommand(player, "tp " + args[1]);
 
-        final ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
-        dataOutput.writeUTF("Connect");
-        dataOutput.writeUTF(args[0]);
-        ((Player)sender).sendPluginMessage(plugin, "BungeeCord", dataOutput.toByteArray());
-        sender.sendMessage(ChatColor.YELLOW + "Sending you to " + ChatColor.GOLD + args[0]);
+        if(!args[0].equalsIgnoreCase(this.plugin.getServerName())) {
+            final ByteArrayDataOutput dataOutput = ByteStreams.newDataOutput();
+            dataOutput.writeUTF("Connect");
+            dataOutput.writeUTF(args[0]);
+            ((Player) sender).sendPluginMessage(plugin, "BungeeCord", dataOutput.toByteArray());
+            sender.sendMessage(ChatColor.YELLOW + "Sending you to " + ChatColor.GOLD + args[0]);
+        }
 
         return true;
     }

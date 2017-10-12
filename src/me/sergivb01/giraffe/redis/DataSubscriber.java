@@ -6,7 +6,6 @@ import com.customhcf.util.chat.Text;
 import me.sergivb01.giraffe.Giraffe;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
@@ -52,7 +51,7 @@ public class DataSubscriber
                             case "request": {
                                 for (final Player staff : Bukkit.getOnlinePlayers()) {
                                     if (staff.hasPermission("rank.staff") && BasePlugin.getPlugin().getUserManager().getUser(staff.getUniqueId()).isStaffChatVisible()) {
-                                        new Text(ChatColor.BLUE + "[Request] " + ChatColor.GRAY + "[" + server + "] " + ChatColor.RESET + sender + ChatColor.GRAY + " requested assistance.").setHoverText(ChatColor.BLUE + "Click here to teleport to " + ChatColor.GRAY + sender).setClick(ClickAction.RUN_COMMAND, "/staffserver " + server + " " + sender).send((CommandSender)staff);
+                                        new Text(ChatColor.BLUE + "[Request] " + ChatColor.GRAY + "[" + server + "] " + ChatColor.RESET + sender + ChatColor.GRAY + " requested assistance.").setHoverText(ChatColor.BLUE + "Click here to teleport to " + ChatColor.GRAY + sender).setClick(ClickAction.RUN_COMMAND, "/staffserver " + server + " " + sender).send(staff);
                                         staff.sendMessage(ChatColor.BLUE + "    Reason: " + ChatColor.GRAY + msg);
                                     }
                                 }
@@ -62,7 +61,7 @@ public class DataSubscriber
                                 final String target = args[4];
                                 for (final Player staff2 : Bukkit.getOnlinePlayers()) {
                                     if (staff2.hasPermission("rank.staff") && BasePlugin.getPlugin().getUserManager().getUser(staff2.getUniqueId()).isStaffChatVisible()) {
-                                        new Text(ChatColor.RED + "[Report] " + ChatColor.GRAY + "[" + server + "] " + ChatColor.RESET + sender + ChatColor.GRAY + " has reported " + ChatColor.RESET + target + ChatColor.GRAY + ".").setHoverText(ChatColor.RED + "Click here to teleport to " + ChatColor.GRAY + target).setClick(ClickAction.RUN_COMMAND, "/staffserver " + server + " " + target).send((CommandSender)staff2);
+                                        new Text(ChatColor.RED + "[Report] " + ChatColor.GRAY + "[" + server + "] " + ChatColor.RESET + sender + ChatColor.GRAY + " has reported " + ChatColor.RESET + target + ChatColor.GRAY + ".").setHoverText(ChatColor.RED + "Click here to teleport to " + ChatColor.GRAY + target).setClick(ClickAction.RUN_COMMAND, "/staffserver " + server + " " + target).send(staff2);
                                         staff2.sendMessage(ChatColor.RED + "    Reason:" + ChatColor.GRAY + msg.replace(target, ""));
                                     }
                                 }
