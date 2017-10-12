@@ -6,14 +6,13 @@ import com.customhcf.hcf.faction.event.FactionRenameEvent;
 import com.customhcf.hcf.faction.event.PlayerJoinedFactionEvent;
 import com.customhcf.hcf.faction.event.PlayerLeftFactionEvent;
 import com.customhcf.hcf.faction.type.PlayerFaction;
-import com.customhcf.hcf.utils.ConfigurationService;
 import com.google.common.base.Optional;
 import me.joeleoli.construct.Construct;
 import me.joeleoli.construct.api.IConstructLibrary;
 import me.joeleoli.construct.api.IConstructPlayer;
-import me.sergivb01.giraffe.utils.TaskUtil;
 import me.sergivb01.giraffe.Giraffe;
 import me.sergivb01.giraffe.utils.TabUtils;
+import me.sergivb01.giraffe.utils.TaskUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -33,18 +32,16 @@ public class FactionsTabListener implements Listener {
     public FactionsTabListener(Giraffe plugin) {
         this.plugin = plugin;
         this.construct = Construct.getLibrary();
-        if(ConfigurationService.KIT_MAP) {
-            new Thread(()-> Bukkit.getScheduler().scheduleAsyncRepeatingTask(plugin, new BukkitRunnable() {
-                @Override
-                public void run() {
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        if (construct.hasTabList(player)) {
-                            updateKoth(player);
-                        }
+        new Thread(()-> Bukkit.getScheduler().scheduleAsyncRepeatingTask(plugin, new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    if (construct.hasTabList(player)) {
+                        updateKoth(player);
                     }
                 }
-            }, 20L, 20L)).start();
-        }
+            }
+        }, 20L, 20L)).start();
     }
 
     @EventHandler
@@ -294,15 +291,17 @@ public class FactionsTabListener implements Listener {
         //Start first row
         tabPlayer.setPosition(1, TabUtils.translate(player, "&ePlayer Info"));
         updatePlayerKills(player);
+
         tabPlayer.setPosition(5, TabUtils.translate(player, "&eYour location"));
         updatePlayerLocation(player);
+
         updateFactionsDetails(player);
+
         tabPlayer.setPosition(9, TabUtils.translate(player, "&ePlayer Vault"));
         updatePlayerVault(player);
-        if(ConfigurationService.KIT_MAP) {
-            tabPlayer.setPosition(19, TabUtils.translate(player, "&eNext Koth"));
-            updateKoth(player);
-        }
+
+        tabPlayer.setPosition(19, TabUtils.translate(player, "&eNext Koth"));
+        updateKoth(player);
         //End first row
 
         //Start second row
@@ -317,11 +316,9 @@ public class FactionsTabListener implements Listener {
     }
 
     private void updateKoth(Player player){
-        if(!ConfigurationService.KIT_MAP) return;
         IConstructPlayer tabPlayer = this.construct.getPlayer(player);
         HCF hcf = HCF.getInstance();
-        tabPlayer.setPosition(20, ChatColor.translateAlternateColorCodes('&', "&9&l" + hcf.getNextGame() + " &7(" + ((hcf.NEXT_KOTH > 0) ? hcf.getKothRemaining() : "Running") + ")"));
-
+        tabPlayer.setPosition(20, ChatColor.translateAlternateColorCodes('&', ((hcf.NEXT_KOTH > 0) ? "&9&l" + hcf.getNextGame() + " &7(" + hcf.getKothRemaining() + ")" : "&7None Scheduled")));
     }
 
     private void updatePlayerKills(Player player){
