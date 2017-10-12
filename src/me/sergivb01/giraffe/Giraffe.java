@@ -121,6 +121,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
             Bukkit.getPluginManager().callEvent(new PlayerJoinEvent(target, "ltd_es_una_puta"));
         }
 
+
     }
 
     public void addToList(Player player){
