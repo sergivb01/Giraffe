@@ -320,7 +320,7 @@ public class FactionsTabListener implements Listener {
         if(!ConfigurationService.KIT_MAP) return;
         IConstructPlayer tabPlayer = this.construct.getPlayer(player);
         HCF hcf = HCF.getInstance();
-        tabPlayer.setPosition(20, ChatColor.translateAlternateColorCodes('&', "&a&l" + hcf.getNextGame() + " &7(" + ((hcf.NEXT_KOTH > 0) ? hcf.getKothRemaining() : "Running") + ")"));
+        tabPlayer.setPosition(20, ChatColor.translateAlternateColorCodes('&', "&9&l" + hcf.getNextGame() + " &7(" + ((hcf.NEXT_KOTH > 0) ? hcf.getKothRemaining() : "Running") + ")"));
 
     }
 
