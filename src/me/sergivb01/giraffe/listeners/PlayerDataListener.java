@@ -27,7 +27,7 @@ public class PlayerDataListener implements Listener{
             plugin.addToList(player);
             plugin.saveSinglePlayerData(player, true, true);
             plugin.getLogger().info("Saved " + player.getName() + " data as he joined the game.");
-            //TabTitleManager.setHeaderAndFooter(player, "§6§lVeilMC Network", "§eveilmc.net §7| §ets.veilmc.net");
+            //TabTitleManager.setHeaderAndFooter(player, "§6§lVeilMC Network", "§eveilmc.net §7| §ets.veilmc.net"); //TODO: Need to test if works (1.8)
         });
 
         if(!plugin.getPlayerToSave().contains(player)) plugin.getPlayerToSave().add(player); //Player needs to be added to save-data list :p
@@ -43,7 +43,7 @@ public class PlayerDataListener implements Listener{
         });
 
         if(player.hasPermission("rank.staff")){ //staff notification about server switched
-            plugin.getPublisher().write("staffswitch;" + player.getName() + ";" + Bukkit.getServerName() + ";" + "left the server.");
+            plugin.getPublisher().write("staffswitch;" + player.getName() + ";" + this.plugin.getServerName() + ";" + "left the server.");
         }
 
         if(plugin.getPlayerToSave().contains(player)) plugin.getPlayerToSave().remove(player); //We don't need to keep player in
@@ -54,7 +54,7 @@ public class PlayerDataListener implements Listener{
         Player player = event.getPlayer();
         if(player.hasPermission("rank.staff")){ //staff notification about server switched
             TaskUtil.runTaskNextTick(()->{
-                plugin.getPublisher().write("staffswitch;" + player.getName() + ";" + Bukkit.getServerName() + ";" + "joined the server.");
+                plugin.getPublisher().write("staffswitch;" + player.getName() + ";" + this.plugin.getServerName() + ";" + "joined the server.");
             });
         }
 
@@ -64,7 +64,7 @@ public class PlayerDataListener implements Listener{
     public void onStaffChatChat(AsyncPlayerChatEvent event){
         Player player = event.getPlayer();
         if(BasePlugin.getPlugin().getUserManager().getUser(player.getUniqueId()).isInStaffChat()){//Staffchat
-            plugin.getPublisher().write("staffchat;" + player.getName() + ";" + Bukkit.getServerName() + ";" + event.getMessage().replace(";", ":"));
+            plugin.getPublisher().write("staffchat;" + player.getName() + ";" + this.plugin.getServerName() + ";" + event.getMessage().replace(";", ":"));
             event.setCancelled(true);
         }
     }

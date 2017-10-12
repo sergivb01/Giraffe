@@ -35,7 +35,7 @@ public class StaffChatCommand implements CommandExecutor{
         } else {
             Player targetPlayer = Bukkit.getPlayerExact(args[0]);
             if (targetPlayer == null || !BaseCommand.canSee(sender, targetPlayer) || !sender.hasPermission("command.staffchat.others")) {
-                plugin.getPublisher().write("staffchat;" + sender.getName() + ";" + Bukkit.getServerName() + ";" + StringUtils.join(args, " ").replace(";", ":"));
+                plugin.getPublisher().write("staffchat;" + sender.getName() + ";" + this.plugin.getServerName() + ";" + StringUtils.join(args, " ").replace(";", ":"));
                 return true;
             }
             target = BasePlugin.getPlugin().getUserManager().getUser(targetPlayer.getUniqueId());
@@ -43,7 +43,7 @@ public class StaffChatCommand implements CommandExecutor{
         boolean newStaffChat = !target.isInStaffChat() || args.length >= 2 && Boolean.parseBoolean(args[1]);
         target.setInStaffChat(newStaffChat);
         sender.sendMessage(ChatColor.YELLOW + "Staff chat mode of " + target.getName() + " set to " + newStaffChat + '.');
-        //plugin.getPublisher().write("staffchat;" + player.getName() + ";" + Bukkit.getServerName() + ";" + StringUtils.join(args, " ").replace(";", ":"));
+        //plugin.getPublisher().write("staffchat;" + player.getName() + ";" + this.plugin.getServerName() + ";" + StringUtils.join(args, " ").replace(";", ":"));
         return true;
     }
 }
