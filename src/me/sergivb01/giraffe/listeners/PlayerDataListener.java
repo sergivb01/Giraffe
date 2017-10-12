@@ -1,9 +1,8 @@
 package me.sergivb01.giraffe.listeners;
 
 import com.customhcf.base.BasePlugin;
-import me.joeleoli.construct.util.TaskUtil;
 import me.sergivb01.giraffe.Giraffe;
-import org.bukkit.Bukkit;
+import me.sergivb01.giraffe.utils.TaskUtil;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,12 +22,12 @@ public class PlayerDataListener implements Listener{
     public void onUserJoin(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
 
-        TaskUtil.runTaskNextTick(()->{
+        TaskUtil.runTaskAsyncNextTick(()->{
             plugin.addToList(player);
             plugin.saveSinglePlayerData(player, true, true);
             plugin.getLogger().info("Saved " + player.getName() + " data as he joined the game.");
             //TabTitleManager.setHeaderAndFooter(player, "§6§lVeilMC Network", "§eveilmc.net §7| §ets.veilmc.net"); //TODO: Need to test if works (1.8)
-        });
+        }, 30L);
 
         if(!plugin.getPlayerToSave().contains(player)) plugin.getPlayerToSave().add(player); //Player needs to be added to save-data list :p
 
@@ -37,7 +36,7 @@ public class PlayerDataListener implements Listener{
     @EventHandler
     public void onUserQuit(PlayerQuitEvent event){
         final Player player = event.getPlayer();
-        TaskUtil.runTaskNextTick(()->{
+        TaskUtil.runTaskAsyncNextTick(()->{
             plugin.saveSinglePlayerData(player, false, true);
             plugin.getLogger().info("Saved " + player.getName() + " data as he quit the game.");
         });
@@ -53,7 +52,7 @@ public class PlayerDataListener implements Listener{
     public void onStaffJoin(PlayerJoinEvent event){
         Player player = event.getPlayer();
         if(player.hasPermission("rank.staff")){ //staff notification about server switched
-            TaskUtil.runTaskNextTick(()->{
+            TaskUtil.runTaskAsyncNextTick(()->{
                 plugin.getPublisher().write("staffswitch;" + player.getName() + ";" + this.plugin.getServerName() + ";" + "joined the server.");
             });
         }
