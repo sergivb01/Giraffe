@@ -6,6 +6,7 @@ import com.customhcf.hcf.faction.event.FactionRenameEvent;
 import com.customhcf.hcf.faction.event.PlayerJoinedFactionEvent;
 import com.customhcf.hcf.faction.event.PlayerLeftFactionEvent;
 import com.customhcf.hcf.faction.type.PlayerFaction;
+import com.customhcf.hcf.utils.ConfigurationService;
 import com.google.common.base.Optional;
 import me.joeleoli.construct.Construct;
 import me.joeleoli.construct.api.IConstructLibrary;
@@ -23,6 +24,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class FactionsTabListener implements Listener {
     private Giraffe plugin;
@@ -31,6 +33,18 @@ public class FactionsTabListener implements Listener {
     public FactionsTabListener(Giraffe plugin) {
         this.plugin = plugin;
         this.construct = Construct.getLibrary();
+        if(ConfigurationService.KIT_MAP) {
+            new Thread(()-> Bukkit.getScheduler().scheduleAsyncRepeatingTask(plugin, new BukkitRunnable() {
+                @Override
+                public void run() {
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        if (construct.hasTabList(player)) {
+                            updateKoth(player);
+                        }
+                    }
+                }
+            }, 20L, 20L)).start();
+        }
     }
 
     @EventHandler
@@ -285,6 +299,10 @@ public class FactionsTabListener implements Listener {
         updateFactionsDetails(player);
         tabPlayer.setPosition(9, TabUtils.translate(player, "&ePlayer Vault"));
         updatePlayerVault(player);
+        if(ConfigurationService.KIT_MAP) {
+            tabPlayer.setPosition(19, TabUtils.translate(player, "&eNext Koth"));
+            updateKoth(player);
+        }
         //End first row
 
         //Start second row
@@ -295,6 +313,14 @@ public class FactionsTabListener implements Listener {
         updateFactionList(player);
         tabPlayer.setPosition(41, TabUtils.translate(player, "&eFaction List"));
         //End third row
+
+    }
+
+    private void updateKoth(Player player){
+        if(!ConfigurationService.KIT_MAP) return;
+        IConstructPlayer tabPlayer = this.construct.getPlayer(player);
+        HCF hcf = HCF.getInstance();
+        tabPlayer.setPosition(20, ChatColor.translateAlternateColorCodes('&', "&a&l" + hcf.getNextGame() + " &7(" + ((hcf.NEXT_KOTH > 0) ? hcf.getKothRemaining() : "Running") + ")"));
 
     }
 
