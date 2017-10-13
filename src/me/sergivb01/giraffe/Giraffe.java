@@ -250,7 +250,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
             serverStatus.put("whitelist", String.valueOf(Bukkit.hasWhitelist()));
             serverStatus.put("uptime", serverUptime);
             serverStatus.put("nextgame", HCF.getInstance().getNextGame());
-            serverStatus.put("nextmillis", String.valueOf(HCF.getInstance().NEXT_KOTH));
+            serverStatus.put("nextduration", HCF.getInstance().getKothRemaining());
             serverStatus.put("tps0", String.valueOf(Bukkit.spigot().getTPS()[0]));
             serverStatus.put("tps1", String.valueOf(Bukkit.spigot().getTPS()[1]));
             serverStatus.put("tps2", String.valueOf(Bukkit.spigot().getTPS()[2]));
