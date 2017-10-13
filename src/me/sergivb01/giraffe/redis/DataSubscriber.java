@@ -14,11 +14,11 @@ public class DataSubscriber
 {
     private JedisPubSub jedisPubSub;
     private Jedis jedis;
-    private Giraffe main;
+    private Giraffe plugin;
 
-    public DataSubscriber(final Giraffe main) {
-        this.main = main;
-        this.jedis = new Jedis(main.getConfig().getString("redis-server"));
+    public DataSubscriber(final Giraffe plugin) {
+        this.plugin = plugin;
+        this.jedis = new Jedis(plugin.getConfig().getString("redis-server"));
         this.subscribe();
     }
 
@@ -38,8 +38,13 @@ public class DataSubscriber
                         final String sender = args[1];
                         final String server = args[2];
                         final String msg = args[3];
-                        final String s = command;
-                        switch (s) {
+                        switch (command) {
+                            case "kothalert": {
+                                for (final Player target : Bukkit.getOnlinePlayers()) {
+                                    target.sendMessage(ChatColor.translateAlternateColorCodes('&', "&9&l" + sender + " &eis now running on &a&l" + server + "&e."));
+                                }
+                                break;
+                            }
                             case "staffchat": {
                                 for (final Player staff : Bukkit.getOnlinePlayers()) {
                                     if (staff.hasPermission("rank.staff") && BasePlugin.getPlugin().getUserManager().getUser(staff.getUniqueId()).isStaffChatVisible()) {
@@ -76,12 +81,12 @@ public class DataSubscriber
                                 break;
                             }
                             default:
-                                main.getLogger().warning("Recived data but i don't know how to handle it! \"" + message + "\"");
+                                plugin.getLogger().warning("Recived data but i don't know how to handle it! \"" + message + "\"");
                                 break;
                         }
                     }
                 }else{
-                    main.getLogger().warning("Recived data from \"" + channel + "\" i don't know how to handle it! \"" + message + "\"");
+                    plugin.getLogger().warning("Recived data from \"" + channel + "\" i don't know how to handle it! \"" + message + "\"");
                 }
             }
 

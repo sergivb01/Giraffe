@@ -350,5 +350,9 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
         return serverType.trim().toLowerCase();
     }
 
+    public void broadcastKoth(String koth, String server){
+        this.getPublisher().write("kothalert;" + koth + ";" + server + ";" + "aw");
+    }
+
 
 }
