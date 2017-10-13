@@ -40,9 +40,7 @@ public class DataSubscriber
                         final String msg = args[3];
                         switch (command) {
                             case "kothalert": {
-                                for (final Player target : Bukkit.getOnlinePlayers()) {
-                                    target.sendMessage(ChatColor.translateAlternateColorCodes('&', "&9&l" + sender + " &eis now running on &a&l" + server + "&e."));
-                                }
+                                    Bukkit.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&9&l" + sender + "KOTH &eIS NOW RUNNING ON &a&l" + server.toUpperCase() + "&e."));
                                 break;
                             }
                             case "staffchat": {
