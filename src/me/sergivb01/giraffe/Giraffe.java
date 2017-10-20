@@ -1,5 +1,6 @@
 package me.sergivb01.giraffe;
 
+import me.sergivb01.giraffe.listeners.*;
 import net.veilmc.base.BasePlugin;
 import net.veilmc.hcf.HCF;
 import net.veilmc.hcf.deathban.Deathban;
@@ -9,10 +10,6 @@ import lombok.Getter;
 import lombok.Setter;
 import me.joeleoli.construct.util.TaskUtil;
 import me.sergivb01.giraffe.commands.*;
-import me.sergivb01.giraffe.listeners.FactionSavingListener;
-import me.sergivb01.giraffe.listeners.FactionsTabListener;
-import me.sergivb01.giraffe.listeners.LobbyTabListener;
-import me.sergivb01.giraffe.listeners.PlayerDataListener;
 import me.sergivb01.giraffe.redis.DataPublisher;
 import me.sergivb01.giraffe.redis.DataSubscriber;
 import net.minecraft.util.com.google.common.io.ByteArrayDataInput;
@@ -99,6 +96,8 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
         if(serverType.equals("lobby")) {
             this.getServer().getPluginManager().registerEvents(new LobbyTabListener(this), this);
             this.getLogger().info("LOBBY MODEEEEEEEEEEEEEE");
+        }else if(serverType.equals("practice")){
+            this.getServer().getPluginManager().registerEvents(new PracticeTabListener(this), this);
         }else{
             this.getServer().getPluginManager().registerEvents(new FactionsTabListener(this), this);
             this.getServer().getPluginManager().registerEvents(new FactionSavingListener(this), this);
