@@ -1,10 +1,10 @@
 package me.sergivb01.giraffe;
 
-import com.customhcf.base.BasePlugin;
-import com.customhcf.hcf.HCF;
-import com.customhcf.hcf.deathban.Deathban;
-import com.customhcf.hcf.faction.type.PlayerFaction;
-import com.customhcf.hcf.user.FactionUser;
+import net.veilmc.base.BasePlugin;
+import net.veilmc.hcf.HCF;
+import net.veilmc.hcf.deathban.Deathban;
+import net.veilmc.hcf.faction.type.PlayerFaction;
+import net.veilmc.hcf.user.FactionUser;
 import lombok.Getter;
 import lombok.Setter;
 import me.joeleoli.construct.util.TaskUtil;

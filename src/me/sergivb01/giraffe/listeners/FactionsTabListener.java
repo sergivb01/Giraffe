@@ -1,11 +1,11 @@
 package me.sergivb01.giraffe.listeners;
 
-import com.customhcf.hcf.HCF;
-import com.customhcf.hcf.faction.event.FactionDtrChangeEvent;
-import com.customhcf.hcf.faction.event.FactionRenameEvent;
-import com.customhcf.hcf.faction.event.PlayerJoinedFactionEvent;
-import com.customhcf.hcf.faction.event.PlayerLeftFactionEvent;
-import com.customhcf.hcf.faction.type.PlayerFaction;
+import net.veilmc.hcf.HCF;
+import net.veilmc.hcf.faction.event.FactionDtrChangeEvent;
+import net.veilmc.hcf.faction.event.FactionRenameEvent;
+import net.veilmc.hcf.faction.event.PlayerJoinedFactionEvent;
+import net.veilmc.hcf.faction.event.PlayerLeftFactionEvent;
+import net.veilmc.hcf.faction.type.PlayerFaction;
 import com.google.common.base.Optional;
 import me.joeleoli.construct.Construct;
 import me.joeleoli.construct.api.IConstructLibrary;

@@ -1,6 +1,6 @@
 package me.sergivb01.giraffe.listeners;
 
-import com.customhcf.base.BasePlugin;
+import net.veilmc.base.BasePlugin;
 import me.sergivb01.giraffe.Giraffe;
 import me.sergivb01.giraffe.utils.TaskUtil;
 import org.bukkit.entity.Player;

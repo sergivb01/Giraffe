@@ -1,8 +1,8 @@
 package me.sergivb01.giraffe.commands;
 
-import com.customhcf.base.BasePlugin;
-import com.customhcf.base.command.BaseCommand;
-import com.customhcf.base.user.ServerParticipator;
+import net.veilmc.base.BasePlugin;
+import net.veilmc.base.command.BaseCommand;
+import net.veilmc.base.user.ServerParticipator;
 import me.sergivb01.giraffe.Giraffe;
 import net.minecraft.util.org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;

@@ -1,10 +1,10 @@
 package me.sergivb01.giraffe.utils;
 
-import com.customhcf.hcf.HCF;
-import com.customhcf.hcf.faction.FactionManager;
-import com.customhcf.hcf.faction.type.Faction;
-import com.customhcf.hcf.faction.type.PlayerFaction;
-import com.customhcf.util.MapSorting;
+import net.veilmc.hcf.HCF;
+import net.veilmc.hcf.faction.FactionManager;
+import net.veilmc.hcf.faction.type.Faction;
+import net.veilmc.hcf.faction.type.PlayerFaction;
+import net.veilmc.util.MapSorting;
 import net.minecraft.util.com.google.common.collect.Lists;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_7_R4.entity.CraftPlayer;

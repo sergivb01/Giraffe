@@ -1,7 +1,7 @@
 package me.sergivb01.giraffe.commands;
 
-import com.customhcf.hcf.HCF;
-import com.customhcf.hcf.faction.FactionManager;
+import net.veilmc.hcf.HCF;
+import net.veilmc.hcf.faction.FactionManager;
 import me.sergivb01.giraffe.Giraffe;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

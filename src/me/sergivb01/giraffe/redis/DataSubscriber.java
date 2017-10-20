@@ -1,8 +1,8 @@
 package me.sergivb01.giraffe.redis;
 
-import com.customhcf.base.BasePlugin;
-import com.customhcf.util.chat.ClickAction;
-import com.customhcf.util.chat.Text;
+import net.veilmc.base.BasePlugin;
+import net.veilmc.util.chat.ClickAction;
+import net.veilmc.util.chat.Text;
 import me.sergivb01.giraffe.Giraffe;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

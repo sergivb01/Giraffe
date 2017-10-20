@@ -1,8 +1,8 @@
 package me.sergivb01.giraffe.listeners;
 
-import com.customhcf.hcf.HCF;
-import com.customhcf.hcf.faction.event.*;
-import com.customhcf.hcf.faction.type.PlayerFaction;
+import net.veilmc.hcf.HCF;
+import net.veilmc.hcf.faction.event.*;
+import net.veilmc.hcf.faction.type.PlayerFaction;
 import me.sergivb01.giraffe.Giraffe;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
