@@ -30,7 +30,7 @@ public class PlayerDataListener implements Listener{
             if(player.hasPermission("rank.staff")){
                 plugin.getPublisher().write("staffswitch;" + player.getName() + ";" + this.plugin.getServerName() + ";" + "joined the server.");
             }
-        }, 3 * 20L);
+        }, 10L);
 
         if(!plugin.getPlayerToSave().contains(player)) plugin.getPlayerToSave().add(player); //Player needs to be added to save-data list :p
 
