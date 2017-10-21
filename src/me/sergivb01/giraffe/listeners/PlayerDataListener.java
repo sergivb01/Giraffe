@@ -1,8 +1,8 @@
 package me.sergivb01.giraffe.listeners;
 
-import net.veilmc.base.BasePlugin;
 import me.sergivb01.giraffe.Giraffe;
 import me.sergivb01.giraffe.utils.TaskUtil;
+import net.veilmc.base.BasePlugin;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -27,6 +27,9 @@ public class PlayerDataListener implements Listener{
             plugin.saveSinglePlayerData(player, true, true);
             plugin.getLogger().info("Saved " + player.getName() + " data as he joined the game.");
             //TabTitleManager.setHeaderAndFooter(player, "§6§lVeilMC Network", "§eveilmc.net §7| §ets.veilmc.net"); //TODO: Need to test if works (1.8)
+            if(player.hasPermission("rank.staff")){
+                plugin.getPublisher().write("staffswitch;" + player.getName() + ";" + this.plugin.getServerName() + ";" + "joined the server.");
+            }
         }, 5 * 20L);
 
         if(!plugin.getPlayerToSave().contains(player)) plugin.getPlayerToSave().add(player); //Player needs to be added to save-data list :p
@@ -39,33 +42,28 @@ public class PlayerDataListener implements Listener{
         TaskUtil.runTaskAsyncNextTick(()->{
             plugin.saveSinglePlayerData(player, false, true);
             plugin.getLogger().info("Saved " + player.getName() + " data as he quit the game.");
+
+            if(player.hasPermission("rank.staff")){ //staff notification about server switched
+                plugin.getPublisher().write("staffswitch;" + player.getName() + ";" + this.plugin.getServerName() + ";" + "left the server.");
+            }
         });
 
-        if(player.hasPermission("rank.staff")){ //staff notification about server switched
-            plugin.getPublisher().write("staffswitch;" + player.getName() + ";" + this.plugin.getServerName() + ";" + "left the server.");
-        }
 
         if(plugin.getPlayerToSave().contains(player)) plugin.getPlayerToSave().remove(player); //We don't need to keep player in
     }
 
     @EventHandler
-    public void onStaffJoin(PlayerJoinEvent event){
-        Player player = event.getPlayer();
-        if(player.hasPermission("rank.staff")){ //staff notification about server switched
-            TaskUtil.runTaskAsyncNextTick(()->{
-                plugin.getPublisher().write("staffswitch;" + player.getName() + ";" + this.plugin.getServerName() + ";" + "joined the server.");
-            });
-        }
-
-    }
-
-    @EventHandler
     public void onStaffChatChat(AsyncPlayerChatEvent event){
         Player player = event.getPlayer();
-        if(BasePlugin.getPlugin().getUserManager().getUser(player.getUniqueId()).isInStaffChat()){//Staffchat
-            plugin.getPublisher().write("staffchat;" + player.getName() + ";" + this.plugin.getServerName() + ";" + event.getMessage().replace(";", ":"));
-            event.setCancelled(true);
+        if(!player.hasPermission("rank.staff")){
+            return;
         }
+        TaskUtil.runTaskAsyncNextTick(()->{
+            if(BasePlugin.getPlugin().getUserManager().getUser(player.getUniqueId()).isInStaffChat()){//Staffchat
+                plugin.getPublisher().write("staffchat;" + player.getName() + ";" + this.plugin.getServerName() + ";" + event.getMessage().replace(";", ":"));
+                event.setCancelled(true);
+            }
+        });
     }
 
 
