@@ -155,7 +155,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
             }
             globalInfo.put(cleanServer + "rank", PermissionsEx.getUser(player).getGroups()[0].getName());
 
-            if(!serverType.equalsIgnoreCase("lobby")) {
+            if(!serverType.equalsIgnoreCase("lobby") && !serverType.equalsIgnoreCase("practice")) {
                 /* ================================================================================================================ */
                 final HCF hcf = HCF.getInstance();
                 final FactionUser factionUser = hcf.getUserManager().getUser(player.getUniqueId());
@@ -248,11 +248,13 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
             serverStatus.put("max", String.valueOf(Bukkit.getMaxPlayers()));
             serverStatus.put("whitelist", String.valueOf(Bukkit.hasWhitelist()));
             serverStatus.put("uptime", serverUptime);
-            serverStatus.put("nextgame", HCF.getInstance().getNextGame());
-            serverStatus.put("nextduration", HCF.getInstance().getKothRemaining());
             serverStatus.put("tps0", String.valueOf(Bukkit.spigot().getTPS()[0]));
             serverStatus.put("tps1", String.valueOf(Bukkit.spigot().getTPS()[1]));
             serverStatus.put("tps2", String.valueOf(Bukkit.spigot().getTPS()[2]));
+            if(!serverType.equals("practice") && !serverType.equals("lobby")) {
+                serverStatus.put("nextgame", HCF.getInstance().getNextGame());
+                serverStatus.put("nextduration", HCF.getInstance().getKothRemaining());
+            }
 
             Jedis jedis = null;
             try {
