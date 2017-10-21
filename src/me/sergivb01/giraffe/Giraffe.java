@@ -180,7 +180,9 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
             try {
                 jedis = getPool().getResource();
                 jedis.hmset("data:players:global:" + player.getUniqueId().toString(), globalInfo);
-                jedis.hmset("data:players:" + serverType.trim().toLowerCase() + ":" + player.getUniqueId().toString(), serverInfo);
+                if(!serverType.equalsIgnoreCase("lobby") && !serverType.equalsIgnoreCase("practice")) {
+                    jedis.hmset("data:players:" + serverType.trim().toLowerCase() + ":" + player.getUniqueId().toString(), serverInfo);
+                }
                 getPool().returnResource(jedis);
             }finally {
                 if (jedis != null) {
