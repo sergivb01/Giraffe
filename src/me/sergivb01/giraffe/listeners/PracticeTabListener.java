@@ -4,7 +4,6 @@ import me.joeleoli.construct.Construct;
 import me.joeleoli.construct.api.IConstructLibrary;
 import me.joeleoli.construct.api.IConstructPlayer;
 import me.sergivb01.giraffe.Giraffe;
-import me.sergivb01.giraffe.utils.TabUtils;
 import me.sergivb01.giraffe.utils.TaskUtil;
 import net.veilmc.practice.game.cache.Cache;
 import net.veilmc.practice.game.party.event.*;
@@ -102,8 +101,9 @@ public class PracticeTabListener implements Listener {
         }
         IConstructPlayer tabPlayer = this.construct.getPlayer(player);
 
-        //Start first row
-        tabPlayer.setPosition(1, TabUtils.translate(player, "&ePlayer Info"));
+        for(int i = 1; i <= 60; i++){
+            tabPlayer.setPosition(i, "Position #" + i);
+        }
 
     }
 
