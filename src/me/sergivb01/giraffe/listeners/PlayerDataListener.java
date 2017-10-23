@@ -58,13 +58,10 @@ public class PlayerDataListener implements Listener{
         if(!player.hasPermission("rank.staff")){
             return;
         }
-        TaskUtil.runTaskAsyncNextTick(()->{
-            if(BasePlugin.getPlugin().getUserManager().getUser(player.getUniqueId()).isInStaffChat()){//Staffchat
+        if(BasePlugin.getPlugin().getUserManager().getUser(player.getUniqueId()).isInStaffChat()){//Staffchat
                 plugin.getPublisher().write("staffchat;" + player.getName() + ";" + this.plugin.getServerName() + ";" + event.getMessage().replace(";", ":"));
                 event.setCancelled(true);
-            }
-        });
+        }
     }
-
 
 }
