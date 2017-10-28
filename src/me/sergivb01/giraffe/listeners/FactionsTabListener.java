@@ -52,17 +52,11 @@ public class FactionsTabListener implements Listener {
             return;
         }
 
-        TaskUtil.runTaskAsyncNextTick(() -> {
+        TaskUtil.runTaskNextTick(() -> {
             if(!this.construct.hasTabList(player)) {
                 this.construct.createTabList(player);
             }
             this.initialUpdate(player);
-
-            for(Player p : Bukkit.getOnlinePlayers()){
-                if(this.construct.hasTabList(p)) {
-                    updateOnlinePlayers(p);
-                }
-            }
         });
 
         if(HCF.getPlugin().getFactionManager().getPlayerFaction(player.getUniqueId()) != null){
