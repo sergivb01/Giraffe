@@ -104,17 +104,17 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
             this.getLogger().info("HCF MODEEEEEEEEEEEEEEEEE (" + serverType + ")");
         }
 
-        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> { //Save server status every 10s
+        TaskUtil.runTaskTimerAsync(() -> { //Save server status every 10s
             saveServerData(true);
         }, 20L, 10 * 20L);
 
-        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> { //Save data of single player every 5 seconds.
+        TaskUtil.runTaskTimerAsync(() -> { //Save data of single player every 5 seconds.
             if (!playerToSave.isEmpty()) {
                 Player next = playerToSave.get(0);
                 TaskUtil.runTaskNextTick(()-> saveSinglePlayerData(next, true, false));
                 Collections.rotate(playerToSave, -1);
             }
-        }, 10 * 20L, 5 * 20L); //Wait 10s so it doesn't overload on restarts...
+        }, 5 * 20L, 20L); //Wait 5s so it doesn't overload on restarts...
 
         for(Player target : Bukkit.getOnlinePlayers()){
             Bukkit.getPluginManager().callEvent(new PlayerJoinEvent(target, "ltd_es_una_puta"));
@@ -180,6 +180,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
             try {
                 jedis = getPool().getResource();
                 jedis.hmset("data:players:global:" + player.getUniqueId().toString(), globalInfo);
+                this.getLogger().info("Saved " + player.getName() + "'s data. - " + player.getUniqueId().toString());
                 if(!serverType.equalsIgnoreCase("lobby") && !serverType.equalsIgnoreCase("practice")) {
                     jedis.hmset("data:players:" + serverType.trim().toLowerCase() + ":" + player.getUniqueId().toString(), serverInfo);
                 }
