@@ -108,7 +108,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
             saveServerData(true);
         }, 20L, 10 * 20L);
 
-        TaskUtil.runTaskTimerAsync(() -> { //Save data of single player every 5 seconds.
+        TaskUtil.runTaskTimerAsync(() -> { //Save data of single player every second
             if (!playerToSave.isEmpty()) {
                 Player next = playerToSave.get(0);
                 TaskUtil.runTaskNextTick(()-> saveSinglePlayerData(next, true, false));
@@ -141,6 +141,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
 
     public void saveSinglePlayerData(Player player, boolean online, boolean isNotRegular){
         new Thread(() -> {
+            long start = System.currentTimeMillis();
             final String cleanServer = serverType.trim().toLowerCase() + "_";
             Map<String, String> globalInfo = new HashedMap<>();
             Map<String, String> serverInfo = new HashedMap<>();
@@ -190,7 +191,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
                     jedis.close();
                 }
             }
-
+            this.getLogger().info("Player data of " + player.getName() + " has been saved into Redis Backend. (Executed in " + (System.currentTimeMillis() - start) + "ms).");
         }).start();
 
     }
