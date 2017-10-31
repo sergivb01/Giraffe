@@ -1,5 +1,6 @@
 package me.sergivb01.giraffe.listeners;
 
+import me.sergivb01.giraffe.utils.TaskUtil;
 import net.veilmc.hcf.HCF;
 import net.veilmc.hcf.faction.event.*;
 import net.veilmc.hcf.faction.type.PlayerFaction;
@@ -7,6 +8,7 @@ import me.sergivb01.giraffe.Giraffe;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -23,6 +25,16 @@ public class FactionSavingListener implements Listener{
         //this.plugin.saveFaction((PlayerFaction)event.getFaction());
         //this.plugin.getLogger().info("Saving faction " + event.getFaction().getName() + " because it was created.");
     //}
+
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent event){
+        if(event.getEntity().getKiller() != null){
+            TaskUtil.runTaskAsyncNextTick(()-> this.plugin.saveSinglePlayerData(event.getEntity().getKiller(), true, false));
+        }
+        if(event.getEntity() != null){
+            TaskUtil.runTaskAsyncNextTick(()-> this.plugin.saveSinglePlayerData(event.getEntity(), true, false));
+        }
+    }
 
     @EventHandler
     public void onPlayerJoinFaction(PlayerJoinedFactionEvent event){
