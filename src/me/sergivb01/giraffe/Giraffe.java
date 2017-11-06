@@ -124,7 +124,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
                 TaskUtil.runTaskNextTick(()-> saveSinglePlayerData(next, true, false));
                 Collections.rotate(playerToSave, -1);
             }
-        },  * 20L, 20L); //Wait 5s so it doesn't overload on restarts...
+        },  15 * 20L, 20L); //Wait 15s so it doesn't overload on restarts...
 
         for(Player target : Bukkit.getOnlinePlayers()){
             Bukkit.getPluginManager().callEvent(new PlayerJoinEvent(target, "ltd_es_una_puta"));
