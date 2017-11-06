@@ -17,6 +17,7 @@ import net.minecraft.util.com.google.common.io.ByteStreams;
 import net.veilmc.base.BasePlugin;
 import net.veilmc.hcf.HCF;
 import net.veilmc.hcf.deathban.Deathban;
+import net.veilmc.hcf.faction.type.Faction;
 import net.veilmc.hcf.faction.type.PlayerFaction;
 import net.veilmc.hcf.user.FactionUser;
 import org.apache.commons.collections4.map.HashedMap;
@@ -41,6 +42,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Giraffe extends JavaPlugin implements PluginMessageListener {
     @Getter @Setter private boolean useTab = true;
@@ -75,7 +77,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
         instance = this;
 
 
-        spigot = classExists("org.bukkit.event.entity.SpawnerSpawnEvent");
+        spigot = classExists();
         if (spigot) {
             getLogger().info("Spigot detected! Enabled tracking for mob spawner spawn events.");
         }
@@ -100,15 +102,19 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
 
         this.getServer().getPluginManager().registerEvents(new PlayerDataListener(this), this);
 
-        if(serverType.equals("lobby")) {
-            this.getServer().getPluginManager().registerEvents(new LobbyTabListener(this), this);
-            this.getLogger().info("LOBBY MODEEEEEEEEEEEEEE");
-        }else if(serverType.equals("practice")){
-            this.getServer().getPluginManager().registerEvents(new PracticeTabListener(this), this);
-        }else{
-            this.getServer().getPluginManager().registerEvents(new FactionsTabListener(this), this);
-            this.getServer().getPluginManager().registerEvents(new FactionSavingListener(this), this);
-            this.getLogger().info("HCF MODEEEEEEEEEEEEEEEEE (" + serverType + ")");
+        switch (serverType) {
+            case "lobby":
+                this.getServer().getPluginManager().registerEvents(new LobbyTabListener(this), this);
+                this.getLogger().info("LOBBY MODEEEEEEEEEEEEEE");
+                break;
+            case "practice":
+                this.getServer().getPluginManager().registerEvents(new PracticeTabListener(this), this);
+                break;
+            default:
+                this.getServer().getPluginManager().registerEvents(new FactionsTabListener(this), this);
+                this.getServer().getPluginManager().registerEvents(new FactionSavingListener(this), this);
+                this.getLogger().info("HCF MODEEEEEEEEEEEEEEEEE (" + serverType + ")");
+                break;
         }
 
         tickCounter = new TickCounter();
@@ -226,9 +232,8 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
 
                 ArrayList<String> alliesNames = new ArrayList<>();
 
-                for (PlayerFaction playerFaction1 : playerFaction.getAlliedFactions()) {
-                    alliesNames.add(playerFaction1.getName());
-                }
+                alliesNames.addAll(playerFaction.getAlliedFactions().stream().map(Faction::getName).collect(Collectors.toList()));
+
                 factionInfo.put("faction_allies", (alliesNames.size() <= 0 ? "No allies" : alliesNames.toString().replace("[", "").replace("]", "")));
             }
 
@@ -390,9 +395,9 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
         return listener;
     }
 
-    private static boolean classExists(String clazz) {
+    private static boolean classExists() {
         try {
-            Class.forName(clazz);
+            Class.forName("org.bukkit.event.entity.SpawnerSpawnEvent");
             return true;
         } catch (ClassNotFoundException e) {
             return false;
