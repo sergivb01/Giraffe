@@ -25,7 +25,7 @@ public abstract class AbstractReportListener implements ReportListener {
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
 
     // functions to create zero'd counters
-    public static final Function<ChunkPosition, AtomicInteger> ZERO_COUNTER = o -> new AtomicInteger(0);
+    static final Function<ChunkPosition, AtomicInteger> ZERO_COUNTER = o -> new AtomicInteger(0);
     private static final Function<EntityType, AtomicInteger> ZERO_COUNTER_ENTITY = o -> new AtomicInteger(0);
 
     private final Giraffe plugin;
@@ -37,7 +37,7 @@ public abstract class AbstractReportListener implements ReportListener {
     private long startTick = -1;
     private long endTick = -1;
 
-    public AbstractReportListener(Giraffe plugin) {
+    AbstractReportListener(Giraffe plugin) {
         this.plugin = plugin;
     }
 
@@ -131,7 +131,7 @@ public abstract class AbstractReportListener implements ReportListener {
         return entities;
     }
 
-    public void appendReport(StringBuilder report, Map<ChunkPosition, AtomicInteger> data, String name, String description, boolean avg) {
+    void appendReport(StringBuilder report, Map<ChunkPosition, AtomicInteger> data, String name, String description, boolean avg) {
         report.append("## ").append(name).append("\n");
         report.append("__").append(description).append("__\n\n");
 
