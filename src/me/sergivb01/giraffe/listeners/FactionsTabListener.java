@@ -40,7 +40,7 @@ public class FactionsTabListener implements Listener {
                     updateKoth(player);
                 }
             }
-        }, 20L, 20L)).start();
+        }, 20L, 5 * 20L)).start();
     }
 
     @EventHandler
