@@ -1,4 +1,4 @@
-package me.sergivb01.giraffe.utils;
+package me.sergivb01.giraffe.utils.tab;
 
 import net.veilmc.hcf.HCF;
 import net.veilmc.hcf.faction.FactionManager;

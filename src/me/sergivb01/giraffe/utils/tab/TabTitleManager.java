@@ -1,4 +1,4 @@
-package me.sergivb01.giraffe.utils;
+package me.sergivb01.giraffe.utils.tab;
 
 import net.minecraft.server.v1_7_R4.ChatSerializer;
 import net.minecraft.server.v1_7_R4.IChatBaseComponent;

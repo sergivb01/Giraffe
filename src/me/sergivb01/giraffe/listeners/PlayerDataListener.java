@@ -64,5 +64,10 @@ public class PlayerDataListener implements Listener{
         }
     }
 
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent e) {
+        this.plugin.stopListening(e.getPlayer().getUniqueId());
+    }
+
 
 }

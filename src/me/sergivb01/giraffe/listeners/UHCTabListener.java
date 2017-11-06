@@ -4,7 +4,7 @@ import me.joeleoli.construct.Construct;
 import me.joeleoli.construct.api.IConstructLibrary;
 import me.joeleoli.construct.api.IConstructPlayer;
 import me.sergivb01.giraffe.Giraffe;
-import me.sergivb01.giraffe.utils.TabUtils;
+import me.sergivb01.giraffe.utils.tab.TabUtils;
 import me.sergivb01.giraffe.utils.TaskUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

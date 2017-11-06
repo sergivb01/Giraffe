@@ -1,20 +1,24 @@
 package me.sergivb01.giraffe;
 
+import lombok.Getter;
+import lombok.Setter;
+import me.joeleoli.construct.util.TaskUtil;
+import me.sergivb01.giraffe.commands.*;
 import me.sergivb01.giraffe.listeners.*;
+import me.sergivb01.giraffe.redis.DataPublisher;
+import me.sergivb01.giraffe.redis.DataSubscriber;
+import me.sergivb01.giraffe.utils.lag.TickCounter;
+import me.sergivb01.giraffe.utils.report.BukkitReportListener;
+import me.sergivb01.giraffe.utils.report.ReportListener;
+import me.sergivb01.giraffe.utils.report.SpigotReportListener;
+import net.minecraft.util.com.google.common.io.ByteArrayDataInput;
+import net.minecraft.util.com.google.common.io.ByteArrayDataOutput;
+import net.minecraft.util.com.google.common.io.ByteStreams;
 import net.veilmc.base.BasePlugin;
 import net.veilmc.hcf.HCF;
 import net.veilmc.hcf.deathban.Deathban;
 import net.veilmc.hcf.faction.type.PlayerFaction;
 import net.veilmc.hcf.user.FactionUser;
-import lombok.Getter;
-import lombok.Setter;
-import me.joeleoli.construct.util.TaskUtil;
-import me.sergivb01.giraffe.commands.*;
-import me.sergivb01.giraffe.redis.DataPublisher;
-import me.sergivb01.giraffe.redis.DataSubscriber;
-import net.minecraft.util.com.google.common.io.ByteArrayDataInput;
-import net.minecraft.util.com.google.common.io.ByteArrayDataOutput;
-import net.minecraft.util.com.google.common.io.ByteStreams;
 import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.Bukkit;
@@ -39,21 +43,18 @@ import java.nio.charset.Charset;
 import java.util.*;
 
 public class Giraffe extends JavaPlugin implements PluginMessageListener {
-    @Getter @Setter private boolean useTab;
+    @Getter @Setter private boolean useTab = true;
     @Getter private String serverType;
-    @Getter private List<Player> playerToSave;
-    @Getter private int playerss;
+    @Getter private List<Player> playerToSave = new ArrayList<>();
+    @Getter private int playerss = 0;
     @Getter private static Giraffe instance;
     @Getter private DataSubscriber subscriber;
     @Getter private DataPublisher publisher;
     @Getter private JedisPool pool;
+    @Getter private TickCounter tickCounter;
+    private final Map<UUID, ReportListener> listeners = new HashMap<>();
+    private boolean spigot = false;
 
-    public Giraffe() {
-        this.useTab = true;
-        this.playerToSave = new ArrayList<>();
-        this.playerss = 0;
-        //this.pool = null;
-    }
 
     public void onDisable() {
         for(Player player : Bukkit.getOnlinePlayers()){
@@ -72,6 +73,12 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
     public void onEnable() {
         aO6169yawd7Fuck();
         instance = this;
+
+
+        spigot = classExists("org.bukkit.event.entity.SpawnerSpawnEvent");
+        if (spigot) {
+            getLogger().info("Spigot detected! Enabled tracking for mob spawner spawn events.");
+        }
 
         final File configFile = new File(this.getDataFolder() + "/config.yml");
         if (!configFile.exists()) {
@@ -104,6 +111,9 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
             this.getLogger().info("HCF MODEEEEEEEEEEEEEEEEE (" + serverType + ")");
         }
 
+        tickCounter = new TickCounter();
+        getServer().getScheduler().runTaskTimer(this, tickCounter, 1L, 1L);
+
         TaskUtil.runTaskTimerAsync(() -> { //Save server status every 10s
             saveServerData(true);
         }, 20L, 10 * 20L);
@@ -114,7 +124,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
                 TaskUtil.runTaskNextTick(()-> saveSinglePlayerData(next, true, false));
                 Collections.rotate(playerToSave, -1);
             }
-        }, 5 * 20L, 20L); //Wait 5s so it doesn't overload on restarts...
+        }, 10 * 20L, 20L); //Wait 10s so it doesn't overload on restarts...
 
         for(Player target : Bukkit.getOnlinePlayers()){
             Bukkit.getPluginManager().callEvent(new PlayerJoinEvent(target, "ltd_es_una_puta"));
@@ -181,7 +191,6 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
             try {
                 jedis = getPool().getResource();
                 jedis.hmset("data:players:global:" + player.getUniqueId().toString(), globalInfo);
-                this.getLogger().info("Saved " + player.getName() + "'s data. - " + player.getUniqueId().toString());
                 if(!serverType.equalsIgnoreCase("lobby") && !serverType.equalsIgnoreCase("practice")) {
                     jedis.hmset("data:players:" + serverType.trim().toLowerCase() + ":" + player.getUniqueId().toString(), serverInfo);
                 }
@@ -191,7 +200,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
                     jedis.close();
                 }
             }
-            this.getLogger().info("Player data of " + player.getName() + " has been saved into Redis Backend. (Executed in " + (System.currentTimeMillis() - start) + "ms).");
+            this.getLogger().info("Player data of " + player.getName() + " ("+ player.getUniqueId().toString() +") has been saved into Redis Backend. (Executed in " + (System.currentTimeMillis() - start) + "ms).");
         }).start();
 
     }
@@ -286,6 +295,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
         }
         this.getCommand("toggletab").setExecutor(new ToggleTab(this));
         this.getCommand("staffserver").setExecutor(new StaffServerCommand(this));
+        this.getCommand("findlag").setExecutor(new FindLagCommand(this));
 
         Map<String, Map<String, Object>> map = getDescription().getCommands();
         for (Map.Entry<String, Map<String, Object>> entry : map.entrySet()) {
@@ -361,5 +371,32 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
         this.getPublisher().write("kothalert;" + koth + ";" + this.getServerName() + ";" + "aw");
     }
 
+
+    public ReportListener startListening(UUID uuid) {
+        stopListening(uuid);
+
+        ReportListener listener = spigot ? new SpigotReportListener(this) : new BukkitReportListener(this);
+        listeners.put(uuid, listener);
+        listener.start();
+
+        return listener;
+    }
+
+    public ReportListener stopListening(UUID uuid) {
+        ReportListener listener = listeners.remove(uuid);
+        if (listener != null) {
+            listener.stop();
+        }
+        return listener;
+    }
+
+    private static boolean classExists(String clazz) {
+        try {
+            Class.forName(clazz);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
 
 }

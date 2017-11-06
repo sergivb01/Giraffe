@@ -1,6 +1,6 @@
 name: Giraffe
 main: me.sergivb01.giraffe.Giraffe
-version: 0.1
+version: SNAPSHOT-1.3
 author: sergivb01
 description: Giraffe plugin
 depend: [Construct]
@@ -18,3 +18,6 @@ commands:
     description: Allows staff to teleport to another server
   toggletab:
     description: Toggles player tab
+  findlag:
+    aliases: [fl]
+    description: Helper to find server lag
