@@ -1,18 +1,18 @@
 package me.sergivb01.giraffe.listeners;
 
+import com.google.common.base.Optional;
+import me.joeleoli.construct.Construct;
+import me.joeleoli.construct.api.IConstructLibrary;
+import me.joeleoli.construct.api.IConstructPlayer;
+import me.sergivb01.giraffe.Giraffe;
+import me.sergivb01.giraffe.utils.TaskUtil;
+import me.sergivb01.giraffe.utils.tab.TabUtils;
 import net.veilmc.hcf.HCF;
 import net.veilmc.hcf.faction.event.FactionDtrChangeEvent;
 import net.veilmc.hcf.faction.event.FactionRenameEvent;
 import net.veilmc.hcf.faction.event.PlayerJoinedFactionEvent;
 import net.veilmc.hcf.faction.event.PlayerLeftFactionEvent;
 import net.veilmc.hcf.faction.type.PlayerFaction;
-import com.google.common.base.Optional;
-import me.joeleoli.construct.Construct;
-import me.joeleoli.construct.api.IConstructLibrary;
-import me.joeleoli.construct.api.IConstructPlayer;
-import me.sergivb01.giraffe.Giraffe;
-import me.sergivb01.giraffe.utils.tab.TabUtils;
-import me.sergivb01.giraffe.utils.TaskUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -23,7 +23,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
 public class FactionsTabListener implements Listener {
     private Giraffe plugin;
@@ -32,13 +31,13 @@ public class FactionsTabListener implements Listener {
     public FactionsTabListener(Giraffe plugin) {
         this.plugin = plugin;
         this.construct = Construct.getLibrary();
-        new Thread(()-> Bukkit.getScheduler().scheduleAsyncRepeatingTask(plugin, new BukkitRunnable() {
-            @Override
-            public void run() {
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    if (construct.hasTabList(player)) {
-                        updateKoth(player);
-                    }
+        new Thread(()-> TaskUtil.runTaskTimerAsync(()->{
+            if(!this.plugin.isUseTab()){
+                return;
+            }
+            for(Player player : Bukkit.getOnlinePlayers()) {
+                if (construct.hasTabList(player)) {
+                    updateKoth(player);
                 }
             }
         }, 20L, 20L)).start();
