@@ -65,10 +65,9 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
         }
 
         saveServerData(false);
-        TaskUtil.runTaskNextTick(()->{
-            this.subscriber.getJedisPubSub().unsubscribe();
-            this.pool.destroy();
-        });
+
+        this.subscriber.getJedisPubSub().unsubscribe();
+        this.pool.destroy();
 
         instance = null;
     }
@@ -287,6 +286,9 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
                 if (jedis != null) {
                     jedis.close();
                 }
+            }
+            if(!up){
+                this.getLogger().warning("Saved server data with offline status.");
             }
         }).start();
 
