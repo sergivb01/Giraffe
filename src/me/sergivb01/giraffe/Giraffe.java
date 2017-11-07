@@ -65,10 +65,10 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
         }
 
         saveServerData(false);
-        TaskUtil.runTaskLater(()->{
+        TaskUtil.runTaskNextTick(()->{
             this.subscriber.getJedisPubSub().unsubscribe();
             this.pool.destroy();
-        }, 20L);
+        });
 
         instance = null;
     }
