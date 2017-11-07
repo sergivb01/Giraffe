@@ -2,11 +2,11 @@ package me.sergivb01.giraffe;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.joeleoli.construct.util.TaskUtil;
 import me.sergivb01.giraffe.commands.*;
 import me.sergivb01.giraffe.listeners.*;
 import me.sergivb01.giraffe.redis.DataPublisher;
 import me.sergivb01.giraffe.redis.DataSubscriber;
+import me.sergivb01.giraffe.utils.TaskUtil;
 import me.sergivb01.giraffe.utils.lag.TickCounter;
 import me.sergivb01.giraffe.utils.report.BukkitReportListener;
 import me.sergivb01.giraffe.utils.report.ReportListener;
@@ -59,15 +59,16 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
 
 
     public void onDisable() {
+        broadcastStatus(false);
         for(Player player : Bukkit.getOnlinePlayers()){
             saveSinglePlayerData(player, false, true);
         }
 
         saveServerData(false);
-        TaskUtil.runTaskNextTick(()->{
+        TaskUtil.runTaskLater(()->{
             this.subscriber.getJedisPubSub().unsubscribe();
             this.pool.destroy();
-        });
+        }, 20L);
 
         instance = null;
     }
@@ -136,7 +137,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
             Bukkit.getPluginManager().callEvent(new PlayerJoinEvent(target, "ltd_es_una_puta"));
         }
 
-
+        TaskUtil.runTaskLater(()-> broadcastStatus(true), 3 * 20L);
     }
 
     public void addToList(Player player){
@@ -376,6 +377,9 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
         this.getPublisher().write("kothalert;" + koth + ";" + this.getServerName() + ";" + "aw");
     }
 
+    private void broadcastStatus(boolean online){
+        this.getPublisher().write("srvstatus;" + getServerName() + ";" + (online  ? "up" : "down") + ";" + "aw");
+    }
 
     public ReportListener startListening(UUID uuid) {
         stopListening(uuid);

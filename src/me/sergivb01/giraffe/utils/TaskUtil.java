@@ -11,6 +11,10 @@ public class TaskUtil {
         return Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, run, 1L);
     }
 
+    public static int runTaskLater(final Runnable run, final long ticks) {
+        return Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, run, ticks);
+    }
+
     public static int runTaskAsyncNextTick(final Runnable run) {
         return Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, run, 1L);
     }

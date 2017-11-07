@@ -39,6 +39,10 @@ public class DataSubscriber
                         final String server = args[2];
                         final String msg = args[3];
                         switch (command) {
+                            case "srvstatus": {
+                                Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6&lServer Status Alert&8] &9&l" + sender + " &eis now " + (server.equalsIgnoreCase("up") ? "&eonline" : "&coffline")) + "&e!");
+                                break;
+                            }
                             case "kothalert": {
                                     Bukkit.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6&lKoth Alert&8] &9&l" + sender + " &eIS NOW RUNNING ON &a&l" + server.toUpperCase() + "&e."));
                                 break;
