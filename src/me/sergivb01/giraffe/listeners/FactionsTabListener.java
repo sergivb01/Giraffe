@@ -7,6 +7,7 @@ import me.joeleoli.construct.api.IConstructPlayer;
 import me.sergivb01.giraffe.Giraffe;
 import me.sergivb01.giraffe.utils.TaskUtil;
 import me.sergivb01.giraffe.utils.tab.TabUtils;
+import net.minecraft.server.v1_7_R4.MinecraftServer;
 import net.veilmc.hcf.HCF;
 import net.veilmc.hcf.faction.event.FactionDtrChangeEvent;
 import net.veilmc.hcf.faction.event.FactionRenameEvent;
@@ -27,10 +28,12 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class FactionsTabListener implements Listener {
     private Giraffe plugin;
     private IConstructLibrary construct;
+    private HCF hcf;
 
     public FactionsTabListener(Giraffe plugin) {
         this.plugin = plugin;
         this.construct = Construct.getLibrary();
+        this.hcf = HCF.getInstance();
         new Thread(()-> TaskUtil.runTaskTimerAsync(()->{
             if(!this.plugin.isUseTab()){
                 return;
@@ -40,6 +43,8 @@ public class FactionsTabListener implements Listener {
                     updateKoth(player);
                 }
             }
+            MinecraftServer.getServer().setMotd(ChatColor.YELLOW + "Next Koth:" + "\n" +
+                    ChatColor.translateAlternateColorCodes('&', ((hcf.NEXT_KOTH > 0) ? "&9&l" + hcf.getNextGame() + " &7(" + hcf.getKothRemaining() + ")" : "&7None Scheduled")));
         }, 20L, 5 * 20L)).start();
     }
 
@@ -310,7 +315,6 @@ public class FactionsTabListener implements Listener {
 
     private void updateKoth(Player player){
         IConstructPlayer tabPlayer = this.construct.getPlayer(player);
-        HCF hcf = HCF.getInstance();
         tabPlayer.setPosition(20, ChatColor.translateAlternateColorCodes('&', ((hcf.NEXT_KOTH > 0) ? "&9&l" + hcf.getNextGame() + " &7(" + hcf.getKothRemaining() + ")" : "&7None Scheduled")));
     }
 
