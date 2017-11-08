@@ -33,7 +33,7 @@ public class DataSubscriber
             public void onMessage(final String channel, final String message) {
                 if (channel.equalsIgnoreCase("giraffe")) {
                     final String[] args = message.split(";");
-                    if (args.length > 2) {
+                    if (args.length > 3) {
                         final String command = args[0].toLowerCase();
                         final String sender = args[1];
                         final String server = args[2];
@@ -58,7 +58,7 @@ public class DataSubscriber
                             case "request": {
                                 for (final Player staff : Bukkit.getOnlinePlayers()) {
                                     if (staff.hasPermission("rank.staff") && BasePlugin.getPlugin().getUserManager().getUser(staff.getUniqueId()).isStaffChatVisible()) {
-                                        new Text(ChatColor.BLUE + "[Request] " + ChatColor.GRAY + "[" + server + "] " + ChatColor.AQUA + sender + ChatColor.GRAY + " requested assistance.").setHoverText(ChatColor.BLUE + "Click here to teleport to " + ChatColor.GRAY + server).setClick(ClickAction.RUN_COMMAND, "/staffserver " + server).send(staff);
+                                        new Text(ChatColor.BLUE + "[Request] " + ChatColor.GRAY + "[" + server + "] " + ChatColor.AQUA + sender + ChatColor.GRAY + " requested assistance.").setHoverText(ChatColor.BLUE + "Click here to go to " + ChatColor.AQUA + server).setClick(ClickAction.RUN_COMMAND, "/staffserver " + server).send(staff);
                                         staff.sendMessage(ChatColor.BLUE + "    Reason: " + ChatColor.GRAY + msg);
                                     }
                                 }
@@ -68,7 +68,7 @@ public class DataSubscriber
                                 final String target = args[4];
                                 for (final Player staff2 : Bukkit.getOnlinePlayers()) {
                                     if (staff2.hasPermission("rank.staff") && BasePlugin.getPlugin().getUserManager().getUser(staff2.getUniqueId()).isStaffChatVisible()) {
-                                        new Text(ChatColor.RED + "[Report] " + ChatColor.GRAY + "[" + server + "] " + ChatColor.AQUA + sender + ChatColor.GRAY + " has reported " + ChatColor.RESET + target + ChatColor.GRAY + ".").setHoverText(ChatColor.RED + "Click here to teleport to " + ChatColor.GRAY + server).setClick(ClickAction.RUN_COMMAND, "/staffserver " + server).send(staff2);
+                                        new Text(ChatColor.RED + "[Report] " + ChatColor.GRAY + "[" + server + "] " + ChatColor.AQUA + target + ChatColor.GRAY + " has been reported.").setHoverText(ChatColor.GRAY + "(Reported by " + sender + ") " + ChatColor.RED + "Click here to go to " + ChatColor.AQUA + server).setClick(ClickAction.RUN_COMMAND, "/staffserver " + server).send(staff2);
                                         staff2.sendMessage(ChatColor.RED + "    Reason:" + ChatColor.GRAY + msg.replace(target, ""));
                                     }
                                 }
@@ -86,6 +86,8 @@ public class DataSubscriber
                                 plugin.getLogger().warning("Recived data but i don't know how to handle it! \"" + message + "\"");
                                 break;
                         }
+                    }else{
+                        plugin.getLogger().severe("Recived data from Giraffe channel but args are not > 4! Message: \"" + message + "\"");
                     }
                 }else{
                     plugin.getLogger().warning("Recived data from \"" + channel + "\" i don't know how to handle it! \"" + message + "\"");
