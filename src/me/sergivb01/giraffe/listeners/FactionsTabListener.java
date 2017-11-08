@@ -7,7 +7,6 @@ import me.joeleoli.construct.api.IConstructPlayer;
 import me.sergivb01.giraffe.Giraffe;
 import me.sergivb01.giraffe.utils.TaskUtil;
 import me.sergivb01.giraffe.utils.tab.TabUtils;
-import net.minecraft.server.v1_7_R4.MinecraftServer;
 import net.veilmc.hcf.HCF;
 import net.veilmc.hcf.faction.event.FactionDtrChangeEvent;
 import net.veilmc.hcf.faction.event.FactionRenameEvent;
@@ -43,8 +42,6 @@ public class FactionsTabListener implements Listener {
                     updateKoth(player);
                 }
             }
-            MinecraftServer.getServer().setMotd(ChatColor.YELLOW + "Next Koth:" + "\n" +
-                    ChatColor.translateAlternateColorCodes('&', ((hcf.NEXT_KOTH > 0) ? "&9&l" + hcf.getNextGame() + " &7(" + hcf.getKothRemaining() + ")" : "&7None Scheduled")));
         }, 20L, 5 * 20L)).start();
     }
 
