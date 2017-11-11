@@ -61,14 +61,7 @@ public class FactionsTabListener implements Listener {
         });
 
         if(HCF.getPlugin().getFactionManager().getPlayerFaction(player.getUniqueId()) != null){
-            TaskUtil.runTaskAsyncNextTick(() -> {
-                for(Player member : HCF.getPlugin().getFactionManager().getPlayerFaction(player.getUniqueId()).getOnlinePlayers()){
-                    if(this.construct.hasTabList(member)){
-                        updateFactions(member);
-                        updateFactionsDetails(member);
-                    }
-                }
-            });
+            updateFactionMembersTab(player);
         }
 
         TaskUtil.runTaskAsyncNextTick(() -> {
@@ -138,14 +131,7 @@ public class FactionsTabListener implements Listener {
             });
 
             if(HCF.getPlugin().getFactionManager().getPlayerFaction(death.getUniqueId()) != null) {
-                TaskUtil.runTaskAsyncNextTick(() -> {
-                    for (Player member : HCF.getPlugin().getFactionManager().getPlayerFaction(death.getUniqueId()).getOnlinePlayers()) {
-                        if (this.construct.hasTabList(member)) {
-                            updateFactions(member);
-                            updateFactionsDetails(member);
-                        }
-                    }
-                });
+                updateFactionMembersTab(player);
             }
 
             TaskUtil.runTaskAsyncNextTick(() -> {
@@ -222,12 +208,7 @@ public class FactionsTabListener implements Listener {
 
 
             TaskUtil.runTaskAsyncNextTick(() -> {
-                for(Player member : HCF.getPlugin().getFactionManager().getPlayerFaction(player.getUniqueId()).getOnlinePlayers()){
-                    if(this.construct.hasTabList(member)){
-                        updateFactions(member);
-                        updateFactionsDetails(member);
-                    }
-                }
+                updateFactionMembersTab(player);
             });
 
             TaskUtil.runTaskAsyncNextTick(() -> {
@@ -275,6 +256,17 @@ public class FactionsTabListener implements Listener {
 
             TaskUtil.runTaskAsyncNextTick(()-> updatePlayerLocation(player));
         }
+    }
+
+    private void updateFactionMembersTab(Player player){
+        TaskUtil.runTaskAsyncNextTick(() -> {
+            for(Player member : HCF.getPlugin().getFactionManager().getPlayerFaction(player.getUniqueId()).getOnlinePlayers()){
+                if(this.construct.hasTabList(member)){
+                    updateFactions(member);
+                    updateFactionsDetails(member);
+                }
+            }
+        });
     }
 
     private void initialUpdate(Player player) {
