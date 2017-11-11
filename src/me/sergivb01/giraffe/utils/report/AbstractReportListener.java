@@ -78,8 +78,8 @@ public abstract class AbstractReportListener implements ReportListener {
             report.append("**Report issues at:** @sergivb01 on Slack\n\n");
             report.append("**Report duration:** ").append(time).append(" seconds   \n");
             report.append("**Report duration (ticks):** ").append(ticks).append("   \n");
-            report.append("**Lost ticks (count):** ").append(ticks - (time * 20)).append(" ticks").append("   \n");
-            report.append("**Ran ticks (%):** ").append((ticks * (time * 20)) / time).append("% of ticks were ran").append("   \n");
+            report.append("**Lost ticks (count):** ").append((time * 20) - ticks).append(" ticks").append("   \n");
+            report.append("**Ran ticks (%):** ").append((ticks * 100) / (time * 20)).append("% of ticks were ran").append("   \n");
             report.append("**Report time:** ").append(startDate).append("   \n\n");
 
             appendData(report);
