@@ -139,6 +139,10 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
         TaskUtil.runTaskLater(()-> broadcastStatus(true), 3 * 20L);
     }
 
+    public void announceBan(Player player){
+        this.getPublisher().write("banalert;" + player.getName() + ";" + this.getServerName() + ";" + "aw");
+    }
+
     public void addToList(Player player){
         new Thread(() -> {
             Jedis jedis = null;

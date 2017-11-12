@@ -44,7 +44,11 @@ public class DataSubscriber
                                 break;
                             }
                             case "kothalert": {
-                                    Bukkit.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6&lKoth Alert&8] &9&l" + sender + " &eIS NOW RUNNING ON &a&l" + server.toUpperCase() + "&e."));
+                                Bukkit.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&8[&6&lKoth Alert&8] &9&l" + sender + " &eIS NOW RUNNING ON &a&l" + server.toUpperCase() + "&e."));
+                                break;
+                            }
+                            case "banalert": {
+                                Bukkit.getServer().broadcastMessage(ChatColor.translateAlternateColorCodes('&', "&6&lANTICHEAT &a&l" + sender + " &ehas been caught Cheating in &a&l" + server.toUpperCase() + " &eand has been banned."));
                                 break;
                             }
                             case "staffchat": {
