@@ -157,12 +157,12 @@ public class LobbyTabListener implements Listener {
         tabPlayer.setPosition(11, c("&7Kills: &a" + (kits.getOrDefault("kills", "0"))));
         tabPlayer.setPosition(12, c("&7Deaths: &a" + (kits.getOrDefault("deaths", "0"))));
         tabPlayer.setPosition(13, c(""));
-        tabPlayer.setPosition(14, c(kits.get("faction_name").equals("No Faction") ? "&eFaction Statics" : " "));
+        tabPlayer.setPosition(14, c(!kits.get("faction_name").equals("No Faction") ? "&eFaction Statics" : " "));
         tabPlayer.setPosition(15, c(""));
-        tabPlayer.setPosition(16, c((kits.containsKey("faction_name") ? ("&7Name: &a" +  kits.get("faction_name")) : " ")));
-        tabPlayer.setPosition(17, c((kits.containsKey("faction_dtr") ? ("&7DTR: &a" +  kits.get("faction_dtr")) : " ")));
-        tabPlayer.setPosition(18, c((kits.containsKey("faction_online") ? ("&7Online: &a" +  kits.get("faction_online")) : " ")));
-        tabPlayer.setPosition(19, c((kits.containsKey("faction_balance") ? ("&7Balance: &a$" +  kits.get("faction_balance")) : " ")));
+        tabPlayer.setPosition(16, c((!kits.get("faction_name").equals("No Faction") ? ("&7Name: &a" +  kits.get("faction_name")) : " ")));
+        tabPlayer.setPosition(17, c((!kits.get("faction_name").equals("No Faction") ? ("&7DTR: &a" +  kits.get("faction_dtr")) : " ")));
+        tabPlayer.setPosition(18, c((!kits.get("faction_name").equals("No Faction") ? ("&7Online: &a" +  kits.get("faction_online")) : " ")));
+        tabPlayer.setPosition(19, c((!kits.get("faction_name").equals("No Faction") ? ("&7Balance: &a$" +  kits.get("faction_balance")) : " ")));
         tabPlayer.setPosition(20, c(""));
         //End first row
 
@@ -180,12 +180,12 @@ public class LobbyTabListener implements Listener {
         tabPlayer.setPosition(31, c("&7Kills: &a" + (hcf.getOrDefault("kills", "0"))));
         tabPlayer.setPosition(32, c("&7Deaths: &a" + (hcf.getOrDefault("deaths", "0"))));
         tabPlayer.setPosition(33, c(""));
-        tabPlayer.setPosition(34, c(hcf.get("faction_name").equals("No Faction") ? "&eFaction Statics" : " "));
+        tabPlayer.setPosition(34, c(!hcf.get("faction_name").equals("No Faction") ? "&eFaction Statics" : " "));
         tabPlayer.setPosition(35, c(""));
-        tabPlayer.setPosition(36, c((hcf.containsKey("faction_name") ? ("&7Name: &a" +  hcf.get("faction_name")) : " ")));
-        tabPlayer.setPosition(37, c((hcf.containsKey("faction_dtr") ? ("&7DTR: &a" +  hcf.get("faction_dtr")) : " ")));
-        tabPlayer.setPosition(38, c((hcf.containsKey("faction_online") ? ("&7Online: &a" +  hcf.get("faction_online")) : " ")));
-        tabPlayer.setPosition(39, c((hcf.containsKey("faction_balance") ? ("&7Balance: &a$" +  hcf.get("faction_balance")) : " ")));
+        tabPlayer.setPosition(36, c((!hcf.get("faction_name").equals("No Faction") ? ("&7Name: &a" +  hcf.get("faction_name")) : " ")));
+        tabPlayer.setPosition(37, c((!hcf.get("faction_name").equals("No Faction") ? ("&7DTR: &a" +  hcf.get("faction_dtr")) : " ")));
+        tabPlayer.setPosition(38, c((!hcf.get("faction_name").equals("No Faction") ? ("&7Online: &a" +  hcf.get("faction_online")) : " ")));
+        tabPlayer.setPosition(39, c((!hcf.get("faction_name").equals("No Faction") ? ("&7Balance: &a$" +  hcf.get("faction_balance")) : " ")));
         tabPlayer.setPosition(40, c(""));
         //End second row
 
@@ -203,12 +203,12 @@ public class LobbyTabListener implements Listener {
         tabPlayer.setPosition(51, c("&7Kills: &a" + (lite.getOrDefault("kills", "0"))));
         tabPlayer.setPosition(52, c("&7Deaths: &a" + (lite.getOrDefault("deaths", "0"))));
         tabPlayer.setPosition(53, c(""));
-        tabPlayer.setPosition(54, c(lite.get("faction_name").equals("No Faction") ? "&eFaction Statics" : " "));
+        tabPlayer.setPosition(54, c(!lite.get("faction_name").equals("No Faction") ? "&eFaction Statics" : " "));
         tabPlayer.setPosition(55, c(""));
-        tabPlayer.setPosition(56, c((lite.containsKey("faction_name") ? ("&7Name: &a" +  lite.get("faction_name")) : " ")));
-        tabPlayer.setPosition(57, c((lite.containsKey("faction_dtr") ? ("&7DTR: &a" +  lite.get("faction_dtr")) : " ")));
-        tabPlayer.setPosition(58, c((lite.containsKey("faction_online") ? ("&7Online: &a" +  lite.get("faction_online")) : " ")));
-        tabPlayer.setPosition(59, c((lite.containsKey("faction_balance") ? ("&7Balance: &a$" +  lite.get("faction_balance")) : " ")));
+        tabPlayer.setPosition(56, c((!lite.get("faction_name").equals("No Faction") ? ("&7Name: &a" +  lite.get("faction_name")) : " ")));
+        tabPlayer.setPosition(57, c((!lite.get("faction_name").equals("No Faction") ? ("&7DTR: &a" +  lite.get("faction_dtr")) : " ")));
+        tabPlayer.setPosition(58, c((!lite.get("faction_name").equals("No Faction") ? ("&7Online: &a" +  lite.get("faction_online")) : " ")));
+        tabPlayer.setPosition(59, c((!lite.get("faction_name").equals("No Faction") ? ("&7Balance: &a$" +  lite.get("faction_balance")) : " ")));
         tabPlayer.setPosition(60, c(""));
 
 
