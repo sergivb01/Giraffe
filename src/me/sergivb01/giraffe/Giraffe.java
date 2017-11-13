@@ -56,6 +56,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
     @Getter private TickCounter tickCounter;
     private final Map<UUID, ReportListener> listeners = new HashMap<>();
     private boolean spigot = false;
+    @Getter private LobbyTabListener lobbyTabListener;
 
 
     public void onDisable() {
@@ -104,7 +105,8 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
 
         switch (serverType) {
             case "lobby":
-                this.getServer().getPluginManager().registerEvents(new LobbyTabListener(this), this);
+                this.lobbyTabListener = new LobbyTabListener(this);
+                this.getServer().getPluginManager().registerEvents(lobbyTabListener, this);
                 this.getLogger().info("LOBBY MODEEEEEEEEEEEEEE");
                 break;
             case "practice":
@@ -339,7 +341,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("PlayerCount");
         out.writeUTF(server);
-
+        
         player.sendPluginMessage(this, "RedisBungee", out.toByteArray());
 
     }
