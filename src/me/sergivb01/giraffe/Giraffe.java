@@ -218,16 +218,15 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
     }
 
     public void saveFaction(PlayerFaction playerFaction){
-
-        new Thread(()->{
+        TaskUtil.runTaskAsyncNextTick(new Thread(() -> {
             final String cleanServer = serverType.trim().toLowerCase();
             Map<String, String> factionInfo = new HashedMap<>();
 
             boolean remove = false;
-            if(playerFaction.getName() == null){
+            if (playerFaction.getName() == null) {
                 remove = true;
                 this.getLogger().warning("Removing ");
-            }else {
+            } else {
 
                 factionInfo.put("faction_name", playerFaction.getName());
                 factionInfo.put("faction_leader", playerFaction.getLeader().getName());
@@ -236,9 +235,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
                 factionInfo.put("faction_dtrregen", String.valueOf(playerFaction.getRemainingRegenerationTime()));
                 factionInfo.put("faction_balance", String.valueOf(playerFaction.getBalance()));
 
-                ArrayList<String> alliesNames = new ArrayList<>();
-
-                alliesNames.addAll(playerFaction.getAlliedFactions().stream().map(Faction::getName).collect(Collectors.toList()));
+                ArrayList<String> alliesNames = playerFaction.getAlliedFactions().stream().map(Faction::getName).collect(Collectors.toCollection(ArrayList::new));
 
                 factionInfo.put("faction_allies", (alliesNames.size() <= 0 ? "No allies" : alliesNames.toString().replace("[", "").replace("]", "")));
             }
@@ -246,19 +243,19 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
             Jedis jedis = null;
             try {
                 jedis = getPool().getResource();
-                if(remove) {
+                if (remove) {
                     jedis.del("data:factionlist:" + cleanServer + ":" + playerFaction.getName());
-                }else{
+                } else {
                     jedis.hmset("data:factionlist:" + cleanServer + ":" + playerFaction.getName(), factionInfo);
 
                 }
                 getPool().returnResource(jedis);
-            }finally {
+            } finally {
                 if (jedis != null) {
                     jedis.close();
                 }
             }
-        }).start();
+        })::start, 10L);
     }
 
 
