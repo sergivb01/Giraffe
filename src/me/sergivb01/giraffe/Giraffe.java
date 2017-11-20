@@ -24,6 +24,7 @@ import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Statistic;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -186,8 +187,8 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
                 final PlayerFaction playerFaction = hcf.getFactionManager().getPlayerFaction(player.getUniqueId());
 
                 serverInfo.put("playtime", String.valueOf(BasePlugin.getPlugin().getPlayTimeManager().getTotalPlayTime(player.getUniqueId())));
-                serverInfo.put("kills", String.valueOf(factionUser.getKills()));
-                serverInfo.put("deaths", String.valueOf(factionUser.getDeaths()));
+                serverInfo.put("kills", String.valueOf(player.getStatistic(Statistic.PLAYER_KILLS)));
+                serverInfo.put("deaths", String.valueOf(player.getStatistic(Statistic.DEATHS)));
                 serverInfo.put("diamonds", String.valueOf(factionUser.getDiamondsMined()));
                 serverInfo.put("lives", String.valueOf(hcf.getDeathbanManager().getLives(player.getUniqueId())));
                 serverInfo.put("balance", String.valueOf(hcf.getEconomyManager().getBalance(player.getUniqueId())));
