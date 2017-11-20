@@ -20,8 +20,6 @@ import redis.clients.jedis.Jedis;
 import java.util.Map;
 import java.util.Random;
 
-import static org.bukkit.Bukkit.getScheduler;
-
 public class LobbyTabListener implements Listener {
     private Giraffe plugin;
     private IConstructLibrary construct;
@@ -38,13 +36,12 @@ public class LobbyTabListener implements Listener {
             if(Bukkit.getOnlinePlayers().size() == 0) return;
             Player p1 = (Player) Bukkit.getOnlinePlayers().toArray()[new Random().nextInt(Bukkit.getOnlinePlayers().size())];
             this.plugin.getCount(p1, "ALL");
+            updateServers();
             for(Player player : Bukkit.getOnlinePlayers()){
                 if(this.construct.hasTabList(player)){
                     this.initialUpdate(player);
                 }
             }
-
-            getScheduler().runTaskTimer(plugin, this::updateServers, 10L, 10L);
         }, 10L, 10L)).start();
     }
 
@@ -143,8 +140,7 @@ public class LobbyTabListener implements Listener {
 
         Map<String, String> lite = getPlayerData(player, "lite");
         if(lite.get("faction_name") != null) lite.putAll(getFactionData(lite.get("faction_name"), "lite"));
-
-
+        
 
         //Start first row
         tabPlayer.setPosition(4, c("&eStore"));
@@ -153,11 +149,11 @@ public class LobbyTabListener implements Listener {
         tabPlayer.setPosition(10, c("&7Online: &a" + kitsServer.get("online") + "/" + kitsServer.get("max")));
         tabPlayer.setPosition(11, c("&7Kills: &a" + (kits.getOrDefault("kills", "0"))));
         tabPlayer.setPosition(12, c("&7Deaths: &a" + (kits.getOrDefault("deaths", "0"))));
-        tabPlayer.setPosition(14, c(!kits.get("faction_name").equals("No Faction") ? "&eFaction Statics" : " "));
-        tabPlayer.setPosition(16, c((!kits.get("faction_name").equals("No Faction") ? ("&7Name: &a" +  kits.get("faction_name")) : " ")));
-        tabPlayer.setPosition(17, c((!kits.get("faction_name").equals("No Faction") ? ("&7DTR: &a" +  kits.get("faction_dtr")) : " ")));
-        tabPlayer.setPosition(18, c((!kits.get("faction_name").equals("No Faction") ? ("&7Online: &a" +  kits.get("faction_online")) : " ")));
-        tabPlayer.setPosition(19, c((!kits.get("faction_name").equals("No Faction") ? ("&7Balance: &a$" +  kits.get("faction_balance")) : " ")));
+        tabPlayer.setPosition(14, c(existIn(kits) ? "&eFaction Statics" : " "));
+        tabPlayer.setPosition(16, c(existIn(kits) ? ("&7Name: &a" +  kits.get("faction_name")) : " "));
+        tabPlayer.setPosition(17, c(existIn(kits) ? ("&7DTR: &a" +  kits.get("faction_dtr")) : " "));
+        tabPlayer.setPosition(18, c(existIn(kits) ? ("&7Online: &a" +  kits.get("faction_online")) : " "));
+        tabPlayer.setPosition(19, c(existIn(kits) ? ("&7Balance: &a$" +  kits.get("faction_balance")) : " "));
         //End first row
 
         //Start second row
@@ -170,11 +166,11 @@ public class LobbyTabListener implements Listener {
         tabPlayer.setPosition(30, c("&7Online: &a" + hcfServer.get("online") + "/" + hcfServer.get("max")));
         tabPlayer.setPosition(31, c("&7Kills: &a" + (hcf.getOrDefault("kills", "0"))));
         tabPlayer.setPosition(32, c("&7Deaths: &a" + (hcf.getOrDefault("deaths", "0"))));
-        tabPlayer.setPosition(34, c(!hcf.get("faction_name").equals("No Faction") ? "&eFaction Statics" : " "));
-        tabPlayer.setPosition(36, c((!hcf.get("faction_name").equals("No Faction") ? ("&7Name: &a" +  hcf.get("faction_name")) : " ")));
-        tabPlayer.setPosition(37, c((!hcf.get("faction_name").equals("No Faction") ? ("&7DTR: &a" +  hcf.get("faction_dtr")) : " ")));
-        tabPlayer.setPosition(38, c((!hcf.get("faction_name").equals("No Faction") ? ("&7Online: &a" +  hcf.get("faction_online")) : " ")));
-        tabPlayer.setPosition(39, c((!hcf.get("faction_name").equals("No Faction") ? ("&7Balance: &a$" +  hcf.get("faction_balance")) : " ")));
+        tabPlayer.setPosition(34, c(existIn(hcf) ? "&eFaction Statics" : " "));
+        tabPlayer.setPosition(36, c(existIn(hcf) ? ("&7Name: &a" +  hcf.get("faction_name")) : " "));
+        tabPlayer.setPosition(37, c(existIn(hcf) ? ("&7DTR: &a" +  hcf.get("faction_dtr")) : " "));
+        tabPlayer.setPosition(38, c(existIn(hcf) ? ("&7Online: &a" +  hcf.get("faction_online")) : " "));
+        tabPlayer.setPosition(39, c(existIn(hcf) ? ("&7Balance: &a$" +  hcf.get("faction_balance")) : " "));
         //End second row
 
         //Start third row
@@ -184,16 +180,17 @@ public class LobbyTabListener implements Listener {
         tabPlayer.setPosition(50, c("&7Online: &a" + liteServer.get("online") + "/" + liteServer.get("max")));
         tabPlayer.setPosition(51, c("&7Kills: &a" + (lite.getOrDefault("kills", "0"))));
         tabPlayer.setPosition(52, c("&7Deaths: &a" + (lite.getOrDefault("deaths", "0"))));
-        tabPlayer.setPosition(54, c(!lite.get("faction_name").equals("No Faction") ? "&eFaction Statics" : " "));
-        tabPlayer.setPosition(56, c((!lite.get("faction_name").equals("No Faction") ? ("&7Name: &a" +  lite.get("faction_name")) : " ")));
-        tabPlayer.setPosition(57, c((!lite.get("faction_name").equals("No Faction") ? ("&7DTR: &a" +  lite.get("faction_dtr")) : " ")));
-        tabPlayer.setPosition(58, c((!lite.get("faction_name").equals("No Faction") ? ("&7Online: &a" +  lite.get("faction_online")) : " ")));
-        tabPlayer.setPosition(59, c((!lite.get("faction_name").equals("No Faction") ? ("&7Balance: &a$" +  lite.get("faction_balance")) : " ")));
-
-
+        tabPlayer.setPosition(54, c((existIn(lite) ? "&eFaction Statics" : " ")));
+        tabPlayer.setPosition(56, c(existIn(lite) ? ("&7Name: &a" +  lite.get("faction_name")) : " "));
+        tabPlayer.setPosition(57, c((existIn(lite) || lite.isEmpty()) ? ("&7DTR: &a" +  lite.get("faction_dtr")) : " "));
+        tabPlayer.setPosition(58, c((existIn(lite) || lite.isEmpty()) ? ("&7Online: &a" +  lite.get("faction_online")) : " "));
+        tabPlayer.setPosition(59, c((existIn(lite) || lite.isEmpty()) ? ("&7Balance: &a$" +  lite.get("faction_balance")) : " "));
 
     }
 
 
+    private boolean existIn(Map<String, String> map) {
+        return map.get("faction_name") != null && !map.get("faction_name").equals("No Faction");
+    }
 
 }
