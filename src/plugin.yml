@@ -18,6 +18,8 @@ commands:
     description: Allows staff to teleport to another server
   toggletab:
     description: Toggles player tab
+  testerino:
+    description: Used for testing in development
   findlag:
     aliases: [fl]
     description: Helper to find server lag

@@ -147,7 +147,6 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
     }
 
     public void addToList(Player player){
-        new Thread(() -> {
             Jedis jedis = null;
             try {
                 jedis = getPool().getResource();
@@ -158,12 +157,10 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
                     jedis.close();
                 }
             }
-
-        }).start();
     }
 
     public void saveSinglePlayerData(Player player, boolean online, boolean isNotRegular){
-        new Thread(() -> {
+
             long start = System.currentTimeMillis();
             final String cleanServer = serverType.trim().toLowerCase() + "_";
             Map<String, String> globalInfo = new HashedMap<>();
@@ -214,12 +211,11 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
                 }
             }
             this.getLogger().info("Player data of " + player.getName() + " ("+ player.getUniqueId().toString() +") has been saved into Redis Backend. (Executed in " + (System.currentTimeMillis() - start) + "ms).");
-        }).start();
 
     }
 
     public void saveFaction(PlayerFaction playerFaction){
-        TaskUtil.runTaskAsyncNextTick(new Thread(() -> {
+        TaskUtil.runTaskAsyncNextTick(()->{
             final String cleanServer = serverType.trim().toLowerCase();
             Map<String, String> factionInfo = new HashedMap<>();
 
@@ -256,12 +252,12 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
                     jedis.close();
                 }
             }
-        })::start, 10L);
+        });
     }
 
 
     public void saveServerData(boolean up){
-        new Thread(() -> {
+        TaskUtil.runTaskAsyncNextTick(()->{
             String serverUptime = DurationFormatUtils.formatDurationWords(ManagementFactory.getRuntimeMXBean().getUptime(), true, true);
 
             Map<String, String> serverStatus = new HashMap<>();
@@ -294,7 +290,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
             if(!up){
                 this.getLogger().warning("Saved server data with offline status.");
             }
-        }).start();
+        });
 
     }
 
@@ -308,6 +304,7 @@ public class Giraffe extends JavaPlugin implements PluginMessageListener {
         this.getCommand("toggletab").setExecutor(new ToggleTab(this));
         this.getCommand("staffserver").setExecutor(new StaffServerCommand(this));
         this.getCommand("findlag").setExecutor(new FindLagCommand(this));
+        this.getCommand("testerino").setExecutor(new TesterinoCommand(this));
 
         Map<String, Map<String, Object>> map = getDescription().getCommands();
         for (Map.Entry<String, Map<String, Object>> entry : map.entrySet()) {

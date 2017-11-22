@@ -4,8 +4,8 @@ import lombok.Getter;
 import me.joeleoli.construct.Construct;
 import me.joeleoli.construct.api.IConstructLibrary;
 import me.joeleoli.construct.api.IConstructPlayer;
-import me.joeleoli.construct.util.TaskUtil;
 import me.sergivb01.giraffe.Giraffe;
+import me.sergivb01.giraffe.utils.TaskUtil;
 import org.apache.commons.collections4.map.HashedMap;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -42,7 +42,7 @@ public class LobbyTabListener implements Listener {
                     this.initialUpdate(player);
                 }
             }
-        }, 10L, 10L)).start();
+        }, 10L, 20L)).start();
     }
 
     @EventHandler
@@ -67,20 +67,13 @@ public class LobbyTabListener implements Listener {
     public void onQuit(PlayerQuitEvent event) {
         if(!this.plugin.isUseTab()) return;
 
-        TaskUtil.runTaskNextTick(() -> {
-            this.construct.removeTabList(event.getPlayer());
-        });
-
+        TaskUtil.runTaskNextTick(() -> this.construct.removeTabList(event.getPlayer()));
     }
 
     @EventHandler
     public void onKick(PlayerKickEvent event) {
         if(!this.plugin.isUseTab()) return;
         this.construct.removeTabList(event.getPlayer());
-    }
-
-    private String c(String str){
-        return ChatColor.translateAlternateColorCodes('&', str);
     }
 
     private void updateServers(){
@@ -100,11 +93,12 @@ public class LobbyTabListener implements Listener {
 
     private Map<String, String> getPlayerData(Player player, String gamemode){
         Map<String, String> toReturn;
+
         Jedis jedis = null;
         try {
-            jedis = this.plugin.getPool().getResource();
+            jedis = plugin.getPool().getResource();
             toReturn =  jedis.hgetAll("data:players:" + gamemode + ":" + player.getUniqueId().toString());
-            this.plugin.getPool().returnResource(jedis);
+            plugin.getPool().returnResource(jedis);
         }finally {
             if (jedis != null) {
                 jedis.close();
@@ -129,65 +123,70 @@ public class LobbyTabListener implements Listener {
         return toReturn;
     }
 
-
     private void initialUpdate(Player player){
         IConstructPlayer tabPlayer = this.construct.getPlayer(player);
-        Map<String, String> kits = getPlayerData(player, "kits");
-        if(kits.get("faction_name") != null) kits.putAll(getFactionData(kits.get("faction_name"), "kits"));
+        TaskUtil.runTaskAsyncNextTick(()->{
 
-        Map<String, String> hcf = getPlayerData(player, "hcf");
-        if(hcf.get("faction_name") != null) hcf.putAll(getFactionData(hcf.get("faction_name"), "hcf"));
+            Map<String, String> kits = getPlayerData(player, "kits");
+            if(kits.get("faction_name") != null) kits.putAll(getFactionData(kits.get("faction_name"), "kits"));
 
-        Map<String, String> lite = getPlayerData(player, "lite");
-        if(lite.get("faction_name") != null) lite.putAll(getFactionData(lite.get("faction_name"), "lite"));
-        
+            Map<String, String> hcf = getPlayerData(player, "hcf");
+            if(hcf.get("faction_name") != null) hcf.putAll(getFactionData(hcf.get("faction_name"), "hcf"));
 
-        //Start first row
-        tabPlayer.setPosition(4, c("&eStore"));
-        tabPlayer.setPosition(5, c("&7store.veilhcf.us"));
-        tabPlayer.setPosition(9, c("&eHardcore Kits"));
-        tabPlayer.setPosition(10, c("&7Online: &a" + kitsServer.get("online") + "/" + kitsServer.get("max")));
-        tabPlayer.setPosition(11, c("&7Kills: &a" + (kits.getOrDefault("kills", "0"))));
-        tabPlayer.setPosition(12, c("&7Deaths: &a" + (kits.getOrDefault("deaths", "0"))));
-        tabPlayer.setPosition(14, c(existIn(kits) ? "&eFaction Statics" : " "));
-        tabPlayer.setPosition(16, c(existIn(kits) ? ("&7Name: &a" +  kits.get("faction_name")) : " "));
-        tabPlayer.setPosition(17, c(existIn(kits) ? ("&7DTR: &a" +  kits.get("faction_dtr")) : " "));
-        tabPlayer.setPosition(18, c(existIn(kits) ? ("&7Online: &a" +  kits.get("faction_online")) : " "));
-        tabPlayer.setPosition(19, c(existIn(kits) ? ("&7Balance: &a$" +  kits.get("faction_balance")) : " "));
-        //End first row
+            Map<String, String> lite = getPlayerData(player, "lite");
+            if(lite.get("faction_name") != null) lite.putAll(getFactionData(lite.get("faction_name"), "lite"));
 
-        //Start second row
-        tabPlayer.setPosition(21, c("&6&lVeil Network"));
-        tabPlayer.setPosition(22, c("&7" + this.plugin.getPlayerss() + "/1500"));
-        tabPlayer.setPosition(24, c("&eWebsite"));
-        tabPlayer.setPosition(25, c("&7veilhcf.us"));
-        tabPlayer.setPosition(27, c("&eServer Statics"));
-        tabPlayer.setPosition(29, c("&eHardcore Factions"));
-        tabPlayer.setPosition(30, c("&7Online: &a" + hcfServer.get("online") + "/" + hcfServer.get("max")));
-        tabPlayer.setPosition(31, c("&7Kills: &a" + (hcf.getOrDefault("kills", "0"))));
-        tabPlayer.setPosition(32, c("&7Deaths: &a" + (hcf.getOrDefault("deaths", "0"))));
-        tabPlayer.setPosition(34, c(existIn(hcf) ? "&eFaction Statics" : " "));
-        tabPlayer.setPosition(36, c(existIn(hcf) ? ("&7Name: &a" +  hcf.get("faction_name")) : " "));
-        tabPlayer.setPosition(37, c(existIn(hcf) ? ("&7DTR: &a" +  hcf.get("faction_dtr")) : " "));
-        tabPlayer.setPosition(38, c(existIn(hcf) ? ("&7Online: &a" +  hcf.get("faction_online")) : " "));
-        tabPlayer.setPosition(39, c(existIn(hcf) ? ("&7Balance: &a$" +  hcf.get("faction_balance")) : " "));
-        //End second row
 
-        //Start third row
-        tabPlayer.setPosition(44, c("&eTeamspeak"));
-        tabPlayer.setPosition(45, c("&7ts.veilmc.net"));
-        tabPlayer.setPosition(49, c("&eHardcore Lite"));
-        tabPlayer.setPosition(50, c("&7Online: &a" + liteServer.get("online") + "/" + liteServer.get("max")));
-        tabPlayer.setPosition(51, c("&7Kills: &a" + (lite.getOrDefault("kills", "0"))));
-        tabPlayer.setPosition(52, c("&7Deaths: &a" + (lite.getOrDefault("deaths", "0"))));
-        tabPlayer.setPosition(54, c((existIn(lite) ? "&eFaction Statics" : " ")));
-        tabPlayer.setPosition(56, c(existIn(lite) ? ("&7Name: &a" +  lite.get("faction_name")) : " "));
-        tabPlayer.setPosition(57, c((existIn(lite) || lite.isEmpty()) ? ("&7DTR: &a" +  lite.get("faction_dtr")) : " "));
-        tabPlayer.setPosition(58, c((existIn(lite) || lite.isEmpty()) ? ("&7Online: &a" +  lite.get("faction_online")) : " "));
-        tabPlayer.setPosition(59, c((existIn(lite) || lite.isEmpty()) ? ("&7Balance: &a$" +  lite.get("faction_balance")) : " "));
+            //Start first row
+            tabPlayer.setPosition(4, c("&eStore"));
+            tabPlayer.setPosition(5, c("&7store.veilhcf.us"));
+            tabPlayer.setPosition(9, c("&eHardcore Kits"));
+            tabPlayer.setPosition(10, c("&7Online: &a" + kitsServer.get("online") + "/" + kitsServer.get("max")));
+            tabPlayer.setPosition(11, c("&7Kills: &a" + (kits.getOrDefault("kills", "0"))));
+            tabPlayer.setPosition(12, c("&7Deaths: &a" + (kits.getOrDefault("deaths", "0"))));
+            tabPlayer.setPosition(14, c(existIn(kits) ? "&eFaction Statics" : " "));
+            tabPlayer.setPosition(16, c(existIn(kits) ? ("&7Name: &a" +  kits.get("faction_name")) : " "));
+            tabPlayer.setPosition(17, c(existIn(kits) ? ("&7DTR: &a" +  kits.get("faction_dtr")) : " "));
+            tabPlayer.setPosition(18, c(existIn(kits) ? ("&7Online: &a" +  kits.get("faction_online")) : " "));
+            tabPlayer.setPosition(19, c(existIn(kits) ? ("&7Balance: &a$" +  kits.get("faction_balance")) : " "));
+            //End first row
+
+            //Start second row
+            tabPlayer.setPosition(21, c("&6&lVeil Network"));
+            tabPlayer.setPosition(22, c("&7" + this.plugin.getPlayerss() + "/1500"));
+            tabPlayer.setPosition(24, c("&eWebsite"));
+            tabPlayer.setPosition(25, c("&7veilhcf.us"));
+            tabPlayer.setPosition(27, c("&eServer Statics"));
+            tabPlayer.setPosition(29, c("&eHardcore Factions"));
+            tabPlayer.setPosition(30, c("&7Online: &a" + hcfServer.get("online") + "/" + hcfServer.get("max")));
+            tabPlayer.setPosition(31, c("&7Kills: &a" + (hcf.getOrDefault("kills", "0"))));
+            tabPlayer.setPosition(32, c("&7Deaths: &a" + (hcf.getOrDefault("deaths", "0"))));
+            tabPlayer.setPosition(34, c(existIn(hcf) ? "&eFaction Statics" : " "));
+            tabPlayer.setPosition(36, c(existIn(hcf) ? ("&7Name: &a" +  hcf.get("faction_name")) : " "));
+            tabPlayer.setPosition(37, c(existIn(hcf) ? ("&7DTR: &a" +  hcf.get("faction_dtr")) : " "));
+            tabPlayer.setPosition(38, c(existIn(hcf) ? ("&7Online: &a" +  hcf.get("faction_online")) : " "));
+            tabPlayer.setPosition(39, c(existIn(hcf) ? ("&7Balance: &a$" +  hcf.get("faction_balance")) : " "));
+            //End second row
+
+            //Start third row
+            tabPlayer.setPosition(44, c("&eTeamspeak"));
+            tabPlayer.setPosition(45, c("&7ts.veilmc.net"));
+            tabPlayer.setPosition(49, c("&eHardcore Lite"));
+            tabPlayer.setPosition(50, c("&7Online: &a" + liteServer.get("online") + "/" + liteServer.get("max")));
+            tabPlayer.setPosition(51, c("&7Kills: &a" + (lite.getOrDefault("kills", "0"))));
+            tabPlayer.setPosition(52, c("&7Deaths: &a" + (lite.getOrDefault("deaths", "0"))));
+            tabPlayer.setPosition(54, c((existIn(lite) ? "&eFaction Statics" : " ")));
+            tabPlayer.setPosition(56, c(existIn(lite) ? ("&7Name: &a" +  lite.get("faction_name")) : " "));
+            tabPlayer.setPosition(57, c((existIn(lite) || lite.isEmpty()) ? ("&7DTR: &a" +  lite.get("faction_dtr")) : " "));
+            tabPlayer.setPosition(58, c((existIn(lite) || lite.isEmpty()) ? ("&7Online: &a" +  lite.get("faction_online")) : " "));
+            tabPlayer.setPosition(59, c((existIn(lite) || lite.isEmpty()) ? ("&7Balance: &a$" +  lite.get("faction_balance")) : " "));
+        });
 
     }
 
+    private String c(String str){
+        return ChatColor.translateAlternateColorCodes('&', str);
+    }
 
     private boolean existIn(Map<String, String> map) {
         return map.get("faction_name") != null && !map.get("faction_name").equals("No Faction");
