@@ -68,7 +68,6 @@ public class FactionsTabListener implements Listener {
             for(Player on : Bukkit.getOnlinePlayers()){
                 if(this.construct.hasTabList(on)){
                     updateFactionList(on);
-                    updateOnlinePlayers(on);
                 }
             }
         });
