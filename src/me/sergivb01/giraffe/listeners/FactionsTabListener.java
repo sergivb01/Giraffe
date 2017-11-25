@@ -85,7 +85,9 @@ public class FactionsTabListener implements Listener {
 
         TaskUtil.runTaskAsyncNextTick(() -> {
             for(Player p : Bukkit.getOnlinePlayers()){
-                updateOnlinePlayers(p);
+                if (this.construct.hasTabList(p)) {
+                    updateOnlinePlayers(p);
+                }
             }
         });
 
