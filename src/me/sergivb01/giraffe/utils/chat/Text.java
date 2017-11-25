@@ -80,16 +80,16 @@ public class Text extends ChatComponentText{
     }
 
     public Text setHoverText(final String text) {
-        return this.setHover(HoverAction.SHOW_TEXT, (IChatBaseComponent)new Text(text));
+        return this.setHover(HoverAction.SHOW_TEXT, new Text(text));
     }
 
     public Text reset() {
-        ChatUtil.reset((IChatBaseComponent)this);
+        ChatUtil.reset(this);
         return this;
     }
 
     public IChatBaseComponent f() {
-        return (IChatBaseComponent)this.h();
+        return this.h();
     }
 
     public String toRawText() {
@@ -97,7 +97,7 @@ public class Text extends ChatComponentText{
     }
 
     public void send(final CommandSender sender) {
-        ChatUtil.send(sender, (IChatBaseComponent)this);
+        ChatUtil.send(sender, this);
     }
 
     public void broadcast() {
@@ -107,9 +107,9 @@ public class Text extends ChatComponentText{
     public void broadcast(final String permission) {
         for (final Player player : Bukkit.getOnlinePlayers()) {
             if (permission == null || player.hasPermission(permission)) {
-                this.send((CommandSender)player);
+                this.send(player);
             }
         }
-        this.send((CommandSender)Bukkit.getConsoleSender());
+        this.send(Bukkit.getConsoleSender());
     }
 }

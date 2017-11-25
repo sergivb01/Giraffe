@@ -17,6 +17,7 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import redis.clients.jedis.Jedis;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
@@ -42,7 +43,7 @@ public class LobbyTabListener implements Listener {
                     this.initialUpdate(player);
                 }
             }
-        }, 10L, 20L)).start();
+        }, 10L, 3 * 20L)).start();
     }
 
     @EventHandler
@@ -60,6 +61,7 @@ public class LobbyTabListener implements Listener {
             this.initialUpdate(player);
         });
 
+        player.sendMessage(ChatColor.YELLOW + "Your tab has been loaded but your data will not be displayed due an issue.");
 
     }
 
@@ -91,50 +93,63 @@ public class LobbyTabListener implements Listener {
         }
     }
 
-    private Map<String, String> getPlayerData(Player player, String gamemode){
-        Map<String, String> toReturn;
+    private Map<String, String> getPlayerData(Player player, String gamemode) {
+        /*try {
+            Map<String, String> toReturn;
 
-        Jedis jedis = null;
-        try {
-            jedis = plugin.getPool().getResource();
-            toReturn =  jedis.hgetAll("data:players:" + gamemode + ":" + player.getUniqueId().toString());
-            plugin.getPool().returnResource(jedis);
-        }finally {
-            if (jedis != null) {
-                jedis.close();
+            Jedis jedis = null;
+            try {
+                jedis = plugin.getPool().getResource();
+                toReturn = jedis.hgetAll("data:players:" + gamemode + ":" + player.getUniqueId().toString());
+                plugin.getPool().returnResource(jedis);
+            } finally {
+                if (jedis != null) {
+                    jedis.close();
+                }
             }
-        }
 
-        return toReturn;
+            return toReturn;
+        }catch(OutOfMemoryError ex){
+            return new HashMap<>();
+        }*/
+        return new HashMap<>();
     }
 
     private Map<String, String> getFactionData(String faction, String gamemode){
-        Map<String, String> toReturn;
-        Jedis jedis = null;
-        try {
-            jedis = this.plugin.getPool().getResource();
-            toReturn =  jedis.hgetAll("data:factionlist:" + gamemode + ":" + faction);
-            this.plugin.getPool().returnResource(jedis);
-        }finally {
-            if (jedis != null) {
-                jedis.close();
+        /*try{
+            Map<String, String> toReturn;
+            Jedis jedis = null;
+            try {
+                jedis = this.plugin.getPool().getResource();
+                toReturn =  jedis.hgetAll("data:factionlist:" + gamemode + ":" + faction);
+                this.plugin.getPool().returnResource(jedis);
+            }finally {
+                if (jedis != null) {
+                    jedis.close();
+                }
             }
-        }
-        return toReturn;
+            return toReturn;
+        }catch(OutOfMemoryError ex){
+            return new HashMap<>();
+        }*/
+        return new HashMap<>();
     }
 
     private void initialUpdate(Player player){
         IConstructPlayer tabPlayer = this.construct.getPlayer(player);
         TaskUtil.runTaskAsyncNextTick(()->{
 
-            Map<String, String> kits = getPlayerData(player, "kits");
-            if(kits.get("faction_name") != null) kits.putAll(getFactionData(kits.get("faction_name"), "kits"));
+            Map<String, String> kits, hcf, lite;
+            kits = getPlayerData(player, "kits");
+            lite = getPlayerData(player, "lite");
+            hcf = getPlayerData(player, "hcf");
 
-            Map<String, String> hcf = getPlayerData(player, "hcf");
-            if(hcf.get("faction_name") != null) hcf.putAll(getFactionData(hcf.get("faction_name"), "hcf"));
 
-            Map<String, String> lite = getPlayerData(player, "lite");
-            if(lite.get("faction_name") != null) lite.putAll(getFactionData(lite.get("faction_name"), "lite"));
+            if (kits.get("faction_name") != null) kits.putAll(getFactionData(kits.get("faction_name"), "kits"));
+
+            if (hcf.get("faction_name") != null) hcf.putAll(getFactionData(hcf.get("faction_name"), "hcf"));
+
+            if (lite.get("faction_name") != null) lite.putAll(getFactionData(lite.get("faction_name"), "lite"));
 
 
             //Start first row
@@ -175,11 +190,11 @@ public class LobbyTabListener implements Listener {
             tabPlayer.setPosition(50, c("&7Online: &a" + liteServer.get("online") + "/" + liteServer.get("max")));
             tabPlayer.setPosition(51, c("&7Kills: &a" + (lite.getOrDefault("kills", "0"))));
             tabPlayer.setPosition(52, c("&7Deaths: &a" + (lite.getOrDefault("deaths", "0"))));
-            tabPlayer.setPosition(54, c((existIn(lite) ? "&eFaction Statics" : " ")));
+            tabPlayer.setPosition(54, c(existIn(lite) ? "&eFaction Statics" : " "));
             tabPlayer.setPosition(56, c(existIn(lite) ? ("&7Name: &a" +  lite.get("faction_name")) : " "));
-            tabPlayer.setPosition(57, c((existIn(lite) || lite.isEmpty()) ? ("&7DTR: &a" +  lite.get("faction_dtr")) : " "));
-            tabPlayer.setPosition(58, c((existIn(lite) || lite.isEmpty()) ? ("&7Online: &a" +  lite.get("faction_online")) : " "));
-            tabPlayer.setPosition(59, c((existIn(lite) || lite.isEmpty()) ? ("&7Balance: &a$" +  lite.get("faction_balance")) : " "));
+            tabPlayer.setPosition(57, c(existIn(lite) ? ("&7DTR: &a" +  lite.get("faction_dtr")) : " "));
+            tabPlayer.setPosition(58, c(existIn(lite) ? ("&7Online: &a" +  lite.get("faction_online")) : " "));
+            tabPlayer.setPosition(59, c(existIn(lite) ? ("&7Balance: &a$" +  lite.get("faction_balance")) : " "));
         });
 
     }
