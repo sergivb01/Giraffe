@@ -27,6 +27,7 @@ public class LobbyTabListener implements Listener {
     @Getter private Map<String, String> kitsServer = new HashedMap<>();
     @Getter private Map<String, String> hcfServer = new HashedMap<>();
     @Getter private Map<String, String> liteServer = new HashedMap<>();
+    @Getter private Map<String, String> veilzServer = new HashedMap<>();
 
     public LobbyTabListener(Giraffe plugin) {
         // Define construct before registering event listeners
@@ -85,6 +86,7 @@ public class LobbyTabListener implements Listener {
             kitsServer.putAll(jedis.hgetAll("data:servers:status:kits"));
             hcfServer.putAll(jedis.hgetAll("data:servers:status:hcf"));
             liteServer.putAll(jedis.hgetAll("data:servers:status:lite"));
+            veilzServer.putAll(jedis.hgetAll("data:servers:status:veilz"));
             this.plugin.getPool().returnResource(jedis);
         }finally {
             if (jedis != null) {
